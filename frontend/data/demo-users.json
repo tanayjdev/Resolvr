@@ -1,0 +1,72 @@
+[
+    {
+      "name": "Meera",
+      "age": 17,
+      "location": "Jaipur",
+      "education": "Class 12",
+      "interests": ["Data Analytics"],
+      "skills": ["Excel", "Basic Math"],
+      "language": "Hindi",
+      "budget": "Low",
+      "internet_access": "Limited",
+      "target_role": "Data Analyst",
+      "career_goal": "Get an internship in analytics",
+      "preferred_learning_style": "Video + Practice"
+    },
+    {
+      "name": "Ravi",
+      "age": 20,
+      "location": "Patna",
+      "education": "BCA 2nd Year",
+      "interests": ["Cloud Computing", "DevOps"],
+      "skills": ["Linux", "Networking Basics", "Git"],
+      "language": "Hindi",
+      "budget": "Medium",
+      "internet_access": "Moderate",
+      "target_role": "DevOps Engineer",
+      "career_goal": "Become cloud-ready in 1 year",
+      "preferred_learning_style": "Hands-on Labs"
+    },
+    {
+      "name": "Priya",
+      "age": 21,
+      "location": "Bengaluru",
+      "education": "B.Tech CSE",
+      "interests": ["UI/UX Design", "Product Design"],
+      "skills": ["Figma", "Creativity", "Wireframing"],
+      "language": "English",
+      "budget": "High",
+      "internet_access": "Good",
+      "target_role": "Product Designer",
+      "career_goal": "Build strong portfolio for startups",
+      "preferred_learning_style": "Projects + Case Studies"
+    },
+    {
+      "name": "Devang",
+      "age": 19,
+      "location": "Ahmedabad",
+      "education": "Diploma in IT",
+      "interests": ["Artificial Intelligence", "Machine Learning"],
+      "skills": ["Python", "Basic Statistics", "Problem Solving"],
+      "language": "Gujarati",
+      "budget": "Medium",
+      "internet_access": "Good",
+      "target_role": "ML Engineer",
+      "career_goal": "Get AI internship opportunities",
+      "preferred_learning_style": "Coding Practice"
+    },
+    {
+      "name": "Aarav",
+      "age": 18,
+      "location": "Lucknow",
+      "education": "Class 12",
+      "interests": ["Cybersecurity"],
+      "skills": ["Computer Basics", "Networking", "Logical Thinking"],
+      "language": "Hindi",
+      "budget": "Low",
+      "internet_access": "Moderate",
+      "target_role": "Cybersecurity Analyst",
+      "career_goal": "Learn ethical hacking and security",
+      "preferred_learning_style": "Interactive Labs"
+    }
+  ]
