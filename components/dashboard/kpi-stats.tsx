@@ -5,6 +5,8 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { useUserProgress } from '@/context/user-context'
 
+import { getComputedReadinessScore } from '@/lib/pathwayData'
+
 import {
   TrendingUp,
   TrendingDown,
@@ -66,7 +68,7 @@ function KPICard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border bg-card/40 backdrop-blur-xl transition-all duration-300',
+        'group relative overflow-hidden rounded-2xl border border-cyan-500/10 bg-card/40 backdrop-blur-xl shadow-[0_0_30px_rgba(0,255,255,0.05)] transition-all duration-300',
         'hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,0,0,0.18)]',
         'p-5 sm:p-6',
         colorMap[accentColor].card
@@ -129,7 +131,7 @@ function KPICard({
           </h3>
 
           {subtitle && (
-            <p className="text-xs leading-relaxed text-muted-foreground">
+            <p className="text-xs leading-relaxed text-muted-foreground/80">
               {subtitle}
             </p>
           )}
@@ -140,20 +142,30 @@ function KPICard({
 }
 
 export function KPIStats() {
-  const { progress } =
+  const { progress, profile } =
   useUserProgress()
 
+  const readinessScore = React.useMemo(
+    () =>
+      getComputedReadinessScore(
+        profile
+      ),
+    [profile]
+  )
+
   const {
-     employabilityScore,
      skills,
      simulationsCompleted,
      opportunitiesMatched,
   } = progress
+
   const stats: KPICardProps[] = [
     {
       title: 'Employability Score',
-      value: `${employabilityScore}%`,
-      subtitle: 'Readiness improving steadily',
+      value: `${readinessScore}%`,
+      subtitle: profile.onboardingComplete
+        ? `Adaptive readiness for ${profile.careerGoal || 'your pathway'}`
+        : 'Complete onboarding to unlock personalized readiness',
       trend: {
         value: 12,
         positive: true,

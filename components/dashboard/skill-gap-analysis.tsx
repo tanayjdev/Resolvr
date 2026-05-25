@@ -3,6 +3,11 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useUserProgress } from '@/context/user-context'
+import {
+  getComputedReadinessScore,
+  ONBOARDING_PROMPT_TEXT,
+} from '@/lib/pathwayData'
 import {
   ArrowUpRight,
   TrendingUp,
@@ -193,9 +198,104 @@ function SkillCard({
   )
 }
 
+function buildAdaptiveSkillGaps(
+  interests: string[],
+  recommendedSkills: string[],
+  skills: { name: string; level: number }[],
+  readinessScore: number,
+  onboardingComplete: boolean
+): SkillGap[] {
+  if (!onboardingComplete) {
+    return skillGaps
+  }
+
+  const focusAreas =
+    recommendedSkills.length > 0
+      ? recommendedSkills
+      : interests
+
+  if (focusAreas.length === 0) {
+    return skillGaps
+  }
+
+  return focusAreas.slice(0, 4).map((name) => {
+    const tracked = skills.find(
+      (skill) =>
+        skill.name
+          .toLowerCase()
+          .includes(
+            name.toLowerCase()
+          ) ||
+        name
+          .toLowerCase()
+          .includes(
+            skill.name.toLowerCase()
+          )
+    )
+
+    const current =
+      tracked?.level ??
+      Math.max(35, readinessScore - 12)
+
+    const target = Math.min(
+      95,
+      current + 22
+    )
+
+    const priority: SkillGap['priority'] =
+      current < 60
+        ? 'high'
+        : current < 75
+          ? 'medium'
+          : 'low'
+
+    return {
+      name,
+      current,
+      target,
+      priority,
+      recommendation: `Complete ${name} simulations and milestone drills to close this gap.`,
+    }
+  })
+}
+
 export function SkillGapAnalysis() {
+  const { progress, profile } = useUserProgress()
+
+  const readinessScore = React.useMemo(
+    () =>
+      getComputedReadinessScore(
+        profile
+      ),
+    [profile]
+  )
+
+  const adaptiveSkillGaps = React.useMemo(
+    () =>
+      buildAdaptiveSkillGaps(
+        profile.interests,
+        profile.recommendedSkills,
+        progress.skills,
+        readinessScore,
+        profile.onboardingComplete
+      ),
+    [
+      profile.interests,
+      profile.recommendedSkills,
+      profile.onboardingComplete,
+      progress.skills,
+      readinessScore,
+    ]
+  )
+
   return (
     <section className="glass-panel rounded-2xl border border-white/10 p-4 sm:p-6 h-full overflow-hidden">
+      {!profile.onboardingComplete && (
+        <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+          {ONBOARDING_PROMPT_TEXT}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
@@ -210,7 +310,7 @@ export function SkillGapAnalysis() {
             Skill Gap Analysis
           </h3>
 
-          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+          <p className="text-sm text-muted-foreground/80 mt-1 leading-relaxed">
             Identify the most critical skills needed to reach your target career outcomes.
           </p>
         </div>
@@ -223,7 +323,7 @@ export function SkillGapAnalysis() {
 
       {/* Skill Cards */}
       <div className="space-y-4">
-        {skillGaps.map((skill, index) => (
+        {adaptiveSkillGaps.map((skill, index) => (
           <SkillCard
             key={skill.name}
             skill={skill}

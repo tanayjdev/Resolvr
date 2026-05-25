@@ -3,6 +3,15 @@
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useUserProgress } from '@/context/user-context'
+
+import {
+  getAdaptiveGuidance,
+  getComputedReadinessScore,
+  ONBOARDING_PROMPT_TEXT,
+  type GuidanceCard,
+} from '@/lib/pathwayData'
+
 import {
   Sparkles,
   ArrowRight,
@@ -13,46 +22,7 @@ import {
   BrainCircuit,
 } from 'lucide-react'
 
-interface AIInsight {
-  id: string
-  type: 'pathway' | 'skill' | 'opportunity' | 'action'
-  title: string
-  description: string
-  priority?: 'high' | 'normal'
-}
-
-const insights: AIInsight[] = [
-  {
-    id: '1',
-    type: 'pathway',
-    title: 'Accelerate ML Track',
-    description:
-      'Your recent learning velocity suggests you can complete the ML specialization nearly 2 weeks ahead of schedule.',
-    priority: 'high',
-  },
-  {
-    id: '2',
-    type: 'opportunity',
-    title: 'New Match: AI Startup Internship',
-    description:
-      'A newly posted internship aligns with 94% of your technical and communication skill profile.',
-    priority: 'high',
-  },
-  {
-    id: '3',
-    type: 'skill',
-    title: 'Improve System Design Depth',
-    description:
-      'Adding 2 focused hours weekly to architecture practice may increase your employability score by ~5%.',
-  },
-  {
-    id: '4',
-    type: 'action',
-    title: 'Complete Cloud Assessment',
-    description:
-      'Finish the pending Cloud Architecture evaluation to unlock your next pathway milestone.',
-  },
-]
+type AIInsight = GuidanceCard
 
 function InsightIcon({
   type,
@@ -110,7 +80,7 @@ function InsightCard({
         delay: index * 0.08,
       }}
       className={cn(
-        'group relative w-full overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]',
+        'group relative h-full w-full max-w-full overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]',
         typeStyles[insight.type]
       )}
     >
@@ -132,7 +102,7 @@ function InsightCard({
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap mb-1.5">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <h4 className="text-sm font-semibold text-foreground">
               {insight.title}
             </h4>
@@ -144,7 +114,7 @@ function InsightCard({
             )}
           </div>
 
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p className="text-sm leading-relaxed text-muted-foreground/80">
             {insight.description}
           </p>
         </div>
@@ -159,8 +129,41 @@ function InsightCard({
 }
 
 export function AIGuidancePanel() {
+  const { progress, profile } = useUserProgress()
+
+  const readinessScore = React.useMemo(
+    () => getComputedReadinessScore(profile),
+    [profile]
+  )
+
+  const insights = React.useMemo(
+    () =>
+      getAdaptiveGuidance({
+        careerGoal: profile.careerGoal,
+        interests: profile.interests,
+        skillLevel: profile.skillLevel,
+        readinessScore,
+        pathwayProgress: profile.pathwayProgress,
+        completedSimulations:
+          profile.completedSimulations,
+        recommendedSkills:
+          profile.recommendedSkills,
+        onboardingComplete:
+          profile.onboardingComplete,
+        simulationsCompleted:
+          progress.simulationsCompleted,
+      }),
+    [profile, progress.simulationsCompleted, readinessScore]
+  )
+
   return (
-    <section className="glass-panel rounded-2xl border border-white/10 p-4 sm:p-6 h-full overflow-hidden">
+    <section className="glass-panel h-full w-full max-w-full overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-6">
+      {!profile.onboardingComplete && (
+        <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+          {ONBOARDING_PROMPT_TEXT}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div className="min-w-0">
@@ -184,7 +187,7 @@ export function AIGuidancePanel() {
                 AI Guidance
               </h3>
 
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground/80">
                 Personalized intelligence and recommendations
               </p>
             </div>
@@ -202,7 +205,7 @@ export function AIGuidancePanel() {
       </div>
 
       {/* Insight Cards */}
-      <div className="space-y-3">
+      <div className="grid w-full max-w-full grid-cols-1 gap-3 xl:grid-cols-2 xl:gap-4">
         {insights.map((insight, index) => (
           <InsightCard
             key={insight.id}
@@ -215,7 +218,7 @@ export function AIGuidancePanel() {
       {/* Bottom CTA */}
       <motion.button
         whileTap={{ scale: 0.98 }}
-        className="group relative mt-5 w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/[0.07] to-secondary/[0.08] px-4 py-3.5 transition-all duration-300 hover:border-primary/30"
+        className="group relative mt-5 w-full max-w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/[0.07] to-secondary/[0.08] px-4 py-3.5 transition-all duration-300 hover:border-primary/30 xl:mt-6"
       >
         <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.05] to-secondary/[0.05]" />

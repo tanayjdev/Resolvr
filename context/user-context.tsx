@@ -1,11 +1,8 @@
 "use client"
 
-import type {
-  CareerPathway,
-} from "@/lib/pathways/pathway-engine"
-
 import {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useState,
@@ -13,49 +10,63 @@ import {
   type ReactNode,
 } from "react"
 
+import {
+  buildUserProfile,
+  DEFAULT_PROFILE_ONLY,
+  type ProfileOnlyState,
+  type UserProfile,
+} from "@/lib/types/user-profile"
+
+import {
+  DEFAULT_PROGRESS,
+  type Opportunity,
+  type Skill,
+  type UserProgress,
+} from "@/lib/types/user-state"
+
+import type { CareerPathway } from "@/lib/pathways/pathway-engine"
+
+import {
+  getDefaultPersistedState,
+  readPersistedUserState,
+  writePersistedUserState,
+} from "@/lib/storage/user-state-storage"
+
 // =========================================================
-// Types
+// Re-exports
 // =========================================================
 
-export interface Skill {
-  name: string
-  level: number
-}
+export type {
+  Skill,
+  Opportunity,
+  UserProgress,
+} from "@/lib/types/user-state"
 
-export interface Opportunity {
-  company: string
-  role: string
-  match: number
-}
+export type {
+  UserProfile,
+  ProfileOnlyState,
+  SkillLevel,
+  WeeklyHours,
+} from "@/lib/types/user-profile"
 
-export interface UserProgress {
-  readinessScore: number
+export {
+  DEFAULT_USER_PROFILE,
+  DEFAULT_PROFILE_ONLY,
+  buildUserProfile,
+} from "@/lib/types/user-profile"
 
-  simulationsCompleted: number
+export { DEFAULT_PROGRESS } from "@/lib/types/user-state"
 
-  employabilityScore: number
-
-  skillsTracked: number
-
-  opportunitiesMatched: number
-
-  currentPathway: CareerPathway
-
-  unlockedPathways: string[]
-
-  completedSimulations: string[]
-
-  interests: string[]
-
-  skills: Skill[]
-
-  opportunities: Opportunity[]
-
-  lowDataMode: boolean
-}
+// =========================================================
+// Context
+// =========================================================
 
 interface UserContextType {
   progress: UserProgress
+
+  profile: UserProfile
+
+  hasHydrated: boolean
 
   increaseReadiness: (
     value: number
@@ -83,110 +94,24 @@ interface UserContextType {
     simulation: string
   ) => void
 
+  updateProfile: (
+    updates: Partial<UserProfile>
+  ) => void
+
+  completeOnboarding: () => void
+
+  recordSimulationCompletion: (
+    simulationId: string,
+    finalScore: number
+  ) => void
+
   resetProgress: () => void
 }
-
-// =========================================================
-// Constants
-// =========================================================
-
-const STORAGE_KEY =
-  "pathweaver-progress"
-
-  const DEFAULT_PROGRESS: UserProgress = {
-    readinessScore: 620,
-  
-    simulationsCompleted: 18,
-  
-    employabilityScore: 87,
-  
-    skillsTracked: 24,
-  
-    opportunitiesMatched: 42,
-  
-    currentPathway: "Machine Learning",
-  
-    unlockedPathways: [
-      "Machine Learning",
-      "Backend",
-    ],
-  
-    completedSimulations: [
-      "Kubernetes Incident",
-    ],
-  
-    interests: [
-      "AI",
-      "Cloud",
-    ],
-  
-    skills: [
-      {
-        name: "Python",
-        level: 82,
-      },
-      {
-        name: "Docker",
-        level: 68,
-      },
-    ],
-  
-    opportunities: [
-      {
-        company: "Razorpay",
-        role: "Backend Intern",
-        match: 91,
-      },
-    ],
-  
-    lowDataMode: false,
-  }
-
-// =========================================================
-// Context
-// =========================================================
 
 const UserContext =
   createContext<UserContextType | null>(
     null
   )
-
-// =========================================================
-// Helpers
-// =========================================================
-
-function loadStoredProgress(): UserProgress {
-  if (typeof window === "undefined") {
-    return DEFAULT_PROGRESS
-  }
-
-  try {
-    const stored =
-      localStorage.getItem(
-        STORAGE_KEY
-      )
-
-    if (!stored) {
-      return DEFAULT_PROGRESS
-    }
-
-    const parsed = JSON.parse(
-      stored
-    ) as Partial<UserProgress>
-
-    return {
-      ...DEFAULT_PROGRESS,
-      ...parsed,
-    }
-  } catch (error) {
-    console.error(
-      "Failed to load saved progress:",
-      error
-    )
-
-    return DEFAULT_PROGRESS
-  }
-}
 
 // =========================================================
 // Provider
@@ -200,41 +125,44 @@ export function UserProvider({
   const [progress, setProgress] =
     useState<UserProgress>(DEFAULT_PROGRESS)
 
+  const [profileOnly, setProfileOnly] =
+    useState<ProfileOnlyState>(
+      DEFAULT_PROFILE_ONLY
+    )
+
   const [hasHydrated, setHasHydrated] =
     useState(false)
 
-  // Load persisted progress after mount so SSR and
-  // the first client render stay in sync.
+  const profile = useMemo(
+    () =>
+      buildUserProfile(
+        progress,
+        profileOnly
+      ),
+    [progress, profileOnly]
+  )
+
   useEffect(() => {
-    setProgress(loadStoredProgress())
+    const persisted =
+      readPersistedUserState()
+
+    setProgress(persisted.progress)
+    setProfileOnly(
+      persisted.profileOnly
+    )
     setHasHydrated(true)
   }, [])
-
-  // =======================================================
-  // Persistence
-  // =======================================================
 
   useEffect(() => {
     if (!hasHydrated) {
       return
     }
 
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(progress)
-      )
-    } catch (error) {
-      console.error(
-        "Failed to save progress:",
-        error
-      )
-    }
-  }, [progress, hasHydrated])
-
-  // =======================================================
-  // Actions
-  // =======================================================
+    writePersistedUserState({
+      progress,
+      profileOnly,
+    })
+  }, [progress, profileOnly, hasHydrated])
 
   const increaseReadiness = (
     value: number
@@ -250,40 +178,40 @@ export function UserProvider({
   }
 
   const completeSimulation =
-  (
-    simulationName: string
-  ) => {
-    setProgress((prev) => ({
-      ...prev,
+    (
+      simulationName: string
+    ) => {
+      setProgress((prev) => ({
+        ...prev,
 
-      simulationsCompleted:
-        prev.simulationsCompleted +
-        1,
+        simulationsCompleted:
+          prev.simulationsCompleted +
+          1,
 
-      employabilityScore:
-        Math.min(
-          prev.employabilityScore +
-            2,
-          100
-        ),
+        employabilityScore:
+          Math.min(
+            prev.employabilityScore +
+              2,
+            100
+          ),
 
-      opportunitiesMatched:
-        prev.opportunitiesMatched +
-        1,
+        opportunitiesMatched:
+          prev.opportunitiesMatched +
+          1,
 
-      readinessScore:
-        Math.min(
-          prev.readinessScore +
-            25,
-          1000
-        ),
+        readinessScore:
+          Math.min(
+            prev.readinessScore +
+              25,
+            1000
+          ),
 
-      completedSimulations: [
-        ...prev.completedSimulations,
-        simulationName,
-      ],
-    }))
-  }
+        completedSimulations: [
+          ...prev.completedSimulations,
+          simulationName,
+        ],
+      }))
+    }
 
   const setPathway = (
     pathway: CareerPathway
@@ -301,7 +229,7 @@ export function UserProvider({
   ) => {
     setProgress((prev) => ({
       ...prev,
-  
+
       unlockedPathways:
         prev.unlockedPathways.includes(
           pathway
@@ -315,21 +243,21 @@ export function UserProvider({
   }
 
   const toggleLowDataMode =
-  () => {
-    setProgress((prev) => ({
-      ...prev,
+    () => {
+      setProgress((prev) => ({
+        ...prev,
 
-      lowDataMode:
-        !prev.lowDataMode,
-    }))
-  }
+        lowDataMode:
+          !prev.lowDataMode,
+      }))
+    }
 
   const addOpportunity = (
     opportunity: Opportunity
   ) => {
     setProgress((prev) => ({
       ...prev,
-  
+
       opportunities: [
         ...prev.opportunities,
         opportunity,
@@ -338,49 +266,233 @@ export function UserProvider({
   }
 
   const addCompletedSimulation =
-  (simulation: string) => {
-    setProgress((prev) => ({
-      ...prev,
+    (simulation: string) => {
+      setProgress((prev) => ({
+        ...prev,
 
-      completedSimulations: [
-        ...prev.completedSimulations,
-        simulation,
-      ],
-    }))
-  }
+        completedSimulations: [
+          ...prev.completedSimulations,
+          simulation,
+        ],
+      }))
+    }
+
+  const updateProfile = useCallback(
+    (updates: Partial<UserProfile>) => {
+      const {
+        interests,
+        readinessScore,
+        completedSimulations,
+        careerGoal,
+        skillLevel,
+        learningStyle,
+        weeklyHours,
+        onboardingComplete,
+        recommendedSkills,
+        pathwayProgress,
+      } = updates
+
+      const profileUpdates: Partial<ProfileOnlyState> =
+        {}
+
+      if (careerGoal !== undefined) {
+        profileUpdates.careerGoal =
+          careerGoal
+      }
+
+      if (skillLevel !== undefined) {
+        profileUpdates.skillLevel =
+          skillLevel
+      }
+
+      if (
+        learningStyle !== undefined
+      ) {
+        profileUpdates.learningStyle =
+          learningStyle
+      }
+
+      if (weeklyHours !== undefined) {
+        profileUpdates.weeklyHours =
+          weeklyHours
+      }
+
+      if (
+        onboardingComplete !==
+        undefined
+      ) {
+        profileUpdates.onboardingComplete =
+          onboardingComplete
+      }
+
+      if (
+        recommendedSkills !==
+        undefined
+      ) {
+        profileUpdates.recommendedSkills =
+          recommendedSkills
+      }
+
+      if (
+        pathwayProgress !== undefined
+      ) {
+        profileUpdates.pathwayProgress =
+          pathwayProgress
+      }
+
+      if (
+        Object.keys(profileUpdates)
+          .length > 0
+      ) {
+        setProfileOnly((prev) => ({
+          ...prev,
+          ...profileUpdates,
+        }))
+      }
+
+      if (
+        interests !== undefined ||
+        readinessScore !==
+          undefined ||
+        completedSimulations !==
+          undefined
+      ) {
+        setProgress((prev) => ({
+          ...prev,
+          ...(interests !==
+            undefined && {
+            interests,
+          }),
+          ...(readinessScore !==
+            undefined && {
+            readinessScore,
+          }),
+          ...(completedSimulations !==
+            undefined && {
+            completedSimulations,
+          }),
+        }))
+      }
+    },
+    []
+  )
+
+  const completeOnboarding =
+    useCallback(() => {
+      setProfileOnly((prev) => ({
+        ...prev,
+        onboardingComplete: true,
+      }))
+    }, [])
+
+  const recordSimulationCompletion =
+    useCallback(
+      (
+        simulationId: string,
+        finalScore: number
+      ) => {
+        const impact = Math.round(
+          finalScore / 10
+        )
+
+        setProgress((prev) => {
+          if (
+            prev.completedSimulations.includes(
+              simulationId
+            )
+          ) {
+            return prev
+          }
+
+          return {
+            ...prev,
+
+            completedSimulations: [
+              ...prev.completedSimulations,
+              simulationId,
+            ],
+
+            simulationsCompleted:
+              prev.simulationsCompleted +
+              1,
+
+            readinessScore: Math.min(
+              100,
+              prev.readinessScore +
+                impact
+            ),
+
+            employabilityScore:
+              Math.min(
+                100,
+                prev.employabilityScore +
+                  impact
+              ),
+          }
+        })
+
+        setProfileOnly((prev) => ({
+          ...prev,
+
+          pathwayProgress: Math.min(
+            100,
+            prev.pathwayProgress +
+              impact
+          ),
+        }))
+      },
+      []
+    )
 
   const resetProgress = () => {
-    setProgress(DEFAULT_PROGRESS)
-  }
+    const defaults =
+      getDefaultPersistedState()
 
-  // =======================================================
-  // Memoized Context
-  // =======================================================
+    setProgress(defaults.progress)
+    setProfileOnly(
+      defaults.profileOnly
+    )
+  }
 
   const value = useMemo(
     () => ({
       progress,
-  
+
+      profile,
+
+      hasHydrated,
+
       increaseReadiness,
-  
+
       completeSimulation,
-  
+
       setPathway,
-  
+
       unlockPathway,
-  
+
       toggleLowDataMode,
-  
+
       addOpportunity,
-  
+
       addCompletedSimulation,
-  
+
+      updateProfile,
+
+      completeOnboarding,
+
+      recordSimulationCompletion,
+
       resetProgress,
     }),
-    [progress]
+    [
+      progress,
+      profile,
+      hasHydrated,
+      updateProfile,
+      completeOnboarding,
+      recordSimulationCompletion,
+    ]
   )
-
- 
 
   return (
     <UserContext.Provider

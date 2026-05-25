@@ -1,124 +1,48 @@
 "use client"
 
-import {
-  useUserProgress,
-} from "@/context/user-context"
+import * as React from "react"
 
-import Link from "next/link"
-import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
-import PageTransition from "@/components/common/PageTransition"
+import { useUserProgress } from "@/context/user-context"
 
-import {
-  Sidebar,
-  TopBar,
-  BottomNav,
-} from "@/components/dashboard/navigation"
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow"
 
-import { KPIStats } from "@/components/dashboard/kpi-stats"
+import DashboardShell from "@/components/onboarding/DashboardShell"
 
-import {
-  AdaptivePathwayGraph,
-} from "@/components/dashboard/pathway-graph"
+export default function OnboardingShell() {
+  const router = useRouter()
 
-import {
-  EmployabilityReadiness,
-} from "@/components/dashboard/employability-readiness"
+  const {
+    profile,
+    hasHydrated,
+  } = useUserProgress()
 
-import {
-  SkillGapAnalysis,
-} from "@/components/dashboard/skill-gap-analysis"
+  React.useEffect(() => {
+    if (!hasHydrated) {
+      return
+    }
 
-import {
-  AIGuidancePanel,
-} from "@/components/dashboard/ai-guidance"
+    if (profile.onboardingComplete) {
+      router.replace("/dashboard")
+    }
+  }, [
+    hasHydrated,
+    profile.onboardingComplete,
+    router,
+  ])
 
-import {
-  FeaturedSimulation,
-} from "@/components/dashboard/featured-simulation"
-
-import {
-  OpportunityRecommendations,
-} from "@/components/dashboard/opportunities"
-
-import {
-  FutureProgressionTimeline,
-} from "@/components/dashboard/timeline"
-
-export default function DashboardPage() {
-  const { progress } =
-  useUserProgress()
-  return (
-    <PageTransition>
-      <div className="min-h-screen overflow-hidden bg-background text-foreground">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="relative lg:pl-64">
-          {/* Top Navigation */}
-          <TopBar />
-
-          {/* Dashboard */}
-          <main className="relative space-y-6 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-10">
-            {/* KPI Section */}
-            <KPIStats />
-
-            {/* Main Dashboard Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
-              className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6"
-            >
-              {/* Pathway Graph */}
-              <section className="lg:col-span-8">
-                <AdaptivePathwayGraph />
-              </section>
-
-              {/* Employability */}
-              <section className="lg:col-span-4">
-                <EmployabilityReadiness />
-              </section>
-
-              {/* Skill Gap */}
-              <section className="lg:col-span-6">
-                <SkillGapAnalysis />
-              </section>
-
-              {/* AI Guidance */}
-              <section className="lg:col-span-6">
-                <AIGuidancePanel />
-              </section>
-
-              {/* Featured Simulation */}
-              <section className="lg:col-span-4">
-                <Link
-                  href="/recommendations"
-                  className="block"
-                >
-                  <div className="cursor-pointer transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99]">
-                    <FeaturedSimulation />
-                  </div>
-                </Link>
-              </section>
-
-              {/* Timeline */}
-              <section className="lg:col-span-8">
-                <FutureProgressionTimeline />
-              </section>
-
-              {/* Opportunities */}
-              <section className="lg:col-span-12">
-                <OpportunityRecommendations />
-              </section>
-            </motion.div>
-          </main>
-        </div>
-
-        {/* Mobile Navigation */}
-        <BottomNav />
+  if (!hasHydrated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
       </div>
-    </PageTransition>
-  )
+    )
+  }
+
+  if (profile.onboardingComplete) {
+    return null
+  }
+
+  return <OnboardingFlow />
 }

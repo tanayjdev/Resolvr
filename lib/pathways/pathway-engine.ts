@@ -1,5 +1,10 @@
 import type { PathwayNode } from "@/components/dashboard/pathway-graph"
 
+import {
+  buildSpecializationNodes,
+  getPathwayDataForCareerGoal,
+} from "@/lib/pathwayData"
+
 // ============================================================
 // Types
 // ============================================================
@@ -22,6 +27,8 @@ export type CareerPathway =
     interests: string[]
   
     completedSimulations: string[]
+
+    careerGoal?: string
   }
 
 // ============================================================
@@ -222,13 +229,20 @@ export function buildPathwayData({
   interests,
 
   completedSimulations,
+
+  careerGoal = "",
 }: BuildPathwayOptions): PathwayNode[] {
 
+  const pathwayConfig =
+    getPathwayDataForCareerGoal(
+      careerGoal
+    )
+
   let adaptivePathway =
-  currentPathway
+    pathwayConfig.pathwayKey
 
 if (
-  interests.includes("Security")
+  interests.includes("Cybersecurity")
 ) {
   adaptivePathway =
     "Cybersecurity"
@@ -242,7 +256,7 @@ if (
 }
 
 if (
-  interests.includes("Frontend")
+  interests.includes("Web Development")
 ) {
   adaptivePathway =
     "Frontend Engineering"
@@ -365,7 +379,7 @@ if (
       id: "3",
 
       title:
-        currentPathway,
+        pathwayConfig.specializationTitle,
 
       status: getStatus(
         readinessScore,
@@ -374,14 +388,20 @@ if (
       ),
 
       description:
-        "AI-personalized specialization pathway.",
+        pathwayConfig.specializationDescription,
 
       children:
-      buildSpecializationChildren(
-        adaptivePathway,
-        simulationsCompleted,
-        completedSimulations
-      ),
+        careerGoal
+          ? buildSpecializationNodes(
+              pathwayConfig,
+              simulationsCompleted,
+              completedSimulations
+            )
+          : buildSpecializationChildren(
+              adaptivePathway,
+              simulationsCompleted,
+              completedSimulations
+            ),
     },
 
     // ========================================================

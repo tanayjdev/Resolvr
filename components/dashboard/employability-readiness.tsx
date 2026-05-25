@@ -10,6 +10,8 @@ import {
   type Skill,
 } from "@/context/user-context"
 
+import { getComputedReadinessScore } from "@/lib/pathwayData"
+
 import {
   TrendingUp,
   ArrowUpRight,
@@ -122,14 +124,18 @@ function CircularProgress({
 
 
 export function EmployabilityReadiness() {
-  const { progress } =
+  const { progress, profile } =
   useUserProgress()
 
-const {
-  employabilityScore,
-  readinessScore,
-  skills,
-} = progress
+const { readinessScore, skills } = progress
+
+const employabilityScore = React.useMemo(
+  () =>
+    getComputedReadinessScore(
+      profile
+    ),
+  [profile]
+)
 
 const skillBreakdown =
   skills.map((skill: Skill) => ({
@@ -163,7 +169,7 @@ const skillBreakdown =
               Employability Readiness
             </h3>
 
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground/80">
             Readiness based on simulations,
             skills, and pathway progression
             </p>

@@ -3,6 +3,8 @@
 import {
   useUserProgress,
 } from "@/context/user-context"
+
+import { getFeaturedSimulation } from "@/lib/pathwayData"
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -57,75 +59,14 @@ function DifficultyBadge({
 }
 
 export function FeaturedSimulation() {
-  
-  const { progress } =
-  useUserProgress()
-  
-  const featuredSimulationMap: Record<
-  string,
-  Simulation
-> = {
-  "Machine Learning": {
-    id: "ml-1",
+  const { progress, profile } =
+    useUserProgress()
 
-    title:
-      "Recommendation Engine Incident",
-
-    description:
-      "Your AI recommendation system accuracy dropped by 32% after a production model update. Diagnose the issue and stabilize performance.",
-
-    difficulty: "advanced",
-
-    duration: "45 min",
-
-    completion: 35,
-
-    featured: true,
-  },
-
-  Backend: {
-    id: "backend-1",
-
-    title:
-      "API Latency Crisis",
-
-    description:
-      "A production API is failing under sudden traffic spikes. Investigate bottlenecks and restore service reliability.",
-
-    difficulty: "intermediate",
-
-    duration: "35 min",
-
-    completion: 52,
-
-    featured: true,
-  },
-
-  DevOps: {
-    id: "devops-1",
-
-    title:
-      "Kubernetes Cluster Failure",
-
-    description:
-      "Multiple services degraded after a failed deployment. Use logs and infrastructure diagnostics to recover the system.",
-
-    difficulty: "advanced",
-
-    duration: "50 min",
-
-    completion: 28,
-
-    featured: true,
-  },
-}
-const sim =
-  featuredSimulationMap[
-    progress.currentPathway
-  ] ??
-  featuredSimulationMap[
-    "Machine Learning"
-  ]
+  const sim: Simulation =
+    getFeaturedSimulation(
+      profile.careerGoal,
+      profile.onboardingComplete
+    )
 
   return (
     <motion.section
@@ -192,7 +133,7 @@ const sim =
                 {sim.title}
               </h3>
 
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="text-sm leading-relaxed text-muted-foreground/80">
                 {sim.description}
               </p>
             </div>
@@ -272,8 +213,8 @@ const sim =
 
             <span className="text-sm font-semibold">
               {sim.completion
-                ? 'Continue ${progress.currentPathway} Simulation'
-                : 'Start ${progress.currentPathway} Simulation'}
+                ? `Continue ${progress.currentPathway} Simulation`
+                : `Start ${progress.currentPathway} Simulation`}
             </span>
 
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/button:translate-x-1" />

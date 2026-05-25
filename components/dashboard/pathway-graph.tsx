@@ -17,6 +17,8 @@ import {
   buildPathwayData,
 } from "@/lib/pathways/pathway-engine"
 
+import { ONBOARDING_PROMPT_TEXT } from "@/lib/pathwayData"
+
 import {
   CheckCircle2,
   Circle,
@@ -162,7 +164,7 @@ function MobilePathwayNode({
           </div>
 
           {node.description && (
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">
               {node.description}
             </p>
           )}
@@ -247,7 +249,7 @@ function MobilePathwayNode({
 // =========================================================
 
 export function AdaptivePathwayGraph() {
-  const { progress } =
+  const { progress, profile } =
     useUserProgress()
 
   const pathwayData =
@@ -255,31 +257,44 @@ export function AdaptivePathwayGraph() {
       return buildPathwayData({
         readinessScore:
           progress.readinessScore,
-      
+
         simulationsCompleted:
           progress.simulationsCompleted,
-      
+
         currentPathway:
           progress.currentPathway,
-      
+
         unlockedPathways:
           progress.unlockedPathways,
-      
+
         interests:
           progress.interests,
-      
+
         completedSimulations:
           progress.completedSimulations,
+
+        careerGoal:
+          profile.careerGoal,
       })
     }, [
       progress.readinessScore,
       progress.simulationsCompleted,
+      progress.currentPathway,
+      progress.interests,
+      progress.completedSimulations,
+      profile.careerGoal,
     ])
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl sm:p-6">
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,198,255,0.08),transparent_35%)]" />
+
+      {!profile.onboardingComplete && (
+        <div className="relative z-10 mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+          {ONBOARDING_PROMPT_TEXT}
+        </div>
+      )}
 
       {/* Header */}
       <div className="relative z-10 mb-6 flex items-start justify-between gap-4">
@@ -294,7 +309,7 @@ export function AdaptivePathwayGraph() {
             Learning Pathway
           </h3>
 
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground/80">
             Your evolving career roadmap powered by AI insights
           </p>
         </div>
@@ -383,7 +398,7 @@ export function AdaptivePathwayGraph() {
                       </h4>
 
                       {node.description && (
-                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">
                           {
                             node.description
                           }

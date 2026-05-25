@@ -10,6 +10,8 @@ import {
   useUserProgress,
 } from "@/context/user-context"
 
+import { getComputedReadinessScore } from "@/lib/pathwayData"
+
 import {
   Rocket,
   GraduationCap,
@@ -148,7 +150,7 @@ function TimelineIcon({
   return (
     <div
       className={cn(
-        "relative flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 sm:h-14 sm:w-14",
+        "relative flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 hover:scale-105 sm:h-14 sm:w-14",
 
         status ===
           "completed" &&
@@ -168,7 +170,7 @@ function TimelineIcon({
       {status ===
         "current" && (
         <>
-          <span className="absolute inset-0 animate-ping rounded-2xl border border-primary/40" />
+          <span className="absolute inset-0 animate-ping rounded-2xl border border-primary/40 opacity-40" />
 
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-primary" />
         </>
@@ -230,19 +232,29 @@ export const FutureProgressionTimeline =
     function FutureProgressionTimeline() {
       const {
         progress,
+        profile,
       } =
         useUserProgress()
+
+      const employabilityScore =
+        React.useMemo(
+          () =>
+            getComputedReadinessScore(
+              profile
+            ),
+          [profile]
+        )
 
       const timeline =
         React.useMemo(() => {
           return buildTimeline(
             progress.readinessScore,
-            progress.employabilityScore,
+            employabilityScore,
             progress.currentPathway
           )
         }, [
           progress.readinessScore,
-          progress.employabilityScore,
+          employabilityScore,
           progress.currentPathway,
         ])
 
@@ -271,7 +283,7 @@ export const FutureProgressionTimeline =
                   Career Progression Timeline
                 </h3>
 
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground/80">
                   AI-generated roadmap tracking your long-term employability journey.
                 </p>
               </div>
@@ -298,9 +310,9 @@ export const FutureProgressionTimeline =
             <div className="hidden xl:block">
               <div className="relative">
                 {/* Progress Line */}
-                <div className="absolute left-0 right-0 top-7 h-[2px] bg-white/10">
+                <div className="absolute left-0 right-0 top-7 h-[2px] bg-white/10 transition-all duration-300">
                 <motion.div
-  className="absolute left-0 top-0 h-full bg-gradient-to-r from-accent via-primary to-secondary"
+  className="absolute left-0 top-0 h-full bg-gradient-to-r from-accent via-primary to-secondary shadow-[0_0_20px_rgba(0,198,255,0.12)] transition-all duration-300"
 
   initial={{
     width: "20%",
@@ -350,7 +362,7 @@ export const FutureProgressionTimeline =
                             index *
                             0.08,
                         }}
-                        className="flex flex-col items-center text-center"
+                        className="flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-0.5"
                       >
                         <TimelineIcon
                           status={
@@ -383,7 +395,7 @@ export const FutureProgressionTimeline =
                             }
                           </h4>
 
-                          <p className="mt-2 line-clamp-3 max-w-[220px] text-xs leading-relaxed text-muted-foreground">
+                          <p className="mt-2 line-clamp-3 max-w-[220px] text-xs leading-relaxed text-muted-foreground/80">
                             {
                               item.description
                             }
@@ -444,7 +456,7 @@ export const FutureProgressionTimeline =
                         index *
                         0.08,
                     }}
-                    className="relative flex gap-4"
+                    className="relative flex gap-4 transition-all duration-300"
                   >
                     {/* Connector */}
                     {index <
@@ -456,8 +468,11 @@ export const FutureProgressionTimeline =
 
                           item.status ===
                             "completed"
-                            ? "bg-gradient-to-b from-accent/60 to-primary/20"
-                            : "bg-white/10"
+                            ? "bg-gradient-to-b from-accent/60 to-primary/20 shadow-[0_0_15px_rgba(0,198,255,0.1)]"
+                            : item.status ===
+                                "current"
+                              ? "bg-gradient-to-b from-primary/40 to-white/10 shadow-[0_0_12px_rgba(0,198,255,0.08)]"
+                              : "bg-white/10"
                         )}
                       />
                     )}
@@ -473,15 +488,15 @@ export const FutureProgressionTimeline =
 
                     <div
                       className={cn(
-                        "flex-1 rounded-2xl border p-4 transition-all duration-300",
+                        "flex-1 rounded-2xl border p-4 transition-all duration-300 hover:border-white/15",
 
                         item.status ===
                           "completed" &&
-                          "border-accent/10 bg-accent/5",
+                          "border-accent/10 bg-accent/5 hover:border-accent/20",
 
                         item.status ===
                           "current" &&
-                          "border-primary/20 bg-primary/5 shadow-[0_0_30px_rgba(0,198,255,0.08)]",
+                          "border-primary/20 bg-primary/5 shadow-[0_0_30px_rgba(0,198,255,0.08)] hover:border-primary/30",
 
                         item.status ===
                           "upcoming" &&
@@ -505,7 +520,7 @@ export const FutureProgressionTimeline =
                             }
                           </h4>
 
-                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">
                             {
                               item.description
                             }

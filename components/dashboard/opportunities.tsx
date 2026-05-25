@@ -15,32 +15,14 @@ import {
   useUserProgress,
 } from "@/context/user-context"
 
-import type {
-  Opportunity,
-} from "@/lib/opportunities/opportunity-data.ts"
+import {
+  getAdaptiveOpportunities,
+  getComputedReadinessScore,
+  ONBOARDING_PROMPT_TEXT,
+  type DashboardOpportunity,
+} from "@/lib/pathwayData"
 
-type ExtendedOpportunity = {
-  id: string
-
-  title: string
-
-  company: string
-
-  location: string
-
-  postedAt: string
-
-  type:
-    | "internship"
-    | "fulltime"
-    | "parttime"
-
-  matchScore: number
-
-  tags: string[]
-
-  reason: string
-}
+type ExtendedOpportunity = DashboardOpportunity
 
 import {
   MapPin,
@@ -150,7 +132,7 @@ function OpportunityCard({
       transition={{
         duration: 0.2,
       }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0b0f1d] via-[#090b16] to-[#06070d] p-5"
+      className="group relative flex h-full min-h-[340px] w-full max-w-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0b0f1d] via-[#090b16] to-[#06070d] p-6"
     >
       {/* Glow */}
       <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
@@ -164,13 +146,13 @@ function OpportunityCard({
 
       <div className="relative z-10 flex h-full flex-col">
         {/* Top */}
-        <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="mb-5 flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-start gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/5 bg-gradient-to-br from-primary/20 to-secondary/20">
               <Building2 className="h-5 w-5 text-primary" />
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 space-y-1">
               <h4 className="line-clamp-1 text-sm font-semibold text-foreground">
                 {opportunity.title}
               </h4>
@@ -187,7 +169,7 @@ function OpportunityCard({
         </div>
 
         {/* Meta */}
-        <div className="mb-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <div className="mb-5 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
 
@@ -206,7 +188,7 @@ function OpportunityCard({
         </div>
 
         {/* Tags */}
-        <div className="mb-5 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2.5">
           <TypeBadge
             type={opportunity.type}
           />
@@ -223,8 +205,8 @@ function OpportunityCard({
           )}
         </div>
 
-        <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
-  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <div className="mb-5 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
     Why matched
   </p>
 
@@ -235,10 +217,10 @@ function OpportunityCard({
 
 
         {/* Divider */}
-        <div className="mb-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="mb-5 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
         {/* Bottom */}
-        <div className="mt-auto flex items-center justify-between gap-3">
+        <div className="mt-auto flex items-center justify-between gap-4 pt-1">
           <MatchScoreBadge
             score={
               opportunity.matchScore
@@ -261,118 +243,46 @@ function OpportunityCard({
 // =========================================================
 
 export function OpportunityRecommendations() {
-  const { progress } =
+  const { progress, profile } =
     useUserProgress()
 
-    const fallbackOpportunities:
-  Record<string, ExtendedOpportunity[]> = {
-      "Machine Learning": [
-        {
-          title: "ML Intern" , id: "ml-1",
-    
-          company: "Swiggy",
-    
-          location: "Bangalore",
-    
-          postedAt: "2 days ago",
-    
-          type: "internship",
-    
-          matchScore: 91,
-    
-          tags: [
-            "Python",
-            "LLMs",
-            "TensorFlow",
-          ],
-    
-          reason:
-            "Strong AI simulation performance and recommendation system readiness",
-        },
-    
-        {
-          title:
-            "AI Research Fellow",
+  const readinessScore =
+    React.useMemo(
+      () =>
+        getComputedReadinessScore(
+          profile
+        ),
+      [profile]
+    )
 
-            id: "ml-2",
-    
-          company: "NVIDIA",
-    
-          location: "Remote",
-    
-          postedAt: "5 days ago",
-    
-          type: "internship",
-    
-          matchScore: 84,
-    
-          tags: [
-            "Deep Learning",
-            "PyTorch",
-          ],
-    
-          reason:
-            "High readiness in machine learning progression",
-        },
-      ],
-    
-      Backend: [
-        {
-          id: "backend-1",
-          title:
-            "Backend Intern",
-    
-          company: "Razorpay",
-    
-          location: "Remote",
-    
-          postedAt: "1 day ago",
-    
-          type: "internship",
-    
-          matchScore: 92,
-    
-          tags: [
-            "Node.js",
-            "API Design",
-          ],
-    
-          reason:
-            "Strong systems thinking and backend simulation progress",
-        },
-      ],
-    
-      DevOps: [
-        {
-          id: "devops-1",
-          title:
-            "DevOps Intern",
-    
-          company: "Zerodha",
-    
-          location: "Bangalore",
-    
-          postedAt: "3 days ago",
-    
-          type: "internship",
-    
-          matchScore: 89,
-    
-          tags: [
-            "Docker",
-            "Kubernetes",
-          ],
-    
-          reason:
-            "Infrastructure simulation performance improving steadily",
-        },
-      ],
-    }
-
-    const opportunities =
-    fallbackOpportunities[
-      progress.currentPathway
-    ] || []
+  const opportunities =
+    React.useMemo(
+      () =>
+        getAdaptiveOpportunities({
+          careerGoal:
+            profile.careerGoal,
+          interests:
+            profile.interests,
+          skillLevel:
+            profile.skillLevel,
+          readinessScore,
+          pathwayProgress:
+            profile.pathwayProgress,
+          completedSimulations:
+            profile.completedSimulations,
+          recommendedSkills:
+            profile.recommendedSkills,
+          onboardingComplete:
+            profile.onboardingComplete,
+          simulationsCompleted:
+            progress.simulationsCompleted,
+        }),
+      [
+        profile,
+        progress.simulationsCompleted,
+        readinessScore,
+      ]
+    )
 
 
   const [
@@ -445,7 +355,7 @@ export function OpportunityRecommendations() {
   }, [emblaApi])
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a0f1f] via-[#090b16] to-[#05060d] p-4 sm:p-6">
+    <section className="relative w-full max-w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a0f1f] via-[#090b16] to-[#05060d] p-4 sm:p-6">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute left-[-10%] top-[-20%] h-72 w-72 rounded-full bg-primary/10 blur-[120px]" />
@@ -454,8 +364,14 @@ export function OpportunityRecommendations() {
       </div>
 
       <div className="relative z-10">
+        {!profile.onboardingComplete && (
+          <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+            {ONBOARDING_PROMPT_TEXT}
+          </div>
+        )}
+
         {/* Header */}
-        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground/80">
   <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
 
   Recommendations updated from your
@@ -475,7 +391,7 @@ export function OpportunityRecommendations() {
               Opportunities For You
             </h3>
 
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground/80">
               Personalized recommendations based on your pathway, readiness, and progress.
             </p>
           </div>
@@ -517,8 +433,8 @@ and pathway progression.
           </p>
         </div>
 
-        {/* Desktop */}
-        <div className="hidden gap-4 lg:grid lg:grid-cols-2 xl:grid-cols-4">
+        {/* Desktop / Tablet */}
+        <div className="hidden w-full max-w-full grid-cols-1 gap-4 md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-2">
           {opportunities.map(
             (
               opp,
@@ -526,6 +442,7 @@ and pathway progression.
             ) => (
               <motion.div
                 key={opp.id}
+                className="h-full w-full min-w-0"
                 initial={{
                   opacity: 0,
                   y: 18,
@@ -553,9 +470,9 @@ and pathway progression.
           )}
         </div>
 
-        {/* Mobile / Tablet */}
+        {/* Mobile */}
         <div
-          className="overflow-hidden lg:hidden"
+          className="overflow-hidden md:hidden"
           ref={emblaRef}
         >
           <div className="flex gap-4">
@@ -566,9 +483,10 @@ and pathway progression.
               ) => (
                 <div
                   key={opp.id}
-                  className="min-w-0 flex-[0_0_88%] sm:flex-[0_0_48%]"
+                  className="min-w-0 w-full flex-[0_0_100%]"
                 >
                   <motion.div
+                    className="h-full w-full"
                     initial={{
                       opacity: 0,
                       y: 18,
@@ -600,7 +518,7 @@ and pathway progression.
         </div>
 
         {/* Dots */}
-        <div className="mt-5 flex justify-center gap-2 lg:hidden">
+        <div className="mt-5 flex justify-center gap-2 md:hidden">
           {opportunities.map(
             (_, idx) => (
               <button
