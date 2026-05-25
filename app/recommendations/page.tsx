@@ -1,4 +1,7 @@
 "use client"
+import PathwayLine from "@/components/pathway/PathwayLine"
+import { OriginNode } from "@/components/pathway/OriginNode"
+import AmbientInsights from "@/components/pathway/AmbientInsights"
 
 import {
   useEffect,
@@ -9,11 +12,8 @@ import {
 
 import PageTransition from "@/components/common/PageTransition"
 
-import {
-  pathways,
-  type CareerPath,
-  type Milestone,
-} from "@/lib/pathway-data"
+import { pathways } from "@/lib/pathway-data"
+import type { CareerPath, Milestone } from "@/lib/types"
 
 import {
   pathInsights,
@@ -278,9 +278,7 @@ export default function PathwayVisualization() {
               />
             ))}
 
-            <OriginNode
-              isLoaded={isLoaded}
-            />
+            <OriginNode/>
           </svg>
         </div>
 
@@ -317,115 +315,7 @@ export default function PathwayVisualization() {
   )
 }
 
-function AmbientInsights({
-  isLoaded,
-  hoveredPath,
-  selectedGoal,
-}: {
-  isLoaded: boolean
-  hoveredPath: string | null
-  selectedGoal: keyof typeof goalInsights
-}) {
-  const currentGoalData =
-    goalInsights[selectedGoal]
 
-  const insights = [
-    {
-      label: "Market Alignment",
-      value:
-        currentGoalData.marketAlignment,
-      trend: "+5%",
-    },
-
-    {
-      label: "Skill Coverage",
-      value:
-        currentGoalData.skillCoverage,
-      trend: "+12%",
-    },
-
-    {
-      label: "Active Paths",
-      value:
-        currentGoalData.activePaths.toString(),
-      trend: null,
-    },
-  ]
-
-  const currentInsight = hoveredPath
-    ? pathInsights[
-        hoveredPath as keyof typeof pathInsights
-      ]
-    : null
-
-  return (
-    <div
-      className={`fixed right-4 top-20 z-40 transition-all duration-500 lg:right-6 ${
-        isLoaded
-          ? "translate-x-0 opacity-100"
-          : "translate-x-4 opacity-0"
-      }`}
-      style={{
-        transitionDelay: "800ms",
-      }}
-    >
-      <div className="glass min-w-[190px] rounded-xl border border-white/[0.06] p-3">
-        <div className="mb-3 flex items-center gap-2 border-b border-white/[0.06] pb-2">
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#00C6FF]" />
-
-          <span className="font-mono text-[10px] uppercase tracking-wider text-white/50">
-            AI Analysis
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          {insights.map((insight) => (
-            <div
-              key={insight.label}
-              className="flex items-center justify-between"
-            >
-              <span className="text-[11px] text-white/40">
-                {insight.label}
-              </span>
-
-              <div className="flex items-center gap-1.5">
-                <span className="text-[12px] font-medium text-white/80">
-                  {insight.value}
-                </span>
-
-                {insight.trend && (
-                  <span className="text-[9px] text-[#00D4A0]">
-                    {insight.trend}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {currentInsight && (
-          <div className="animate-fade-in mt-3 border-t border-white/[0.06] pt-2">
-            <div className="mb-1 text-[10px] text-white/30">
-              Focus Area
-            </div>
-
-            <div className="text-[11px] font-medium text-[#00C6FF]">
-              {currentInsight.focus}
-            </div>
-
-            <div className="mb-1 mt-2 text-[10px] text-white/30">
-              Opportunity
-            </div>
-
-            <div className="text-[10px] leading-relaxed text-white/60">
-              {currentInsight.opportunity}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
 
 function StarParticles() {
   const stars = Array.from(
@@ -460,213 +350,5 @@ function StarParticles() {
   )
 }
 
-function PathwayLine({
-  path,
-  pathIndex,
-  selectedGoal,
-  isHovered,
-  isOtherHovered,
-  isSelected,
-  isLoaded,
-  onPathHover,
-  onMilestoneClick,
-  selectedMilestoneId,
-}: {
-  path: CareerPath
-  pathIndex: number
-  selectedGoal: keyof typeof goalInsights
-  isHovered: boolean
-  isOtherHovered: boolean
-  isSelected: boolean
-  isLoaded: boolean
-  onPathHover: (id: string | null) => void
-  onMilestoneClick: (
-    path: CareerPath,
-    milestone: Milestone
-  ) => void
-  selectedMilestoneId?: string
-}) {
-  const yOffset = PATH_Y_OFFSETS[pathIndex] || 0
 
-  const startX = 180
-  const startY = 350
 
-  const endX = 1200
-  const endY = 350 + yOffset
-
-  const pathColor = path.color || "#00C6FF"
-
-  const curvePath = `
-    M ${startX} ${startY}
-    C 450 ${startY},
-      750 ${endY},
-      ${endX} ${endY}
-  `
-
-  return (
-    <g
-      onMouseEnter={() => onPathHover(path.id)}
-      onMouseLeave={() => onPathHover(null)}
-      className="cursor-pointer transition-all duration-300"
-      opacity={isOtherHovered ? 0.25 : 1}
-    >
-      <path
-        d={curvePath}
-        fill="none"
-        stroke={pathColor}
-        strokeWidth={isHovered || isSelected ? 4 : 2}
-        strokeLinecap="round"
-        opacity={isLoaded ? 0.9 : 0}
-        style={{
-          transition: "all 0.4s ease",
-          filter:
-            isHovered || isSelected
-              ? `drop-shadow(0 0 12px ${pathColor})`
-              : "none",
-        }}
-      />
-
-      {path.milestones.map((milestone, index) => {
-        const x = 350 + index * 220
-        const y = startY + (yOffset / 4) * (index + 1)
-        const selected = selectedMilestoneId === milestone.id
-
-        return (
-          <g
-            key={milestone.id}
-            onClick={(e) => {
-              e.stopPropagation()
-              onMilestoneClick(path, milestone)
-            }}
-            className="cursor-pointer"
-          >
-            <circle
-              cx={x}
-              cy={y}
-              r={selected ? 22 : 16}
-              fill={pathColor}
-              opacity={0.12}
-            />
-
-            <circle
-              cx={x}
-              cy={y}
-              r={selected ? 11 : 8}
-              fill={pathColor}
-              stroke="white"
-              strokeWidth="2"
-              style={{ transition: "all 0.3s ease" }}
-            />
-
-            <text
-              x={x}
-              y={y - 22}
-              textAnchor="middle"
-              className="fill-white text-[11px] font-medium"
-            >
-              {milestone.label}
-            </text>
-          </g>
-        )
-      })}
-
-      <text
-        x={endX + 25}
-        y={endY}
-        className="fill-white font-[var(--font-syne)] text-[15px] font-bold"
-      >
-        {path.name}
-      </text>
-
-      <text
-        x={endX + 25}
-        y={endY + 18}
-        className="fill-white/45 text-[11px]"
-      >
-        {goalInsights[selectedGoal].marketAlignment} Alignment
-      </text>
-    </g>
-  )
-}
-
-function OriginNode({
-  isLoaded,
-}: {
-  isLoaded: boolean
-}) {
-  return (
-    <g
-      className={`transition-opacity duration-500 ${
-        isLoaded
-          ? "opacity-100"
-          : "opacity-0"
-      }`}
-      style={{
-        transitionDelay: "300ms",
-      }}
-    >
-      <circle
-        cx="180"
-        cy="350"
-        r="55"
-        fill="rgba(0,198,255,0.025)"
-      />
-
-      <circle
-        cx="180"
-        cy="350"
-        r="38"
-        fill="none"
-        stroke="rgba(0,198,255,0.08)"
-        strokeWidth="0.5"
-      />
-
-      <circle
-        cx="180"
-        cy="350"
-        r="28"
-        fill="none"
-        stroke="rgba(0,198,255,0.25)"
-        strokeWidth="1"
-        strokeDasharray="4 6"
-      />
-
-      <circle
-        cx="180"
-        cy="350"
-        r="16"
-        fill="#00C6FF"
-        style={{
-          filter:
-            "drop-shadow(0 0 28px rgba(0,198,255,0.5))",
-        }}
-      />
-
-      <circle
-        cx="180"
-        cy="350"
-        r="5"
-        fill="white"
-        opacity="0.85"
-      />
-
-      <text
-        x="180"
-        y="402"
-        textAnchor="middle"
-        className="fill-white font-[var(--font-syne)] text-[14px] font-bold"
-      >
-        You
-      </text>
-
-      <text
-        x="180"
-        y="418"
-        textAnchor="middle"
-        className="fill-white/35 text-[11px]"
-      >
-        Current Position
-      </text>
-    </g>
-  )
-}

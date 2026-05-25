@@ -5,7 +5,10 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 
 import { cn } from '@/lib/utils'
-import { useUserProgress } from '@/context/user-context'
+import {
+  useUserProgress,
+  type Skill,
+} from "@/context/user-context"
 
 import {
   TrendingUp,
@@ -116,41 +119,32 @@ function CircularProgress({
   )
 }
 
-const skillBreakdown = [
-  {
-    name: 'Technical Skills',
-    value: 92,
-    color:
-      'from-primary to-cyan-400',
-  },
 
-  {
-    name: 'Soft Skills',
-    value: 78,
-    color:
-      'from-violet-500 to-fuchsia-400',
-  },
-
-  {
-    name: 'Industry Knowledge',
-    value: 85,
-    color:
-      'from-emerald-500 to-teal-400',
-  },
-
-  {
-    name: 'Leadership',
-    value: 68,
-    color:
-      'from-amber-500 to-orange-400',
-  },
-]
 
 export function EmployabilityReadiness() {
-  const {
-    employabilityScore,
-    readinessScore,
-  } = useUserProgress()
+  const { progress } =
+  useUserProgress()
+
+const {
+  employabilityScore,
+  readinessScore,
+  skills,
+} = progress
+
+const skillBreakdown =
+  skills.map((skill: Skill) => ({
+    name: skill.name,
+    value: skill.level,
+
+    color:
+      skill.level > 80
+        ? 'from-emerald-500 to-teal-400'
+        : skill.level > 65
+        ? 'from-primary to-cyan-400'
+        : 'from-amber-500 to-orange-400',
+  }))
+
+
   return (
     <div className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl sm:p-6">
       {/* Background Glow */}
@@ -170,7 +164,8 @@ export function EmployabilityReadiness() {
             </h3>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              Real-time analysis of your career preparedness
+            Readiness based on simulations,
+            skills, and pathway progression
             </p>
           </div>
 
@@ -178,7 +173,12 @@ export function EmployabilityReadiness() {
           <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400">
             <TrendingUp className="h-3.5 w-3.5" />
 
-            <span>+{Math.max(4, Math.floor(readinessScore / 100))}% this month</span>
+            <span>
+            +{Math.floor(
+        readinessScore / 100
+        ) || 6}
+        % readiness growth
+      </span>
           </div>
         </div>
 
@@ -195,7 +195,14 @@ export function EmployabilityReadiness() {
 
           {/* Skills */}
           <div className="w-full flex-1 space-y-5">
-            {skillBreakdown.map((skill, index) => (
+            {skillBreakdown.map((
+  skill: {
+    name: string
+    value: number
+    color: string
+  },
+  index: number
+) => (
               <motion.div
                 key={skill.name}
                 initial={{

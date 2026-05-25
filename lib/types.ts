@@ -18,7 +18,7 @@ export interface Milestone {
   export interface CareerPath {
     id: string
     name: string
-    color?: string
-    colorRgba?: string
+    color: string
+    colorRgba: string
     milestones: Milestone[]
   }

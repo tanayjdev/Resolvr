@@ -10,13 +10,19 @@ export type CareerPathway =
   | "Cloud Computing"
   | "Frontend Engineering"
 
-interface BuildPathwayOptions {
-  readinessScore: number
-
-  simulationsCompleted: number
-
-  currentPathway: CareerPathway
-}
+  interface BuildPathwayOptions {
+    readinessScore: number
+  
+    simulationsCompleted: number
+  
+    currentPathway: CareerPathway
+  
+    unlockedPathways: string[]
+  
+    interests: string[]
+  
+    completedSimulations: string[]
+  }
 
 // ============================================================
 // Helpers
@@ -44,7 +50,8 @@ function getStatus(
 
 function buildSpecializationChildren(
   pathway: CareerPathway,
-  simulationsCompleted: number
+  simulationsCompleted: number,
+  completedSimulations: string[]
 ): PathwayNode[] {
   switch (pathway) {
     case "Machine Learning":
@@ -55,7 +62,10 @@ function buildSpecializationChildren(
           title: "Machine Learning",
 
           status:
-            simulationsCompleted >= 2
+          simulationsCompleted >= 2 ||
+          completedSimulations.includes(
+            "Kubernetes Incident"
+          )
               ? "current"
               : "locked",
         },
@@ -206,7 +216,38 @@ export function buildPathwayData({
   simulationsCompleted,
 
   currentPathway,
+
+  unlockedPathways,
+
+  interests,
+
+  completedSimulations,
 }: BuildPathwayOptions): PathwayNode[] {
+
+  let adaptivePathway =
+  currentPathway
+
+if (
+  interests.includes("Security")
+) {
+  adaptivePathway =
+    "Cybersecurity"
+}
+
+if (
+  interests.includes("Cloud")
+) {
+  adaptivePathway =
+    "Cloud Computing"
+}
+
+if (
+  interests.includes("Frontend")
+) {
+  adaptivePathway =
+    "Frontend Engineering"
+}
+
   return [
     // ========================================================
     // Foundation
@@ -336,10 +377,11 @@ export function buildPathwayData({
         "AI-personalized specialization pathway.",
 
       children:
-        buildSpecializationChildren(
-          currentPathway,
-          simulationsCompleted
-        ),
+      buildSpecializationChildren(
+        adaptivePathway,
+        simulationsCompleted,
+        completedSimulations
+      ),
     },
 
     // ========================================================

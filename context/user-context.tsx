@@ -1,5 +1,9 @@
 "use client"
 
+import type {
+  CareerPathway,
+} from "@/lib/pathways/pathway-engine"
+
 import {
   createContext,
   useContext,
@@ -13,13 +17,41 @@ import {
 // Types
 // =========================================================
 
+export interface Skill {
+  name: string
+  level: number
+}
+
+export interface Opportunity {
+  company: string
+  role: string
+  match: number
+}
+
 export interface UserProgress {
   readinessScore: number
+
   simulationsCompleted: number
+
   employabilityScore: number
+
   skillsTracked: number
+
   opportunitiesMatched: number
-  currentPathway: string
+
+  currentPathway: CareerPathway
+
+  unlockedPathways: string[]
+
+  completedSimulations: string[]
+
+  interests: string[]
+
+  skills: Skill[]
+
+  opportunities: Opportunity[]
+
+  lowDataMode: boolean
 }
 
 interface UserContextType {
@@ -29,10 +61,26 @@ interface UserContextType {
     value: number
   ) => void
 
-  completeSimulation: () => void
+  completeSimulation: (
+    simulationName: string
+  ) => void
 
   setPathway: (
+    pathway: CareerPathway
+  ) => void
+
+  unlockPathway: (
     pathway: string
+  ) => void
+
+  toggleLowDataMode: () => void
+
+  addOpportunity: (
+    opportunity: Opportunity
+  ) => void
+
+  addCompletedSimulation: (
+    simulation: string
   ) => void
 
   resetProgress: () => void
@@ -45,20 +93,53 @@ interface UserContextType {
 const STORAGE_KEY =
   "pathweaver-progress"
 
-const DEFAULT_PROGRESS: UserProgress =
-  {
+  const DEFAULT_PROGRESS: UserProgress = {
     readinessScore: 620,
-
+  
     simulationsCompleted: 18,
-
+  
     employabilityScore: 87,
-
+  
     skillsTracked: 24,
-
+  
     opportunitiesMatched: 42,
-
-    currentPathway:
+  
+    currentPathway: "Machine Learning",
+  
+    unlockedPathways: [
       "Machine Learning",
+      "Backend",
+    ],
+  
+    completedSimulations: [
+      "Kubernetes Incident",
+    ],
+  
+    interests: [
+      "AI",
+      "Cloud",
+    ],
+  
+    skills: [
+      {
+        name: "Python",
+        level: 82,
+      },
+      {
+        name: "Docker",
+        level: 68,
+      },
+    ],
+  
+    opportunities: [
+      {
+        company: "Razorpay",
+        role: "Backend Intern",
+        match: 91,
+      },
+    ],
+  
+    lowDataMode: false,
   }
 
 // =========================================================
@@ -117,15 +198,27 @@ export function UserProvider({
   children: ReactNode
 }) {
   const [progress, setProgress] =
-    useState<UserProgress>(
-      loadStoredProgress
-    )
+    useState<UserProgress>(DEFAULT_PROGRESS)
+
+  const [hasHydrated, setHasHydrated] =
+    useState(false)
+
+  // Load persisted progress after mount so SSR and
+  // the first client render stay in sync.
+  useEffect(() => {
+    setProgress(loadStoredProgress())
+    setHasHydrated(true)
+  }, [])
 
   // =======================================================
   // Persistence
   // =======================================================
 
   useEffect(() => {
+    if (!hasHydrated) {
+      return
+    }
+
     try {
       localStorage.setItem(
         STORAGE_KEY,
@@ -137,7 +230,7 @@ export function UserProvider({
         error
       )
     }
-  }, [progress])
+  }, [progress, hasHydrated])
 
   // =======================================================
   // Actions
@@ -157,35 +250,102 @@ export function UserProvider({
   }
 
   const completeSimulation =
-    () => {
-      setProgress((prev) => ({
-        ...prev,
+  (
+    simulationName: string
+  ) => {
+    setProgress((prev) => ({
+      ...prev,
 
-        simulationsCompleted:
-          prev.simulationsCompleted +
-          1,
+      simulationsCompleted:
+        prev.simulationsCompleted +
+        1,
 
-        employabilityScore:
-          Math.min(
-            prev.employabilityScore +
-              2,
-            100
-          ),
+      employabilityScore:
+        Math.min(
+          prev.employabilityScore +
+            2,
+          100
+        ),
 
-        opportunitiesMatched:
-          prev.opportunitiesMatched +
-          1,
-      }))
-    }
+      opportunitiesMatched:
+        prev.opportunitiesMatched +
+        1,
+
+      readinessScore:
+        Math.min(
+          prev.readinessScore +
+            25,
+          1000
+        ),
+
+      completedSimulations: [
+        ...prev.completedSimulations,
+        simulationName,
+      ],
+    }))
+  }
 
   const setPathway = (
-    pathway: string
+    pathway: CareerPathway
   ) => {
     setProgress((prev) => ({
       ...prev,
 
       currentPathway:
         pathway,
+    }))
+  }
+
+  const unlockPathway = (
+    pathway: string
+  ) => {
+    setProgress((prev) => ({
+      ...prev,
+  
+      unlockedPathways:
+        prev.unlockedPathways.includes(
+          pathway
+        )
+          ? prev.unlockedPathways
+          : [
+              ...prev.unlockedPathways,
+              pathway,
+            ],
+    }))
+  }
+
+  const toggleLowDataMode =
+  () => {
+    setProgress((prev) => ({
+      ...prev,
+
+      lowDataMode:
+        !prev.lowDataMode,
+    }))
+  }
+
+  const addOpportunity = (
+    opportunity: Opportunity
+  ) => {
+    setProgress((prev) => ({
+      ...prev,
+  
+      opportunities: [
+        ...prev.opportunities,
+        opportunity,
+      ],
+    }))
+  }
+
+  const addCompletedSimulation =
+  (simulation: string) => {
+    setProgress((prev) => ({
+      ...prev,
+
+      completedSimulations: [
+        ...prev.completedSimulations,
+        simulation,
+      ],
     }))
   }
 
@@ -200,17 +360,27 @@ export function UserProvider({
   const value = useMemo(
     () => ({
       progress,
-
+  
       increaseReadiness,
-
+  
       completeSimulation,
-
+  
       setPathway,
-
+  
+      unlockPathway,
+  
+      toggleLowDataMode,
+  
+      addOpportunity,
+  
+      addCompletedSimulation,
+  
       resetProgress,
     }),
     [progress]
   )
+
+ 
 
   return (
     <UserContext.Provider

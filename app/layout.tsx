@@ -182,7 +182,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className="dark scroll-smooth"
     >
-      <body
+      <body suppressHydrationWarning
         className={`
           ${geistSans.variable}
           ${geistMono.variable}

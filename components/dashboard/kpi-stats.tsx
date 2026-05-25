@@ -140,17 +140,20 @@ function KPICard({
 }
 
 export function KPIStats() {
+  const { progress } =
+  useUserProgress()
+
   const {
-    employabilityScore,
-    skillsTracked,
-    simulationsCompleted,
-    opportunitiesMatched,
-  } = useUserProgress()
+     employabilityScore,
+     skills,
+     simulationsCompleted,
+     opportunitiesMatched,
+  } = progress
   const stats: KPICardProps[] = [
     {
       title: 'Employability Score',
-      value: employabilityScore,
-      subtitle: 'Top 15% among similar profiles',
+      value: `${employabilityScore}%`,
+      subtitle: 'Readiness improving steadily',
       trend: {
         value: 12,
         positive: true,
@@ -161,7 +164,7 @@ export function KPIStats() {
 
     {
       title: 'Skills Tracked',
-      value: skillsTracked,
+      value: skills.length,
       subtitle: '6 mastered this month',
       trend: {
         value: 8,

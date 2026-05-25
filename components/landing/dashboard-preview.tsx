@@ -139,10 +139,22 @@ export function DashboardPreview() {
                           <span className="text-primary">{item.progress}%</span>
                         </div>
                         <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-primary rounded-full"
-                            style={{ width: `${item.progress}%` }}
-                          />
+                        <motion.div
+  className="h-full rounded-full bg-gradient-primary"
+
+  initial={{
+    width: 0,
+  }}
+
+  animate={{
+    width: `${item.progress}%`,
+  }}
+
+  transition={{
+    duration: 0.8,
+    ease: "easeOut",
+  }}
+/>
                         </div>
                       </div>
                     ))}

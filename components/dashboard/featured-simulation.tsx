@@ -1,5 +1,8 @@
 'use client'
 
+import {
+  useUserProgress,
+} from "@/context/user-context"
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -24,16 +27,7 @@ interface Simulation {
   featured?: boolean
 }
 
-const featuredSimulation: Simulation = {
-  id: '1',
-  title: 'System Design Interview',
-  description:
-    'Practice building scalable distributed systems with real-world architecture scenarios and AI-powered technical feedback.',
-  difficulty: 'advanced',
-  duration: '45 min',
-  completion: 35,
-  featured: true,
-}
+
 
 function DifficultyBadge({
   difficulty,
@@ -63,7 +57,75 @@ function DifficultyBadge({
 }
 
 export function FeaturedSimulation() {
-  const sim = featuredSimulation
+  
+  const { progress } =
+  useUserProgress()
+  
+  const featuredSimulationMap: Record<
+  string,
+  Simulation
+> = {
+  "Machine Learning": {
+    id: "ml-1",
+
+    title:
+      "Recommendation Engine Incident",
+
+    description:
+      "Your AI recommendation system accuracy dropped by 32% after a production model update. Diagnose the issue and stabilize performance.",
+
+    difficulty: "advanced",
+
+    duration: "45 min",
+
+    completion: 35,
+
+    featured: true,
+  },
+
+  Backend: {
+    id: "backend-1",
+
+    title:
+      "API Latency Crisis",
+
+    description:
+      "A production API is failing under sudden traffic spikes. Investigate bottlenecks and restore service reliability.",
+
+    difficulty: "intermediate",
+
+    duration: "35 min",
+
+    completion: 52,
+
+    featured: true,
+  },
+
+  DevOps: {
+    id: "devops-1",
+
+    title:
+      "Kubernetes Cluster Failure",
+
+    description:
+      "Multiple services degraded after a failed deployment. Use logs and infrastructure diagnostics to recover the system.",
+
+    difficulty: "advanced",
+
+    duration: "50 min",
+
+    completion: 28,
+
+    featured: true,
+  },
+}
+const sim =
+  featuredSimulationMap[
+    progress.currentPathway
+  ] ??
+  featuredSimulationMap[
+    "Machine Learning"
+  ]
 
   return (
     <motion.section
@@ -101,6 +163,18 @@ export function FeaturedSimulation() {
           </div>
         </div>
 
+        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
+  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+
+  Last completed:
+  {
+    progress.completedSimulations[
+      progress.completedSimulations.length - 1
+    ] || "No simulations completed"
+  }
+</div>
+
+
         {/* Main Card */}
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 mb-5">
           {/* Inner Glow */}
@@ -122,6 +196,20 @@ export function FeaturedSimulation() {
                 {sim.description}
               </p>
             </div>
+
+            {/* Scenario Preview */}
+<div className="mb-5 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+    Scenario Preview
+  </p>
+
+  <p className="text-sm leading-relaxed text-foreground/85">
+    Production systems are degrading under
+    rising load. AI guidance will evaluate
+    your debugging decisions, prioritization,
+    and incident response strategy.
+  </p>
+</div>
 
             {/* Meta */}
             <div className="flex flex-wrap items-center gap-3 mb-5">
@@ -184,8 +272,8 @@ export function FeaturedSimulation() {
 
             <span className="text-sm font-semibold">
               {sim.completion
-                ? 'Continue Simulation'
-                : 'Start Simulation'}
+                ? 'Continue ${progress.currentPathway} Simulation'
+                : 'Start ${progress.currentPathway} Simulation'}
             </span>
 
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/button:translate-x-1" />

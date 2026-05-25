@@ -252,10 +252,25 @@ export function AdaptivePathwayGraph() {
 
   const pathwayData =
     React.useMemo(() => {
-      return buildPathwayData(
-        progress.readinessScore,
-        progress.simulationsCompleted
-      )
+      return buildPathwayData({
+        readinessScore:
+          progress.readinessScore,
+      
+        simulationsCompleted:
+          progress.simulationsCompleted,
+      
+        currentPathway:
+          progress.currentPathway,
+      
+        unlockedPathways:
+          progress.unlockedPathways,
+      
+        interests:
+          progress.interests,
+      
+        completedSimulations:
+          progress.completedSimulations,
+      })
     }, [
       progress.readinessScore,
       progress.simulationsCompleted,

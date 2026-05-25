@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { ChevronRight, X, TrendingUp, Target, Zap } from 'lucide-react'
-import { pathways, filterOptions, timelineMarkers, type CareerPath, type Milestone } from '@/lib/pathway-data'
+import { pathways, filterOptions, timelineMarkers } from "@/lib/pathway-data"
+import type { CareerPath, Milestone } from "@/lib/types"
 
 interface MobilePathwayViewProps {
   activeFilter: string

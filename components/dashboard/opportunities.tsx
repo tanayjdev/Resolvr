@@ -1,5 +1,6 @@
 "use client"
 
+
 import * as React from "react"
 
 import { motion } from "framer-motion"
@@ -14,13 +15,32 @@ import {
   useUserProgress,
 } from "@/context/user-context"
 
-import {
-  getMatchedOpportunities,
-} from "@/lib/opportunities/matching-engine"
-
 import type {
   Opportunity,
-} from "@/lib/opportunities/opportunity-data"
+} from "@/lib/opportunities/opportunity-data.ts"
+
+type ExtendedOpportunity = {
+  id: string
+
+  title: string
+
+  company: string
+
+  location: string
+
+  postedAt: string
+
+  type:
+    | "internship"
+    | "fulltime"
+    | "parttime"
+
+  matchScore: number
+
+  tags: string[]
+
+  reason: string
+}
 
 import {
   MapPin,
@@ -41,7 +61,10 @@ import {
 function TypeBadge({
   type,
 }: {
-  type: Opportunity["type"]
+  type:
+  | "internship"
+  | "fulltime"
+  | "parttime"
 }) {
   const styles = {
     internship:
@@ -117,7 +140,7 @@ function MatchScoreBadge({
 function OpportunityCard({
   opportunity,
 }: {
-  opportunity: Opportunity
+  opportunity: ExtendedOpportunity
 }) {
   return (
     <motion.div
@@ -189,7 +212,7 @@ function OpportunityCard({
           />
 
           {opportunity.tags.map(
-            (tag) => (
+            (tag: string) => (
               <span
                 key={tag}
                 className="rounded-full border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
@@ -199,6 +222,17 @@ function OpportunityCard({
             )
           )}
         </div>
+
+        <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+  <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    Why matched
+  </p>
+
+  <p className="text-xs leading-relaxed text-foreground/80">
+    {opportunity.reason}
+  </p>
+</div>
+
 
         {/* Divider */}
         <div className="mb-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -230,16 +264,116 @@ export function OpportunityRecommendations() {
   const { progress } =
     useUserProgress()
 
-  const opportunities =
-    React.useMemo(() => {
-      return getMatchedOpportunities(
-        progress.readinessScore,
-        progress.currentPathway
-      )
-    }, [
-      progress.readinessScore,
-      progress.currentPathway,
-    ])
+    const fallbackOpportunities:
+  Record<string, ExtendedOpportunity[]> = {
+      "Machine Learning": [
+        {
+          title: "ML Intern" , id: "ml-1",
+    
+          company: "Swiggy",
+    
+          location: "Bangalore",
+    
+          postedAt: "2 days ago",
+    
+          type: "internship",
+    
+          matchScore: 91,
+    
+          tags: [
+            "Python",
+            "LLMs",
+            "TensorFlow",
+          ],
+    
+          reason:
+            "Strong AI simulation performance and recommendation system readiness",
+        },
+    
+        {
+          title:
+            "AI Research Fellow",
+
+            id: "ml-2",
+    
+          company: "NVIDIA",
+    
+          location: "Remote",
+    
+          postedAt: "5 days ago",
+    
+          type: "internship",
+    
+          matchScore: 84,
+    
+          tags: [
+            "Deep Learning",
+            "PyTorch",
+          ],
+    
+          reason:
+            "High readiness in machine learning progression",
+        },
+      ],
+    
+      Backend: [
+        {
+          id: "backend-1",
+          title:
+            "Backend Intern",
+    
+          company: "Razorpay",
+    
+          location: "Remote",
+    
+          postedAt: "1 day ago",
+    
+          type: "internship",
+    
+          matchScore: 92,
+    
+          tags: [
+            "Node.js",
+            "API Design",
+          ],
+    
+          reason:
+            "Strong systems thinking and backend simulation progress",
+        },
+      ],
+    
+      DevOps: [
+        {
+          id: "devops-1",
+          title:
+            "DevOps Intern",
+    
+          company: "Zerodha",
+    
+          location: "Bangalore",
+    
+          postedAt: "3 days ago",
+    
+          type: "internship",
+    
+          matchScore: 89,
+    
+          tags: [
+            "Docker",
+            "Kubernetes",
+          ],
+    
+          reason:
+            "Infrastructure simulation performance improving steadily",
+        },
+      ],
+    }
+
+    const opportunities =
+    fallbackOpportunities[
+      progress.currentPathway
+    ] || []
+
 
   const [
     emblaRef,
@@ -321,6 +455,12 @@ export function OpportunityRecommendations() {
 
       <div className="relative z-10">
         {/* Header */}
+        <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
+  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+
+  Recommendations updated from your
+  latest simulations and pathway progress
+</div>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
@@ -364,12 +504,16 @@ export function OpportunityRecommendations() {
           </div>
         </div>
 
+           
+
         {/* Highlight */}
         <div className="mb-6 flex items-center gap-2 rounded-2xl border border-accent/20 bg-accent/5 px-4 py-3">
           <TrendingUp className="h-4 w-4 flex-shrink-0 text-accent" />
 
           <p className="text-sm text-accent">
-            AI detected strong alignment between your current pathway and high-growth opportunities.
+          Recommendations adapted from your
+simulation performance, readiness,
+and pathway progression.
           </p>
         </div>
 

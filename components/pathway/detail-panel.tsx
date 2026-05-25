@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link"
 import { X, TrendingUp, Target, Zap } from 'lucide-react'
-import type { CareerPath, Milestone } from '@/lib/pathway-data'
+import type { CareerPath, Milestone } from "@/lib/types"
 
 interface DetailPanelProps {
   path: CareerPath
@@ -78,7 +78,7 @@ export function DetailPanel({ path, milestone, onClose }: DetailPanelProps) {
             Your Readiness
           </h3>
           <div className="flex items-center gap-3">
-            <ReadinessGauge value={milestone.readiness} color={path.color} />
+            <ReadinessGauge value={milestone.readiness} color={path.color || "#00C6FF"} />
             <div>
               <p className="text-white text-sm font-medium">{milestone.readiness}% ready</p>
               <p className="text-white/40 text-[11px]">

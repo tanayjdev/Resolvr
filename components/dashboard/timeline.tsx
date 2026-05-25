@@ -299,18 +299,29 @@ export const FutureProgressionTimeline =
               <div className="relative">
                 {/* Progress Line */}
                 <div className="absolute left-0 right-0 top-7 h-[2px] bg-white/10">
-                  <div
-                    className="absolute left-0 top-0 h-full bg-gradient-to-r from-accent via-primary to-secondary"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        Math.max(
-                          20,
-                          progress.readinessScore / 10
-                        )
-                      )}%`,
-                    }}
-                  />
+                <motion.div
+  className="absolute left-0 top-0 h-full bg-gradient-to-r from-accent via-primary to-secondary"
+
+  initial={{
+    width: "20%",
+  }}
+
+  animate={{
+    width: `${Math.min(
+      100,
+      Math.max(
+        20,
+        progress.readinessScore /
+          10
+      )
+    )}%`,
+  }}
+
+  transition={{
+    duration: 0.9,
+    ease: "easeOut",
+  }}
+/>
                 </div>
 
                 {/* Timeline */}
