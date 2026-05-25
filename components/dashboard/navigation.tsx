@@ -30,17 +30,17 @@ const navItems = [
   {
     icon: LayoutDashboard,
     label: 'Dashboard',
-    href: '/screen2',
+    href: '/onboarding',
   },
   {
     icon: Route,
     label: 'Pathways',
-    href: '/screen3',
+    href: '/recommendations',
   },
   {
     icon: Gamepad2,
     label: 'Simulations',
-    href: '/screen4',
+    href: '/pathway',
   },
   {
     icon: Sparkles,

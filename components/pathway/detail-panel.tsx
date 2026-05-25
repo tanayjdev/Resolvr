@@ -36,7 +36,7 @@ export function DetailPanel({ path, milestone, onClose }: DetailPanelProps) {
       <div className="p-5 space-y-5">
         {/* Header */}
         <div>
-            <Link href="/screen4">
+            <Link href="/pathway">
               <h2 className="text-xl font-[var(--font-syne)] font-bold text-white pr-8 cursor-pointer hover:text-cyan-400 transition-colors">
                 {milestone.label}
               </h2>
@@ -149,7 +149,7 @@ export function DetailPanel({ path, milestone, onClose }: DetailPanelProps) {
                 </p>
               </div>
             </div>
-            <Link href="/screen4">
+            <Link href="/pathway">
                 <button
                     className="w-full mt-4 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200"
                     style={{

@@ -7,7 +7,7 @@ import {
   useCallback,
 } from "react"
 
-import PageTransition from "@/components/PageTransition"
+import PageTransition from "@/components/common/PageTransition"
 
 import {
   pathways,
@@ -255,40 +255,28 @@ export default function PathwayVisualization() {
             )}
 
             {/* Pathways */}
-            {pathways.map(
-              (path, pathIndex) => (
-                <PathwayLine
-                  key={path.id}
-                  selectedGoal={
-                    selectedGoal
-                  }
-                  path={path}
-                  pathIndex={pathIndex}
-                  isHovered={
-                    hoveredPath === path.id
-                  }
-                  isOtherHovered={
-                    hoveredPath !== null &&
-                    hoveredPath !== path.id
-                  }
-                  isSelected={
-                    selectedMilestone?.path
-                      .id === path.id
-                  }
-                  isLoaded={isLoaded}
-                  onPathHover={
-                    setHoveredPath
-                  }
-                  onMilestoneClick={
-                    handleMilestoneClick
-                  }
-                  selectedMilestoneId={
-                    selectedMilestone
-                      ?.milestone.id
-                  }
-                />
-              )
-            )}
+            {pathways.map((path, pathIndex) => (
+              <PathwayLine
+                key={path.id}
+                selectedGoal={selectedGoal}
+                path={path}
+                pathIndex={pathIndex}
+                isHovered={hoveredPath === path.id}
+                isOtherHovered={
+                  hoveredPath !== null &&
+                  hoveredPath !== path.id
+                }
+                isSelected={
+                  selectedMilestone?.path.id === path.id
+                }
+                isLoaded={isLoaded}
+                onPathHover={setHoveredPath}
+                onMilestoneClick={handleMilestoneClick}
+                selectedMilestoneId={
+                  selectedMilestone?.milestone.id
+                }
+              />
+            ))}
 
             <OriginNode
               isLoaded={isLoaded}
@@ -365,7 +353,9 @@ function AmbientInsights({
   ]
 
   const currentInsight = hoveredPath
-    ? pathInsights[hoveredPath]
+    ? pathInsights[
+        hoveredPath as keyof typeof pathInsights
+      ]
     : null
 
   return (
@@ -470,192 +460,140 @@ function StarParticles() {
   )
 }
 
+function PathwayLine({
+  path,
+  pathIndex,
+  selectedGoal,
+  isHovered,
+  isOtherHovered,
+  isSelected,
+  isLoaded,
+  onPathHover,
+  onMilestoneClick,
+  selectedMilestoneId,
+}: {
+  path: CareerPath
+  pathIndex: number
+  selectedGoal: keyof typeof goalInsights
+  isHovered: boolean
+  isOtherHovered: boolean
+  isSelected: boolean
+  isLoaded: boolean
+  onPathHover: (id: string | null) => void
+  onMilestoneClick: (
+    path: CareerPath,
+    milestone: Milestone
+  ) => void
+  selectedMilestoneId?: string
+}) {
+  const yOffset = PATH_Y_OFFSETS[pathIndex] || 0
+
+  const startX = 180
+  const startY = 350
+
+  const endX = 1200
+  const endY = 350 + yOffset
+
+  const pathColor = path.color || "#00C6FF"
+
+  const curvePath = `
+    M ${startX} ${startY}
+    C 450 ${startY},
+      750 ${endY},
+      ${endX} ${endY}
+  `
+
+  return (
+    <g
+      onMouseEnter={() => onPathHover(path.id)}
+      onMouseLeave={() => onPathHover(null)}
+      className="cursor-pointer transition-all duration-300"
+      opacity={isOtherHovered ? 0.25 : 1}
+    >
+      <path
+        d={curvePath}
+        fill="none"
+        stroke={pathColor}
+        strokeWidth={isHovered || isSelected ? 4 : 2}
+        strokeLinecap="round"
+        opacity={isLoaded ? 0.9 : 0}
+        style={{
+          transition: "all 0.4s ease",
+          filter:
+            isHovered || isSelected
+              ? `drop-shadow(0 0 12px ${pathColor})`
+              : "none",
+        }}
+      />
+
+      {path.milestones.map((milestone, index) => {
+        const x = 350 + index * 220
+        const y = startY + (yOffset / 4) * (index + 1)
+        const selected = selectedMilestoneId === milestone.id
+
+        return (
+          <g
+            key={milestone.id}
+            onClick={(e) => {
+              e.stopPropagation()
+              onMilestoneClick(path, milestone)
+            }}
+            className="cursor-pointer"
+          >
+            <circle
+              cx={x}
+              cy={y}
+              r={selected ? 22 : 16}
+              fill={pathColor}
+              opacity={0.12}
+            />
+
+            <circle
+              cx={x}
+              cy={y}
+              r={selected ? 11 : 8}
+              fill={pathColor}
+              stroke="white"
+              strokeWidth="2"
+              style={{ transition: "all 0.3s ease" }}
+            />
+
+            <text
+              x={x}
+              y={y - 22}
+              textAnchor="middle"
+              className="fill-white text-[11px] font-medium"
+            >
+              {milestone.label}
+            </text>
+          </g>
+        )
+      })}
+
+      <text
+        x={endX + 25}
+        y={endY}
+        className="fill-white font-[var(--font-syne)] text-[15px] font-bold"
+      >
+        {path.name}
+      </text>
+
+      <text
+        x={endX + 25}
+        y={endY + 18}
+        className="fill-white/45 text-[11px]"
+      >
+        {goalInsights[selectedGoal].marketAlignment} Alignment
+      </text>
+    </g>
+  )
+}
+
 function OriginNode({
   isLoaded,
 }: {
   isLoaded: boolean
 }) {
-  function PathwayLine({
-    path,
-    pathIndex,
-    selectedGoal,
-    isHovered,
-    isOtherHovered,
-    isSelected,
-    isLoaded,
-    onPathHover,
-    onMilestoneClick,
-    selectedMilestoneId,
-  }: {
-    path: CareerPath
-    pathIndex: number
-    selectedGoal: keyof typeof goalInsights
-    isHovered: boolean
-    isOtherHovered: boolean
-    isSelected: boolean
-    isLoaded: boolean
-    onPathHover: (
-      id: string | null
-    ) => void
-    onMilestoneClick: (
-      path: CareerPath,
-      milestone: Milestone
-    ) => void
-    selectedMilestoneId?: string
-  }) {
-    const yOffset =
-      PATH_Y_OFFSETS[pathIndex] || 0
-  
-    const startX = 180
-    const startY = 350
-  
-    const endX = 1200
-    const endY = 350 + yOffset
-  
-    const pathColor =
-      path.color || "#00C6FF"
-  
-    const curvePath = `
-      M ${startX} ${startY}
-      C 450 ${startY},
-        750 ${endY},
-        ${endX} ${endY}
-    `
-  
-    return (
-      <g
-        onMouseEnter={() =>
-          onPathHover(path.id)
-        }
-        onMouseLeave={() =>
-          onPathHover(null)
-        }
-        className="cursor-pointer transition-all duration-300"
-        opacity={
-          isOtherHovered
-            ? 0.25
-            : 1
-        }
-      >
-        {/* Main Path */}
-        <path
-          d={curvePath}
-          fill="none"
-          stroke={pathColor}
-          strokeWidth={
-            isHovered || isSelected
-              ? 4
-              : 2
-          }
-          strokeLinecap="round"
-          opacity={
-            isLoaded ? 0.9 : 0
-          }
-          style={{
-            transition:
-              "all 0.4s ease",
-            filter:
-              isHovered ||
-              isSelected
-                ? `drop-shadow(0 0 12px ${pathColor})`
-                : "none",
-          }}
-        />
-  
-        {/* Milestones */}
-        {path.milestones.map(
-          (milestone, index) => {
-            const x =
-              350 + index * 220
-  
-            const y =
-              startY +
-              (yOffset / 4) *
-                (index + 1)
-  
-            const selected =
-              selectedMilestoneId ===
-              milestone.id
-  
-            return (
-              <g
-                key={milestone.id}
-                onClick={() =>
-                  onMilestoneClick(
-                    path,
-                    milestone
-                  )
-                }
-              >
-                {/* Glow */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={
-                    selected
-                      ? 22
-                      : 16
-                  }
-                  fill={pathColor}
-                  opacity={0.12}
-                />
-  
-                {/* Node */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={
-                    selected
-                      ? 11
-                      : 8
-                  }
-                  fill={pathColor}
-                  stroke="white"
-                  strokeWidth="2"
-                  style={{
-                    transition:
-                      "all 0.3s ease",
-                  }}
-                />
-  
-                {/* Label */}
-                <text
-                  x={x}
-                  y={y - 22}
-                  textAnchor="middle"
-                  className="fill-white text-[11px] font-medium"
-                >
-                  {milestone.title}
-                </text>
-              </g>
-            )
-          }
-        )}
-  
-        {/* Path Label */}
-        <text
-          x={endX + 25}
-          y={endY}
-          className="fill-white font-[var(--font-syne)] text-[15px] font-bold"
-        >
-          {path.title}
-        </text>
-  
-        <text
-          x={endX + 25}
-          y={endY + 18}
-          className="fill-white/45 text-[11px]"
-        >
-          {
-            goalInsights[
-              selectedGoal
-            ].marketAlignment
-          } Alignment
-        </text>
-      </g>
-    )
-  }
-}
   return (
     <g
       className={`transition-opacity duration-500 ${

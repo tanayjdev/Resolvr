@@ -196,7 +196,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link href="/screen2">
+          <Link href="/onboarding">
           <Button
             size="lg"
             className="group bg-cyan-500 text-white hover:bg-cyan-400 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/20 text-lg px-8 py-6 rounded-xl flex items-center"

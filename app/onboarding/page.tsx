@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 
-import PageTransition from "@/components/PageTransition"
+import PageTransition from "@/components/common/PageTransition"
 
 import {
   Sidebar,
@@ -88,7 +88,7 @@ export default function DashboardPage() {
               {/* Featured Simulation */}
               <section className="lg:col-span-4">
                 <Link
-                  href="/screen3"
+                  href="/recommendations"
                   className="block"
                 >
                   <div className="cursor-pointer transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99]">

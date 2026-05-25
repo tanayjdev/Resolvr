@@ -6,7 +6,7 @@ import { FeaturesSection } from "@/components/landing/features-section"
 import { DashboardPreview } from "@/components/landing/dashboard-preview"
 import { CTASection } from "@/components/landing/cta-section"
 import { Footer } from "@/components/landing/footer"
-import PageTransition from "@/components/PageTransition"
+import PageTransition from "@/components/common/PageTransition"
 
 export default function Home() {
   return (
