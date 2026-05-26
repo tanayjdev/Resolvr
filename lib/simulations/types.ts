@@ -1,45 +1,37 @@
-export interface SimulationDecision {
+export interface SkillImpact {
   id: string
+  label: string
+}
 
-  text: string
-
-  hiddenScore: 0 | 50 | 100
-
-  feedbackText: string
-
-  consequenceText: string
+export interface Choice {
+  label: string
+  score: 0 | 50 | 100
+  feedback: string
+  nextStep?: string
+  consequenceLogs: string[]
+  aiConfidenceDelta: number
 }
 
 export interface SimulationStep {
   id: string
-
   title: string
-
   incidentSummary: string
-
   logs: string[]
-
-  decisions: SimulationDecision[]
-
+  choices: Choice[]
   sidebarHint: string
+  aiConfidenceContext: string
 }
 
-export interface ProductionAIIncidentConfig {
-  simulationId: string
-
+export interface ScenarioConfig {
+  id: string
   title: string
-
   severity: string
-
   briefingSummary: string
-
   systemAlerts: string[]
-
   briefingLogs: string[]
-
   briefingSidebarHint: string
-
-  decisionSteps: SimulationStep[]
+  steps: SimulationStep[]
+  recommendedSkills: SkillImpact[]
 }
 
 export type SimulationViewPhase =
@@ -50,12 +42,10 @@ export type SimulationViewPhase =
 
 export interface PerformanceTier {
   label: string
-
   toneClass: string
 }
 
 export interface EngineeringEvaluation {
   summary: string
-
   nextSkill: string
 }
