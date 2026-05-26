@@ -3,14 +3,14 @@ export function OriginNode() {
       <>
         <circle
           cx="180"
-          cy="350"
+          cy="300"
           r="55"
           fill="rgba(0,198,255,0.025)"
         />
   
         <circle
           cx="180"
-          cy="350"
+          cy="300"
           r="38"
           fill="none"
           stroke="rgba(0,198,255,0.08)"
@@ -19,7 +19,7 @@ export function OriginNode() {
   
         <circle
           cx="180"
-          cy="350"
+          cy="300"
           r="28"
           fill="none"
           stroke="rgba(0,198,255,0.25)"
@@ -29,7 +29,7 @@ export function OriginNode() {
   
         <circle
           cx="180"
-          cy="350"
+          cy="300"
           r="16"
           fill="#00C6FF"
           style={{
@@ -40,7 +40,7 @@ export function OriginNode() {
   
         <circle
           cx="180"
-          cy="350"
+          cy="300"
           r="5"
           fill="white"
           opacity="0.85"
@@ -48,7 +48,7 @@ export function OriginNode() {
   
         <text
           x="180"
-          y="402"
+          y="350"
           textAnchor="middle"
           className="fill-white font-[var(--font-syne)] text-[14px] font-bold"
         >
@@ -57,7 +57,7 @@ export function OriginNode() {
   
         <text
           x="180"
-          y="418"
+          y="370"
           textAnchor="middle"
           className="fill-white/35 text-[11px]"
         >
