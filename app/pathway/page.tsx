@@ -67,6 +67,7 @@ export default function SimulationPage() {
   const {
     increaseReadiness,
     completeSimulation,
+    recordSimulationWithImpact,
   } = useUserProgress()
 
   // ── Timer ───────────────────────────────────────────────
@@ -320,9 +321,12 @@ export default function SimulationPage() {
           completionHandledRef.current =
             true
 
-          increaseReadiness(23)
-
-          completeSimulation()
+          // Use connected intelligence method for simulation completion
+          recordSimulationWithImpact(
+            "devops-incident-response",
+            scoreState.current,
+            ["Kubernetes", "Docker", "Linux", "Troubleshooting"]
+          )
 
           setSimulationComplete(true)
 
@@ -415,7 +419,7 @@ export default function SimulationPage() {
         onExit={handleExit}
       />
 
-      <main className="flex flex-1 flex-col gap-3 overflow-hidden p-3 lg:gap-4 lg:p-4">
+      <main className="flex flex-1 flex-col gap-2 sm:gap-3 overflow-hidden p-2 sm:p-3 lg:gap-4 lg:p-4">
         {/* Incident */}
         <IncidentPanel />
 

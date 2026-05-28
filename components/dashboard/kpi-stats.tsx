@@ -70,7 +70,7 @@ function KPICard({
       className={cn(
         'group relative overflow-hidden rounded-2xl border border-cyan-500/10 bg-card/40 backdrop-blur-xl shadow-[0_0_30px_rgba(0,255,255,0.05)] transition-all duration-300',
         'hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,0,0,0.18)]',
-        'p-5 sm:p-6',
+        'p-4 sm:p-5 lg:p-6',
         colorMap[accentColor].card
       )}
     >
@@ -92,11 +92,11 @@ function KPICard({
           {/* Icon */}
           <div
             className={cn(
-              'flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br transition-transform duration-300 group-hover:scale-105',
+              'flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br transition-transform duration-300 group-hover:scale-105',
               colorMap[accentColor].icon
             )}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
 
           {/* Trend */}
@@ -126,7 +126,7 @@ function KPICard({
             {title}
           </p>
 
-          <h3 className="font-[var(--font-syne)] text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h3 className="font-[var(--font-syne)] text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
             {value}
           </h3>
 
@@ -212,8 +212,8 @@ export function KPIStats() {
   ]
 
   return (
-    <section className="mb-8 sm:mb-10">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="mb-6 sm:mb-8 lg:mb-10">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {stats.map((stat) => (
           <KPICard
             key={stat.title}

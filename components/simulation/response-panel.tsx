@@ -121,25 +121,25 @@ export function ResponsePanel({
           Header
       ====================================================== */}
 
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border px-3 sm:px-4 py-2.5 sm:py-3">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10">
-            <MessageSquare className="h-4 w-4 text-primary" />
+          <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10">
+            <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-xs sm:text-sm font-semibold text-foreground">
               Diagnosis & Resolution
             </h3>
 
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[10px] sm:text-[11px] text-muted-foreground">
               Document your incident analysis
             </p>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {[
             {
               icon: Bold,
@@ -174,9 +174,9 @@ export function ResponsePanel({
                 key={label}
                 type="button"
                 aria-label={label}
-                className="rounded-lg p-1.5 transition-colors hover:bg-secondary"
+                className="rounded-lg p-1 sm:p-1.5 transition-colors hover:bg-secondary"
               >
-                <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-muted-foreground" />
               </button>
             )
           )}
@@ -187,7 +187,7 @@ export function ResponsePanel({
           Textarea
       ====================================================== */}
 
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-3 sm:p-4">
         <textarea
           value={response}
           onChange={(e) =>
@@ -221,11 +221,11 @@ Example:
           aria-label="Diagnosis and resolution input"
           className="
             h-full
-            min-h-[320px]
+            min-h-[280px] sm:min-h-[320px]
             w-full
             resize-none
             bg-transparent
-            text-sm
+            text-xs sm:text-sm
             leading-relaxed
             text-foreground
             outline-none
@@ -238,9 +238,9 @@ Example:
           Footer
       ====================================================== */}
 
-      <div className="flex flex-col gap-3 border-t border-border p-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 sm:gap-3 border-t border-border p-2.5 sm:p-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Stats */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-muted-foreground">
           <span>
             {wordCount} words
           </span>
@@ -253,8 +253,11 @@ Example:
 
           <span className="h-1 w-1 rounded-full bg-muted-foreground/40" />
 
-          <span>
+          <span className="hidden sm:inline">
             Ctrl + Enter to submit
+          </span>
+          <span className="sm:hidden">
+            ⌘ + Enter to submit
           </span>
         </div>
 
@@ -266,7 +269,7 @@ Example:
           disabled={!canSubmit}
           type="button"
           className={cn(
-            "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300",
+            "inline-flex items-center justify-center gap-2 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-300",
 
             canSubmit
               ? "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -275,13 +278,13 @@ Example:
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
 
               Processing...
             </>
           ) : (
             <>
-              <Send className="h-4 w-4" />
+              <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 
               Submit Step
             </>

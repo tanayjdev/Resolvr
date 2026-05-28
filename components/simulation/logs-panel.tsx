@@ -62,36 +62,36 @@ export function LogsPanel({ logs, className }: LogsPanelProps) {
         className
       )}
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-primary" />
-          <span className="font-medium text-sm">System Logs</span>
+          <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+          <span className="font-medium text-xs sm:text-sm">System Logs</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="text-[10px] sm:text-xs text-muted-foreground">
             {logs.length} entries
           </span>
-          <div className="h-2 w-2 rounded-full bg-success animate-subtle-pulse" />
+          <div className="h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full bg-success animate-subtle-pulse" />
         </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto p-3 font-mono text-xs space-y-1.5 min-h-0"
+        className="flex-1 overflow-auto p-2 sm:p-3 font-mono text-[11px] sm:text-xs space-y-1 sm:space-y-1.5 min-h-0"
       >
         {logs.map((log) => (
           <div
             key={log.id}
             className={cn(
-              "flex items-start gap-2 p-2 rounded-lg hover:bg-secondary/50 transition-colors",
+              "flex items-start gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-lg hover:bg-secondary/50 transition-colors",
               log.isNew && "log-entry-new"
             )}
           >
-            <span className="text-muted-foreground shrink-0 w-16">
+            <span className="text-muted-foreground shrink-0 w-14 sm:w-16 text-[10px] sm:text-[11px]">
               {log.timestamp}
             </span>
             {getLogIcon(log.level)}
-            <span className={cn("flex-1", getLogColor(log.level))}>
+            <span className={cn("flex-1 text-[11px] sm:text-xs", getLogColor(log.level))}>
               {log.message}
             </span>
           </div>

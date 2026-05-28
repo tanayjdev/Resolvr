@@ -14,6 +14,7 @@ import {
   Trophy,
   Target,
   Zap,
+  RotateCcw,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -53,13 +54,13 @@ export default function SimulationsHubPage() {
   }, [activeCategory])
 
   const { strongestSkill, weakestSkill, completedCount } = React.useMemo(() => {
-    const recommended = progress.recommendedSkills || []
+    const skills = progress.skills || []
     return {
-      strongestSkill: recommended.length > 0 ? recommended[0] : "Insufficient data",
-      weakestSkill: recommended.length > 1 ? recommended[recommended.length - 1] : "Insufficient data",
+      strongestSkill: skills.length > 0 ? skills[0].name : "Insufficient data",
+      weakestSkill: skills.length > 1 ? skills[skills.length - 1].name : "Insufficient data",
       completedCount: progress.completedSimulations.length,
     }
-  }, [progress.recommendedSkills, progress.completedSimulations])
+  }, [progress.skills, progress.completedSimulations])
 
   if (!hasHydrated) {
     return <div className="min-h-screen bg-background" />

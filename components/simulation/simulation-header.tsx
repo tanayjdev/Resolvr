@@ -5,7 +5,7 @@
 // ============================================================
 
 import Image from "next/image"
-import { Clock, X, Server, Target } from "lucide-react"
+import { Clock, X, Server, Target, Compass } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface SimulationHeaderProps {
@@ -26,18 +26,12 @@ export function SimulationHeader({
   onExit,
 }: SimulationHeaderProps) {
   return (
-    <header className="glass-panel border-b border-border px-3 py-2 lg:px-6 lg:py-3">
+    <header className="glass-panel border-b border-border px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4">
       <div className="flex items-center justify-between gap-2 lg:gap-4">
         {/* Logo & Title */}
-        <div className="flex items-center gap-3 shrink-0">
-          <Image
-            src="/branding/logo.png"
-            alt="Resolvr"
-            width={110}
-            height={26}
-            className="h-6 w-auto object-contain shrink-0"
-            priority
-          />
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <Compass className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+          <span className="text-lg sm:text-xl font-bold tracking-tight">Resolvr</span>
 
           <div className="h-4 w-px bg-border hidden sm:block" />
 

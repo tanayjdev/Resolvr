@@ -50,9 +50,12 @@ interface TimelineItem {
 function buildTimeline(
   readinessScore: number,
   employabilityScore: number,
-  currentPathway: string
+  currentPathway: string,
+  milestonesCompleted: number,
+  certificationsEarned: number,
+  unlockedPathways: string[]
 ): TimelineItem[] {
-  return [
+  const timeline: TimelineItem[] = [
     {
       id: "1",
 
@@ -78,12 +81,12 @@ function buildTimeline(
         "Currently progressing through specialized pathway projects and industry-focused learning.",
 
       timeframe:
-        readinessScore >= 70
+        readinessScore >= 700
           ? "Accelerated"
           : "Current",
 
       status:
-        readinessScore >= 85
+        readinessScore >= 700
           ? "completed"
           : "current",
 
@@ -100,12 +103,14 @@ function buildTimeline(
         "Professional certifications, advanced simulations, and production-grade skill validation.",
 
       timeframe:
-        readinessScore >= 80
+        readinessScore >= 700 || certificationsEarned > 0
           ? "Unlocked"
           : "Q3 2026",
 
       status:
-        readinessScore >= 80
+        certificationsEarned > 0
+          ? "completed"
+          : readinessScore >= 700
           ? "current"
           : "upcoming",
 
@@ -133,6 +138,20 @@ function buildTimeline(
       icon: Briefcase,
     },
   ]
+
+  // Add advanced pathway milestone if unlocked
+  if (unlockedPathways.includes("AI Systems") || unlockedPathways.includes("Security")) {
+    timeline.push({
+      id: "5",
+      title: "Advanced Specialist",
+      description: "Elite pathway specialization with advanced AI or Security focus.",
+      timeframe: "Unlocked",
+      status: "current",
+      icon: Sparkles,
+    })
+  }
+
+  return timeline
 }
 
 // =========================================================
@@ -150,7 +169,7 @@ function TimelineIcon({
   return (
     <div
       className={cn(
-        "relative flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-300 hover:scale-105 sm:h-14 sm:w-14",
+        "relative flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border transition-all duration-300 hover:scale-105",
 
         status ===
           "completed" &&
@@ -165,7 +184,7 @@ function TimelineIcon({
           "border-white/5 bg-white/[0.03] text-muted-foreground"
       )}
     >
-      <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
 
       {status ===
         "current" && (
@@ -250,16 +269,22 @@ export const FutureProgressionTimeline =
           return buildTimeline(
             progress.readinessScore,
             employabilityScore,
-            progress.currentPathway
+            progress.currentPathway,
+            progress.milestonesCompleted,
+            progress.certificationsEarned,
+            progress.unlockedPathways
           )
         }, [
           progress.readinessScore,
           employabilityScore,
           progress.currentPathway,
+          progress.milestonesCompleted,
+          progress.certificationsEarned,
+          progress.unlockedPathways,
         ])
 
       return (
-        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a0f1f] via-[#090b16] to-[#05060d] p-4 sm:p-6">
+        <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0a0f1f] via-[#090b16] to-[#05060d] p-3 sm:p-4 md:p-5 lg:p-6">
           {/* Background Glow */}
           <div className="absolute inset-0">
             <div className="absolute right-[-10%] top-[-20%] h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
@@ -269,39 +294,39 @@ export const FutureProgressionTimeline =
 
           <div className="relative z-10">
             {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <div className="mb-1.5 sm:mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2.5 sm:px-3 py-1">
+                  <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
 
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+                  <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
                     AI Progression
                   </span>
                 </div>
 
-                <h3 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground">
                   Career Progression Timeline
                 </h3>
 
-                <p className="mt-1 text-sm text-muted-foreground/80">
+                <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-muted-foreground/80">
                   AI-generated roadmap tracking your long-term employability journey.
                 </p>
               </div>
 
-              <button className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground">
+              <button className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground">
                 <span>
                   Customize Path
                 </span>
 
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             </div>
 
             {/* Insight */}
-            <div className="mb-8 flex items-center gap-2 rounded-2xl border border-accent/20 bg-accent/5 px-4 py-3">
-              <TrendingUp className="h-4 w-4 flex-shrink-0 text-accent" />
+            <div className="mb-6 sm:mb-8 flex items-center gap-2 rounded-2xl border border-accent/20 bg-accent/5 px-3 sm:px-4 py-2.5 sm:py-3">
+              <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 text-accent" />
 
-              <p className="text-sm text-accent">
+              <p className="text-xs sm:text-sm text-accent">
                 AI predicts strong long-term growth momentum based on your readiness progression.
               </p>
             </div>
@@ -373,7 +398,7 @@ export const FutureProgressionTimeline =
                           }
                         />
 
-                        <div className="mt-5 flex flex-col items-center">
+                        <div className="mt-4 sm:mt-5 flex flex-col items-center">
                           <TimelineStatus
                             status={
                               item.status
@@ -382,7 +407,7 @@ export const FutureProgressionTimeline =
 
                           <h4
                             className={cn(
-                              "mt-3 text-sm font-semibold",
+                              "mt-2 sm:mt-3 text-xs sm:text-sm font-semibold",
 
                               item.status ===
                                 "upcoming"
@@ -395,7 +420,7 @@ export const FutureProgressionTimeline =
                             }
                           </h4>
 
-                          <p className="mt-2 line-clamp-3 max-w-[220px] text-xs leading-relaxed text-muted-foreground/80">
+                          <p className="mt-1.5 sm:mt-2 line-clamp-3 max-w-[180px] sm:max-w-[220px] text-[11px] sm:text-xs leading-relaxed text-muted-foreground/80">
                             {
                               item.description
                             }
@@ -403,7 +428,7 @@ export const FutureProgressionTimeline =
 
                           <span
                             className={cn(
-                              "mt-3 text-xs font-semibold uppercase tracking-[0.12em]",
+                              "mt-2 sm:mt-3 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.12em]",
 
                               item.status ===
                                 "completed" &&
@@ -456,7 +481,7 @@ export const FutureProgressionTimeline =
                         index *
                         0.08,
                     }}
-                    className="relative flex gap-4 transition-all duration-300"
+                    className="relative flex gap-3 sm:gap-4 transition-all duration-300"
                   >
                     {/* Connector */}
                     {index <
@@ -464,7 +489,7 @@ export const FutureProgressionTimeline =
                         1 && (
                       <div
                         className={cn(
-                          "absolute left-[23px] top-14 h-[calc(100%-10px)] w-[2px]",
+                          "absolute left-[20px] sm:left-[23px] top-12 sm:top-14 h-[calc(100%-8px)] sm:h-[calc(100%-10px)] w-[2px]",
 
                           item.status ===
                             "completed"
@@ -488,7 +513,7 @@ export const FutureProgressionTimeline =
 
                     <div
                       className={cn(
-                        "flex-1 rounded-2xl border p-4 transition-all duration-300 hover:border-white/15",
+                        "flex-1 rounded-2xl border p-3 sm:p-4 transition-all duration-300 hover:border-white/15",
 
                         item.status ===
                           "completed" &&
@@ -503,11 +528,11 @@ export const FutureProgressionTimeline =
                           "border-white/5 bg-white/[0.02]"
                       )}
                     >
-                      <div className="mb-2 flex items-start justify-between gap-3">
+                      <div className="mb-1.5 sm:mb-2 flex items-start justify-between gap-2 sm:gap-3">
                         <div>
                           <h4
                             className={cn(
-                              "text-sm font-semibold",
+                              "text-xs sm:text-sm font-semibold",
 
                               item.status ===
                                 "upcoming"
@@ -520,7 +545,7 @@ export const FutureProgressionTimeline =
                             }
                           </h4>
 
-                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">
+                          <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs leading-relaxed text-muted-foreground/80">
                             {
                               item.description
                             }
@@ -536,7 +561,7 @@ export const FutureProgressionTimeline =
 
                       <div
                         className={cn(
-                          "mt-3 text-[11px] font-semibold uppercase tracking-[0.12em]",
+                          "mt-2 sm:mt-3 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.12em]",
 
                           item.status ===
                             "completed" &&

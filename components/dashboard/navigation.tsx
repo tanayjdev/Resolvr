@@ -17,6 +17,7 @@ import {
   Menu,
   Bell,
   ChevronRight,
+  Compass,
 } from 'lucide-react'
 
 import {
@@ -115,20 +116,14 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="border-b border-white/5 px-5 py-6">
+      <div className="border-b border-white/5 px-4 sm:px-5 py-5 sm:py-6">
         <Link
           href="/"
-          className="group flex items-center gap-3"
+          className="group flex items-center gap-2"
           onClick={closeMobileMenu}
         >
-          <Image
-            src="/branding/logo.png"
-            alt="Resolvr"
-            width={120}
-            height={28}
-            className="h-auto w-auto object-contain"
-            priority
-          />
+          <Compass className="w-7 h-7 sm:w-8 sm:h-8" />
+          <span className="text-lg sm:text-xl font-bold tracking-tight">Resolvr</span>
         </Link>
       </div>
 
@@ -169,7 +164,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/5 bg-sidebar/95 backdrop-blur-xl lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 lg:w-64 border-r border-white/5 bg-sidebar/95 backdrop-blur-xl lg:flex">
         <SidebarContent />
       </aside>
 
@@ -190,7 +185,7 @@ export function Sidebar() {
 
         <SheetContent
           side="left"
-          className="w-72 border-white/10 bg-sidebar/95 p-0 backdrop-blur-2xl"
+          className="w-80 sm:w-72 border-white/10 bg-sidebar/95 p-0 backdrop-blur-2xl"
         >
           <SidebarContent
             closeMobileMenu={() => setOpen(false)}
@@ -204,7 +199,7 @@ export function Sidebar() {
 export function TopBar() {
   return (
     <header className="sticky top-0 z-20 h-16 border-b border-white/5 bg-background/80 backdrop-blur-xl">
-      <div className="flex h-full items-center justify-between px-4 lg:px-6">
+      <div className="flex h-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4">
         {/* Left */}
         <div className="pl-14 lg:pl-0">
           <h2 className="font-[var(--font-syne)] text-lg font-semibold tracking-tight text-foreground">

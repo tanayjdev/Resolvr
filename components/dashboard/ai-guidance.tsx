@@ -80,7 +80,7 @@ function InsightCard({
         delay: index * 0.08,
       }}
       className={cn(
-        'group relative h-full w-full max-w-full overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]',
+        'group relative h-full w-full max-w-full overflow-hidden rounded-2xl border p-3 sm:p-4 text-left transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]',
         typeStyles[insight.type]
       )}
     >
@@ -89,11 +89,11 @@ function InsightCard({
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-secondary/[0.03]" />
       </div>
 
-      <div className="relative z-10 flex items-start gap-3">
+      <div className="relative z-10 flex items-start gap-2 sm:gap-3">
         {/* Icon */}
         <div
           className={cn(
-            'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/5',
+            'flex h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/5',
             iconStyles[insight.type]
           )}
         >
@@ -102,26 +102,26 @@ function InsightCard({
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h4 className="text-sm font-semibold text-foreground">
+          <div className="mb-1.5 sm:mb-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h4 className="text-xs sm:text-sm font-semibold text-foreground">
               {insight.title}
             </h4>
 
             {insight.priority === 'high' && (
-              <span className="rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
+              <span className="rounded-full border border-primary/20 bg-primary/10 px-1.5 sm:px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">
                 Priority
               </span>
             )}
           </div>
 
-          <p className="text-sm leading-relaxed text-muted-foreground/80">
+          <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground/80">
             {insight.description}
           </p>
         </div>
 
         {/* Arrow */}
         <div className="flex-shrink-0 pt-1">
-          <ArrowRight className="w-4 h-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:translate-x-0.5" />
+          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:translate-x-0.5" />
         </div>
       </div>
     </motion.button>
@@ -157,7 +157,7 @@ export function AIGuidancePanel() {
   )
 
   return (
-    <section className="glass-panel h-full w-full max-w-full overflow-hidden rounded-2xl border border-white/10 p-4 sm:p-6">
+    <section className="glass-panel h-full w-full max-w-full overflow-hidden rounded-2xl border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6">
       {!profile.onboardingComplete && (
         <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
           {ONBOARDING_PROMPT_TEXT}
@@ -165,29 +165,29 @@ export function AIGuidancePanel() {
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div className="min-w-0">
           {/* AI Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 mb-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2.5 sm:px-3 py-1 mb-2 sm:mb-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
 
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
               Live AI Guidance
             </span>
           </div>
 
           {/* Title */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 via-secondary/10 to-primary/5 border border-white/5">
-              <BrainCircuit className="w-5 h-5 text-primary" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary/20 via-secondary/10 to-primary/5 border border-white/5">
+              <BrainCircuit className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
 
             <div>
-              <h3 className="font-heading text-lg sm:text-xl font-semibold tracking-tight text-foreground">
+              <h3 className="font-heading text-base sm:text-lg md:text-xl font-semibold tracking-tight text-foreground">
                 AI Guidance
               </h3>
 
-              <p className="text-sm text-muted-foreground/80">
+              <p className="text-xs sm:text-sm text-muted-foreground/80">
                 Personalized intelligence and recommendations
               </p>
             </div>
@@ -195,10 +195,10 @@ export function AIGuidancePanel() {
         </div>
 
         {/* Status */}
-        <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-accent" />
+        <div className="hidden sm:flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-2.5 sm:px-3 py-1 sm:py-1.5">
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent" />
 
-          <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">
+          <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">
             Active
           </span>
         </div>
@@ -218,20 +218,20 @@ export function AIGuidancePanel() {
       {/* Bottom CTA */}
       <motion.button
         whileTap={{ scale: 0.98 }}
-        className="group relative mt-5 w-full max-w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/[0.07] to-secondary/[0.08] px-4 py-3.5 transition-all duration-300 hover:border-primary/30 xl:mt-6"
+        className="group relative mt-4 sm:mt-5 xl:mt-6 w-full max-w-full overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/[0.07] to-secondary/[0.08] px-3 sm:px-4 py-2.5 sm:py-3.5 transition-all duration-300 hover:border-primary/30"
       >
         <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.05] to-secondary/[0.05]" />
         </div>
 
         <div className="relative z-10 flex items-center justify-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
 
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-xs sm:text-sm font-semibold text-foreground">
             Ask AI for More Insights
           </span>
 
-          <ArrowRight className="w-4 h-4 text-primary transition-transform duration-300 group-hover:translate-x-1" />
+          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary transition-transform duration-300 group-hover:translate-x-1" />
         </div>
       </motion.button>
     </section>

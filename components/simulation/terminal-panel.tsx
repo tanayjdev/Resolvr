@@ -134,22 +134,22 @@ export function TerminalPanel({ className, onCommandResult }: TerminalPanelProps
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <TerminalIcon className="h-4 w-4 text-primary" />
-          <span className="font-medium text-sm">Terminal</span>
+          <TerminalIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+          <span className="font-medium text-xs sm:text-sm">Terminal</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2.5 w-2.5 rounded-full bg-destructive" />
-          <div className="h-2.5 w-2.5 rounded-full bg-warning" />
-          <div className="h-2.5 w-2.5 rounded-full bg-success" />
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-destructive" />
+          <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-warning" />
+          <div className="h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-success" />
         </div>
       </div>
 
       {/* Output */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto p-3 font-mono text-xs bg-[#0a0e14] min-h-0"
+        className="flex-1 overflow-auto p-2 sm:p-3 font-mono text-[11px] sm:text-xs bg-[#0a0e14] min-h-0"
         onClick={() => inputRef.current?.focus()}
       >
         {history.map((line, i) => (
@@ -172,10 +172,10 @@ export function TerminalPanel({ className, onCommandResult }: TerminalPanelProps
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="p-3 border-t border-border bg-[#0a0e14]"
+        className="p-2 sm:p-3 border-t border-border bg-[#0a0e14]"
       >
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-primary shrink-0">
+          <span className="font-mono text-[11px] sm:text-xs text-primary shrink-0">
             {PROMPT}
           </span>
           <input
@@ -184,7 +184,7 @@ export function TerminalPanel({ className, onCommandResult }: TerminalPanelProps
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none font-mono text-xs text-foreground placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent border-none outline-none font-mono text-[11px] sm:text-xs text-foreground placeholder:text-muted-foreground"
             placeholder="Enter command..."
             aria-label="Terminal command input"
             autoComplete="off"

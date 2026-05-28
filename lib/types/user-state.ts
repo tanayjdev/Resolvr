@@ -35,6 +35,17 @@ export interface UserProgress {
   opportunities: Opportunity[]
 
   lowDataMode: boolean
+
+  // Connected Intelligence fields
+  certificationsEarned: number
+
+  milestonesCompleted: number
+
+  aiConfidence: number
+
+  recommendationStrength: number
+
+  simulationPerformance: Record<string, number> // simulationId -> score
 }
 
 export const DEFAULT_PROGRESS: UserProgress = {
@@ -76,4 +87,15 @@ export const DEFAULT_PROGRESS: UserProgress = {
   ],
 
   lowDataMode: false,
+
+  // Connected Intelligence fields
+  certificationsEarned: 0,
+
+  milestonesCompleted: 2,
+
+  aiConfidence: 65,
+
+  recommendationStrength: 70,
+
+  simulationPerformance: {},
 }

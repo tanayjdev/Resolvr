@@ -32,6 +32,26 @@ import {
   writePersistedUserState,
 } from "@/lib/storage/user-state-storage"
 
+import {
+  calculateSimulationImpact,
+  calculateCompleteScoring,
+  type ScoringInput,
+} from "@/lib/ai/scoring-engine"
+
+// ============================================================
+// AI Insights Type
+// ============================================================
+
+export interface AIInsights {
+  readinessTrend: "improving" | "stable" | "declining"
+  strongestSkill: string
+  weakestSkill: string
+  recommendedNextAction: string
+  unlockedOpportunities: number
+  pathwayProgress: number
+  confidenceLevel: "low" | "medium" | "high"
+}
+
 // =========================================================
 // Re-exports
 // =========================================================
@@ -106,6 +126,19 @@ interface UserContextType {
   ) => void
 
   resetProgress: () => void
+
+  // Connected Intelligence methods
+  recordSimulationWithImpact: (
+    simulationId: string,
+    finalScore: number,
+    simulationSkills: string[]
+  ) => void
+
+  updateScoring: () => void
+
+  earnCertification: (certificationName: string) => void
+
+  getAIInsights: () => AIInsights
 }
 
 const UserContext =
@@ -454,6 +487,209 @@ export function UserProvider({
     )
   }
 
+  // ============================================================
+  // Connected Intelligence Methods
+  // ============================================================
+
+  const recordSimulationWithImpact = useCallback(
+    (
+      simulationId: string,
+      finalScore: number,
+      simulationSkills: string[]
+    ) => {
+      setProgress((prev) => {
+        // Don't record if already completed
+        if (prev.completedSimulations.includes(simulationId)) {
+          return prev
+        }
+
+        // Calculate impact using scoring engine
+        const scoringInput: ScoringInput = {
+          readinessScore: prev.readinessScore,
+          employabilityScore: prev.employabilityScore,
+          simulationsCompleted: prev.simulationsCompleted,
+          skillsTracked: prev.skillsTracked,
+          opportunitiesMatched: prev.opportunitiesMatched,
+          completedSimulations: prev.completedSimulations,
+          unlockedPathways: prev.unlockedPathways,
+          skills: prev.skills,
+          simulationPerformance: new Map(Object.entries(prev.simulationPerformance))
+        }
+
+        const impact = calculateSimulationImpact(
+          scoringInput,
+          simulationId,
+          finalScore,
+          simulationSkills
+        )
+
+        // Update skills with gains
+        const updatedSkills = prev.skills.map(skill => {
+          const gain = impact.skillGains.find(g => g.skill === skill.name)
+          if (gain) {
+            return {
+              ...skill,
+              level: Math.min(skill.level + gain.gain, 100)
+            }
+          }
+          return skill
+        })
+
+        // Add new skills if they don't exist
+        simulationSkills.forEach(skillName => {
+          if (!updatedSkills.find(s => s.name === skillName)) {
+            const gain = impact.skillGains.find(g => g.skill === skillName)
+            updatedSkills.push({
+              name: skillName,
+              level: gain ? gain.gain : 10
+            })
+          }
+        })
+
+        // Unlock new pathways
+        const newUnlockedPathways = [
+          ...prev.unlockedPathways,
+          ...impact.unlockedPathways
+        ]
+
+        // Recalculate milestones
+        const newMilestones = prev.milestonesCompleted + 1
+
+        return {
+          ...prev,
+
+          completedSimulations: [
+            ...prev.completedSimulations,
+            simulationId
+          ],
+
+          simulationsCompleted: prev.simulationsCompleted + 1,
+
+          readinessScore: Math.min(
+            prev.readinessScore + impact.readinessImpact,
+            1000
+          ),
+
+          employabilityScore: Math.min(
+            prev.employabilityScore + impact.employabilityImpact,
+            100
+          ),
+
+          skills: updatedSkills,
+
+          skillsTracked: updatedSkills.length,
+
+          unlockedPathways: newUnlockedPathways,
+
+          milestonesCompleted: newMilestones,
+
+          aiConfidence: Math.min(
+            prev.aiConfidence + impact.aiConfidenceChange,
+            100
+          ),
+
+          recommendationStrength: Math.min(
+            prev.recommendationStrength + impact.recommendationStrengthChange,
+            100
+          ),
+
+          simulationPerformance: {
+            ...prev.simulationPerformance,
+            [simulationId]: finalScore
+          },
+
+          opportunitiesMatched: prev.opportunitiesMatched + 1
+        }
+      })
+    },
+    []
+  )
+
+  const updateScoring = useCallback(() => {
+    setProgress((prev) => {
+      const scoringInput: ScoringInput = {
+        readinessScore: prev.readinessScore,
+        employabilityScore: prev.employabilityScore,
+        simulationsCompleted: prev.simulationsCompleted,
+        skillsTracked: prev.skillsTracked,
+        opportunitiesMatched: prev.opportunitiesMatched,
+        completedSimulations: prev.completedSimulations,
+        unlockedPathways: prev.unlockedPathways,
+        skills: prev.skills,
+        simulationPerformance: new Map(Object.entries(prev.simulationPerformance))
+      }
+
+      const scoring = calculateCompleteScoring(
+        scoringInput,
+        prev.certificationsEarned
+      )
+
+      return {
+        ...prev,
+        aiConfidence: scoring.aiConfidence,
+        recommendationStrength: scoring.recommendationStrength,
+        milestonesCompleted: scoring.milestonesCompleted
+      }
+    })
+  }, [])
+
+  const earnCertification = useCallback((certificationName: string) => {
+    setProgress((prev) => ({
+      ...prev,
+      certificationsEarned: prev.certificationsEarned + 1,
+      // Certification boosts employability
+      employabilityScore: Math.min(prev.employabilityScore + 10, 100),
+      // Certification boosts readiness slightly
+      readinessScore: Math.min(prev.readinessScore + 50, 1000)
+    }))
+  }, [])
+
+  const getAIInsights = useCallback((): AIInsights => {
+    const skills = progress.skills
+    const sortedSkills = [...skills].sort((a, b) => b.level - a.level)
+    
+    const strongestSkill = sortedSkills[0]?.name || "None"
+    const weakestSkill = sortedSkills[sortedSkills.length - 1]?.name || "None"
+    
+    // Determine readiness trend based on recent performance
+    const recentScores = Object.values(progress.simulationPerformance).slice(-3)
+    const avgRecentScore = recentScores.length > 0 
+      ? recentScores.reduce((a: number, b: number) => a + b, 0) / recentScores.length 
+      : 0
+    
+    const readinessTrend: "improving" | "stable" | "declining" = 
+      avgRecentScore >= 80 ? "improving" : 
+      avgRecentScore >= 60 ? "stable" : "declining"
+    
+    // Determine confidence level
+    const confidenceLevel: "low" | "medium" | "high" =
+      progress.aiConfidence >= 75 ? "high" :
+      progress.aiConfidence >= 50 ? "medium" : "low"
+    
+    // Generate recommended next action
+    let recommendedNextAction = "Continue completing simulations to build your profile"
+    
+    if (progress.readinessScore >= 500 && !progress.unlockedPathways.includes("DevOps")) {
+      recommendedNextAction = "Complete more simulations to unlock DevOps pathway"
+    } else if (progress.readinessScore >= 700 && !progress.unlockedPathways.includes("Security")) {
+      recommendedNextAction = "You're ready for advanced Security simulations"
+    } else if (progress.simulationsCompleted < 5) {
+      recommendedNextAction = "Complete 5 simulations to unlock milestone rewards"
+    } else if (progress.certificationsEarned === 0 && progress.employabilityScore >= 80) {
+      recommendedNextAction = "Consider earning a certification to boost your profile"
+    }
+    
+    return {
+      readinessTrend,
+      strongestSkill,
+      weakestSkill,
+      recommendedNextAction,
+      unlockedOpportunities: progress.opportunitiesMatched,
+      pathwayProgress: profile.pathwayProgress,
+      confidenceLevel
+    }
+  }, [progress, profile])
+
   const value = useMemo(
     () => ({
       progress,
@@ -483,6 +719,15 @@ export function UserProvider({
       recordSimulationCompletion,
 
       resetProgress,
+
+      // Connected Intelligence methods
+      recordSimulationWithImpact,
+
+      updateScoring,
+
+      earnCertification,
+
+      getAIInsights,
     }),
     [
       progress,
@@ -491,6 +736,10 @@ export function UserProvider({
       updateProfile,
       completeOnboarding,
       recordSimulationCompletion,
+      recordSimulationWithImpact,
+      updateScoring,
+      earnCertification,
+      getAIInsights,
     ]
   )
 

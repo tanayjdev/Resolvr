@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Compass } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 
@@ -56,25 +56,19 @@ export function Navbar() {
         : "py-5"
         }`}
     >
-      <Container className="flex items-center justify-between py-1">
+      <Container className="flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4">
         {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-2 group"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <Image
-            src="/branding/logo.png"
-            alt="Resolvr"
-            width={190}
-            height={52}
-            className="h-12 w-auto object-contain"
-            priority
-          />
+          <Compass className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9" />
+          <span className="text-xl sm:text-2xl font-bold tracking-tight">Resolvr</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -88,7 +82,7 @@ export function Navbar() {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary transition-all duration-300 hover:scale-[1.02]">
+          <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary transition-all duration-300 hover:scale-[1.02] px-4 sm:px-5 py-2 text-sm">
             Map Your Future
           </Button>
         </div>

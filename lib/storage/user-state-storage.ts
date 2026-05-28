@@ -252,6 +252,32 @@ function parseUserProgress(
       typeof value.lowDataMode === "boolean"
         ? value.lowDataMode
         : DEFAULT_PROGRESS.lowDataMode,
+
+    // Connected Intelligence fields
+    certificationsEarned:
+      typeof value.certificationsEarned === "number"
+        ? value.certificationsEarned
+        : DEFAULT_PROGRESS.certificationsEarned,
+
+    milestonesCompleted:
+      typeof value.milestonesCompleted === "number"
+        ? value.milestonesCompleted
+        : DEFAULT_PROGRESS.milestonesCompleted,
+
+    aiConfidence:
+      typeof value.aiConfidence === "number"
+        ? value.aiConfidence
+        : DEFAULT_PROGRESS.aiConfidence,
+
+    recommendationStrength:
+      typeof value.recommendationStrength === "number"
+        ? value.recommendationStrength
+        : DEFAULT_PROGRESS.recommendationStrength,
+
+    simulationPerformance:
+      isRecord(value.simulationPerformance)
+        ? value.simulationPerformance as Record<string, number>
+        : DEFAULT_PROGRESS.simulationPerformance,
   }
 }
 

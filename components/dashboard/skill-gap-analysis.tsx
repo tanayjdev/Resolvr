@@ -95,7 +95,7 @@ function SkillCard({
         duration: 0.45,
         delay: index * 0.08,
       }}
-      className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4 sm:p-5 transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]"
+      className="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-3 sm:p-4 md:p-5 transition-all duration-300 hover:border-primary/20 hover:bg-white/[0.03]"
     >
       {/* Hover Glow */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -104,10 +104,10 @@ function SkillCard({
 
       <div className="relative z-10">
         {/* Top Row */}
-        <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <h4 className="text-sm sm:text-[15px] font-semibold text-foreground">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1">
+              <h4 className="text-xs sm:text-sm font-semibold text-foreground">
                 {skill.name}
               </h4>
 
@@ -120,25 +120,25 @@ function SkillCard({
           </div>
 
           <div className="flex-shrink-0 text-right">
-            <div className="font-heading text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+            <div className="font-heading text-lg sm:text-xl md:text-2xl font-bold text-foreground tracking-tight">
               {skill.current}%
             </div>
 
-            <div className="text-[11px] text-muted-foreground">
+            <div className="text-[10px] sm:text-[11px] text-muted-foreground">
               Current Score
             </div>
           </div>
         </div>
 
         {/* Progress */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+        <div className="mb-3 sm:mb-4">
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
               Progress
             </span>
 
-            <div className="flex items-center gap-1 text-[11px] text-primary font-medium">
-              <TrendingUp className="w-3 h-3" />
+            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-primary font-medium">
+              <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               <span>{gapPercentage}% gap remaining</span>
             </div>
           </div>
@@ -174,21 +174,21 @@ function SkillCard({
         </div>
 
         {/* Recommendation */}
-        <div className="flex items-start gap-3 rounded-xl border border-white/5 bg-black/10 px-3 py-3">
+        <div className="flex items-start gap-2 sm:gap-3 rounded-xl border border-white/5 bg-black/10 px-2.5 sm:px-3 py-2.5 sm:py-3">
           <div className="mt-0.5 flex-shrink-0">
             {skill.priority === 'high' ? (
-              <AlertTriangle className="w-4 h-4 text-destructive" />
+              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive" />
             ) : (
-              <Sparkles className="w-4 h-4 text-primary" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
             )}
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground mb-1">
+            <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-muted-foreground mb-0.5 sm:mb-1">
               Recommended Action
             </div>
 
-            <p className="text-sm text-foreground/85 leading-relaxed">
+            <p className="text-xs sm:text-sm text-foreground/85 leading-relaxed">
               {skill.recommendation}
             </p>
           </div>
@@ -289,7 +289,7 @@ export function SkillGapAnalysis() {
   )
 
   return (
-    <section className="glass-panel rounded-2xl border border-white/10 p-4 sm:p-6 h-full overflow-hidden">
+    <section className="glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 h-full overflow-hidden">
       {!profile.onboardingComplete && (
         <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
           {ONBOARDING_PROMPT_TEXT}
@@ -297,7 +297,7 @@ export function SkillGapAnalysis() {
       )}
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 mb-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -306,11 +306,11 @@ export function SkillGapAnalysis() {
             </span>
           </div>
 
-          <h3 className="font-heading text-lg sm:text-xl font-semibold text-foreground tracking-tight">
+          <h3 className="font-heading text-base sm:text-lg md:text-xl font-semibold text-foreground tracking-tight">
             Skill Gap Analysis
           </h3>
 
-          <p className="text-sm text-muted-foreground/80 mt-1 leading-relaxed">
+          <p className="text-xs sm:text-sm text-muted-foreground/80 mt-0.5 sm:mt-1 leading-relaxed">
             Identify the most critical skills needed to reach your target career outcomes.
           </p>
         </div>
@@ -322,7 +322,7 @@ export function SkillGapAnalysis() {
       </div>
 
       {/* Skill Cards */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {adaptiveSkillGaps.map((skill, index) => (
           <SkillCard
             key={skill.name}
@@ -333,7 +333,7 @@ export function SkillGapAnalysis() {
       </div>
 
       {/* Mobile CTA */}
-      <button className="sm:hidden mt-5 w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
+      <button className="sm:hidden mt-4 sm:mt-5 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
         <div className="flex items-center justify-center gap-2">
           <span>View Full Report</span>
           <ArrowUpRight className="w-4 h-4" />

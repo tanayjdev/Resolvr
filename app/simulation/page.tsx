@@ -292,7 +292,7 @@ function SimulationContent() {
         // Ensure idempotency for completed simulations
         if (!progress.completedSimulations.includes(config.id)) {
           const allSkills = [
-            ...(progress.recommendedSkills || []),
+            ...(progress.skills?.map(s => s.name) || []),
             ...config.recommendedSkills.map(s => s.label)
           ]
           const uniqueSkills = Array.from(new Set(allSkills))

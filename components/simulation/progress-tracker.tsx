@@ -20,7 +20,7 @@ export function ProgressTracker({ currentStep, className }: ProgressTrackerProps
   return (
     <div
       className={cn(
-        "glass-panel rounded-xl border border-border p-3 lg:p-4",
+        "glass-panel rounded-xl border border-border p-2.5 sm:p-3 lg:p-4",
         className
       )}
     >
@@ -30,7 +30,7 @@ export function ProgressTracker({ currentStep, className }: ProgressTrackerProps
             <div className="flex flex-col items-center">
               <div
                 className={cn(
-                  "h-8 w-8 lg:h-10 lg:w-10 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold transition-all border-2",
+                  "h-7 w-7 sm:h-8 lg:h-10 sm:w-8 lg:w-10 rounded-full flex items-center justify-center text-[10px] sm:text-xs lg:text-sm font-semibold transition-all border-2",
                   index < currentIndex &&
                     "bg-success/20 border-success text-success",
                   index === currentIndex &&
@@ -40,14 +40,14 @@ export function ProgressTracker({ currentStep, className }: ProgressTrackerProps
                 )}
               >
                 {index < currentIndex ? (
-                  <CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5" />
+                  <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 ) : (
                   step.number
                 )}
               </div>
               <span
                 className={cn(
-                  "mt-1.5 text-[10px] lg:text-xs font-medium",
+                  "mt-1 sm:mt-1.5 lg:mt-1.5 text-[9px] sm:text-[10px] lg:text-xs font-medium",
                   index <= currentIndex
                     ? "text-foreground"
                     : "text-muted-foreground"
@@ -59,7 +59,7 @@ export function ProgressTracker({ currentStep, className }: ProgressTrackerProps
             {index < PROGRESS_STEPS.length - 1 && (
               <div
                 className={cn(
-                  "w-8 lg:w-16 xl:w-24 h-0.5 mx-1 lg:mx-2 rounded-full transition-colors",
+                  "w-6 sm:w-8 lg:w-16 xl:w-24 h-0.5 mx-1 sm:mx-1.5 lg:mx-2 rounded-full transition-colors",
                   index < currentIndex ? "bg-success" : "bg-border"
                 )}
               />

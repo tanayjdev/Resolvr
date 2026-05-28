@@ -286,7 +286,7 @@ export function AdaptivePathwayGraph() {
     ])
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl sm:p-6">
+    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-4 sm:p-5 lg:p-6 backdrop-blur-xl">
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,198,255,0.08),transparent_35%)]" />
 
@@ -344,7 +344,7 @@ export function AdaptivePathwayGraph() {
 
       {/* Desktop */}
       <div className="relative z-10 hidden overflow-x-auto pb-2 lg:block">
-        <div className="flex min-w-max items-start gap-5">
+        <div className="flex min-w-max items-start gap-4 sm:gap-5">
           {pathwayData.map(
             (node, index) => (
               <React.Fragment
@@ -358,7 +358,7 @@ export function AdaptivePathwayGraph() {
                     duration: 0.2,
                   }}
                   className={cn(
-                    "w-[260px] rounded-2xl border p-5 transition-all duration-300",
+                    "w-[220px] sm:w-[240px] md:w-[260px] rounded-2xl border p-4 sm:p-5 transition-all duration-300",
 
                     node.status ===
                       "completed" &&
@@ -466,7 +466,7 @@ export function AdaptivePathwayGraph() {
                 {index <
                   pathwayData.length -
                     1 && (
-                  <div className="flex h-[220px] items-center">
+                  <div className="flex h-[200px] sm:h-[220px] items-center">
                     <ChevronRight
                       className={cn(
                         "h-5 w-5",

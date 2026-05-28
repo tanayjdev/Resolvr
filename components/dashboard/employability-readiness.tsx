@@ -27,8 +27,8 @@ interface CircularProgressProps {
 
 function CircularProgress({
   value,
-  size = 170,
-  strokeWidth = 12,
+  size = 140,
+  strokeWidth = 10,
   className,
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2
@@ -109,11 +109,11 @@ function CircularProgress({
 
       {/* Center */}
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center">
-        <div className="font-[var(--font-syne)] text-4xl font-bold tracking-tight text-foreground">
+        <div className="font-[var(--font-syne)] text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           {value}%
         </div>
 
-        <div className="mt-1 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="mt-1 text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           READY
         </div>
       </div>
@@ -152,7 +152,7 @@ const skillBreakdown =
 
 
   return (
-    <div className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-5 backdrop-blur-xl sm:p-6">
+    <div className="relative h-full overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-4 sm:p-5 lg:p-6 backdrop-blur-xl">
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,255,0.12),transparent_35%)]" />
 
@@ -189,13 +189,13 @@ const skillBreakdown =
         </div>
 
         {/* Main Content */}
-        <div className="flex flex-col items-center gap-8 lg:flex-col xl:flex-row xl:items-center">
+        <div className="flex flex-col items-center gap-6 sm:gap-8 lg:flex-col xl:flex-row xl:items-center">
           {/* Progress Circle */}
           <div className="flex flex-shrink-0 justify-center">
             <CircularProgress
               value={employabilityScore}
-              size={170}
-              strokeWidth={12}
+              size={140}
+              strokeWidth={10}
             />
           </div>
 
