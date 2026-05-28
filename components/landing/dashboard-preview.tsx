@@ -19,7 +19,7 @@ export function DashboardPreview() {
     <section id="dashboard" ref={ref} className="relative py-24 md:py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-      
+
       <Container className="relative">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -48,7 +48,7 @@ export function DashboardPreview() {
         >
           {/* Glow effects */}
           <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-xl opacity-40" />
-          
+
           {/* Dashboard mockup */}
           <div className="relative glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-white/10">
             {/* Window chrome */}
@@ -60,7 +60,7 @@ export function DashboardPreview() {
               </div>
               <div className="flex-1 flex justify-center">
                 <div className="px-4 py-1 rounded-lg bg-white/5 text-xs text-muted-foreground">
-                  dashboard.pathweaver.ai
+                  dashboard.Resolvr.ai
                 </div>
               </div>
             </div>
@@ -139,22 +139,22 @@ export function DashboardPreview() {
                           <span className="text-primary">{item.progress}%</span>
                         </div>
                         <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                        <motion.div
-  className="h-full rounded-full bg-gradient-primary"
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-primary"
 
-  initial={{
-    width: 0,
-  }}
+                            initial={{
+                              width: 0,
+                            }}
 
-  animate={{
-    width: `${item.progress}%`,
-  }}
+                            animate={{
+                              width: `${item.progress}%`,
+                            }}
 
-  transition={{
-    duration: 0.8,
-    ease: "easeOut",
-  }}
-/>
+                            transition={{
+                              duration: 0.8,
+                              ease: "easeOut",
+                            }}
+                          />
                         </div>
                       </div>
                     ))}

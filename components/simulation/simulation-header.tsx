@@ -4,7 +4,8 @@
 // components/simulation/simulation-header.tsx
 // ============================================================
 
-import { Clock, X, Zap, Server, Target } from "lucide-react"
+import Image from "next/image"
+import { Clock, X, Server, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface SimulationHeaderProps {
@@ -28,15 +29,15 @@ export function SimulationHeader({
     <header className="glass-panel border-b border-border px-3 py-2 lg:px-6 lg:py-3">
       <div className="flex items-center justify-between gap-2 lg:gap-4">
         {/* Logo & Title */}
-        <div className="flex items-center gap-2 lg:gap-4 min-w-0">
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="h-7 w-7 lg:h-8 lg:w-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="font-semibold text-sm lg:text-base hidden sm:inline">
-              PathWeaver
-            </span>
-          </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <Image
+            src="/branding/logo.png"
+            alt="Resolvr"
+            width={110}
+            height={26}
+            className="h-6 w-auto object-contain shrink-0"
+            priority
+          />
 
           <div className="h-4 w-px bg-border hidden sm:block" />
 

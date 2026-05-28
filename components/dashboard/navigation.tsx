@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image"
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -40,7 +41,7 @@ const navItems = [
   {
     icon: Gamepad2,
     label: 'Simulations',
-    href: '/pathway',
+    href: '/simulations',
   },
   {
     icon: Sparkles,
@@ -120,19 +121,14 @@ function SidebarContent({
           className="group flex items-center gap-3"
           onClick={closeMobileMenu}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-[0_0_25px_rgba(0,198,255,0.25)] transition-transform duration-300 group-hover:scale-105">
-            <Route className="h-5 w-5 text-primary-foreground" />
-          </div>
-
-          <div>
-            <h1 className="font-[var(--font-syne)] text-lg font-bold tracking-tight text-foreground">
-              PathWeaver
-            </h1>
-
-            <p className="text-xs text-muted-foreground">
-              Career Intelligence
-            </p>
-          </div>
+          <Image
+            src="/branding/logo.png"
+            alt="Resolvr"
+            width={120}
+            height={28}
+            className="h-auto w-auto object-contain"
+            priority
+          />
         </Link>
       </div>
 
@@ -160,8 +156,7 @@ function SidebarContent({
           </div>
 
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Analyzing new career opportunities and optimizing your pathway recommendations.
-          </p>
+            Analyzing simulation outcomes and optimizing your employability intelligence.          </p>
         </div>
       </div>
     </div>

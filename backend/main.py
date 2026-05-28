@@ -4,7 +4,7 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "PathWeaver Backend Running"}
+    return {"message": "Resolvr Backend Running"}
 
 @app.get("/generate-pathway")
 def pathway():

@@ -49,29 +49,31 @@ const syne = Syne({
 // =========================================================
 
 export const metadata: Metadata = {
+  manifest: "/site.webmanifest",
   metadataBase: new URL(
-    "https://pathweaver-ai.vercel.app"
+    "https://resolvr.vercel.app"
   ),
 
   title: {
     default:
-      "PathWeaver AI — AI Career Intelligence Platform",
+      "Resolvr",
 
     template:
-      "%s | PathWeaver AI",
+      "%s | Resolvr AI",
   },
 
   description:
-    "PathWeaver AI helps students discover career pathways, identify skill gaps, and prepare for the future of work through AI-powered guidance, immersive simulations, and adaptive learning intelligence.",
-
+    "Resolvr AI helps students discover employability pathways, identify skill gaps, and prepare for future careers through AI-powered simulations and adaptive intelligence.",
   keywords: [
     "AI career guidance",
     "career pathways",
     "student employability",
-    "career intelligence",
     "AI mentorship",
     "education to employment",
-    "PathWeaver AI",
+    "Resolvr AI",
+    "AI simulations",
+    "employability intelligence",
+    "career simulation platform",
     "career roadmap",
     "future jobs",
     "AI learning platform",
@@ -79,27 +81,27 @@ export const metadata: Metadata = {
 
   authors: [
     {
-      name: "PathWeaver AI Team",
+      name: "Resolvr AI Team",
     },
   ],
 
-  creator: "PathWeaver AI",
+  creator: "Resolvr AI",
 
   applicationName:
-    "PathWeaver AI",
+    "Resolvr AI",
 
   category: "education",
 
   openGraph: {
     title:
-      "PathWeaver AI — AI Career Intelligence Platform",
+      "Resolvr AI — Employability Intelligence Platform",
 
     description:
-      "AI-powered career navigation platform helping students map pathways, build skills, and prepare for future careers.",
+      "AI-powered employability intelligence platform helping students build industry-ready skills through adaptive simulations and career intelligence.",
 
-    url: "https://pathweaver-ai.vercel.app",
+    url: "https://resolvr.vercel.app",
 
-    siteName: "PathWeaver AI",
+    siteName: "Resolvr AI",
 
     locale: "en_IN",
 
@@ -110,7 +112,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "PathWeaver AI",
+        alt: "Resolvr AI",
       },
     ],
   },
@@ -119,10 +121,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
 
     title:
-      "PathWeaver AI — AI Career Intelligence",
+      "Resolvr AI — Employability Intelligence Platform",
 
     description:
-      "AI-powered education-to-employment intelligence platform.",
+      "AI-powered employability intelligence platform with adaptive career simulations and readiness tracking.",
 
     images: ["/og-image.png"],
   },
@@ -130,27 +132,23 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
-        media:
-          "(prefers-color-scheme: light)",
+        url: "/branding/favicon.ico",
       },
-
       {
-        url: "/icon-dark-32x32.png",
-        media:
-          "(prefers-color-scheme: dark)",
+        url: "/branding/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
       },
-
       {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/branding/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
       },
     ],
 
-    apple: "/apple-icon.png",
+    apple: "/branding/apple-touch-icon.png",
   },
 }
-
 // =========================================================
 // Viewport
 // =========================================================
@@ -202,8 +200,8 @@ export default function RootLayout({
         {/* Analytics */}
         {process.env.NODE_ENV ===
           "production" && (
-          <Analytics />
-        )}
+            <Analytics />
+          )}
       </body>
     </html>
   )

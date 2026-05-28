@@ -1,6 +1,6 @@
 // ============================================================
 // lib/simulation/incident-engine.ts
-// Dynamic incident state, escalation, and recovery for PathWeaver
+// Dynamic incident state, escalation, and recovery for Resolvr
 // ============================================================
 
 import type { IncidentSnapshot, LogEntry, LogLevel } from "./types"

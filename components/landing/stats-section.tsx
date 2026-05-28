@@ -43,35 +43,35 @@ function AnimatedCounter({ value, suffix, duration = 2 }: { value: number; suffi
 
   useEffect(() => {
     if (!isInView) return
-  
+
     const startTime = Date.now()
     const endValue = value
-  
+
     let animationFrame: number
-  
+
     const animate = () => {
       const now = Date.now()
-  
+
       const progress = Math.min(
         (now - startTime) / (duration * 1000),
         1
       )
-  
+
       const eased = 1 - Math.pow(1 - progress, 3)
-  
+
       setCount(
         Math.floor(eased * endValue * 10) / 10
       )
-  
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate)
       } else {
         setCount(endValue)
       }
     }
-  
+
     animate()
-  
+
     return () => {
       cancelAnimationFrame(animationFrame)
     }
@@ -90,7 +90,7 @@ export function StatsSection() {
     <section className="relative py-24 md:py-32 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-      
+
       <Container className="relative">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left: Emotional Copy */}
@@ -104,8 +104,8 @@ export function StatsSection() {
               Built for <span className="text-gradient">students</span> who refuse to leave their future to chance
             </h2>
             <p className="text-muted-foreground text-base sm:text-lg leading-relaxed mb-8 text-pretty">
-              The job market is evolving faster than ever. Traditional education pathways are no longer enough. 
-              PathWeaver AI gives you the clarity, direction, and skills to navigate uncertainty with confidence.
+              The job market is evolving faster than ever. Traditional education pathways are no longer enough.
+              Resolvr AI gives you the clarity, direction, and skills to navigate uncertainty with confidence.
             </p>
             <div className="space-y-5">
               <div className="flex items-start gap-4">

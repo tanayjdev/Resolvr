@@ -54,10 +54,10 @@ export interface GuidanceCard {
   id: string
 
   type:
-    | "pathway"
-    | "skill"
-    | "opportunity"
-    | "action"
+  | "pathway"
+  | "skill"
+  | "opportunity"
+  | "action"
 
   title: string
 
@@ -489,7 +489,7 @@ const NEUTRAL_OPPORTUNITIES: DashboardOpportunity[] =
     {
       id: "neutral-1",
       title: "Technology Intern",
-      company: "PathWeaver Network",
+      company: "Resolvr Network",
       location: "Remote",
       postedAt: "Recently",
       type: "internship",
@@ -860,9 +860,9 @@ export interface FeaturedSimulationData {
   description: string
 
   difficulty:
-    | "beginner"
-    | "intermediate"
-    | "advanced"
+  | "beginner"
+  | "intermediate"
+  | "advanced"
 
   duration: string
 

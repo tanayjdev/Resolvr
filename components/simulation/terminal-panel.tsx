@@ -11,7 +11,7 @@ import { executeCommand } from "@/lib/simulation/command-parser"
 import { SEED_TERMINAL_HISTORY } from "@/lib/simulation/mock-data"
 import type { TerminalHistoryLine, CommandResult } from "@/lib/simulation/types"
 
-const PROMPT = "operator@pathweaver:~$"
+const PROMPT = "operator@resolvr:~$"
 
 interface TerminalPanelProps {
   className?: string

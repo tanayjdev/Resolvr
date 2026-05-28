@@ -143,7 +143,7 @@ function KPICard({
 
 export function KPIStats() {
   const { progress, profile } =
-  useUserProgress()
+    useUserProgress()
 
   const readinessScore = React.useMemo(
     () =>
@@ -154,9 +154,9 @@ export function KPIStats() {
   )
 
   const {
-     skills,
-     simulationsCompleted,
-     opportunitiesMatched,
+    skills,
+    simulationsCompleted,
+    opportunitiesMatched,
   } = progress
 
   const stats: KPICardProps[] = [

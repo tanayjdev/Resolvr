@@ -1,6 +1,6 @@
 // ============================================================
 // lib/simulation/types.ts
-// Core TypeScript types for the PathWeaver simulation engine
+// Core TypeScript types for the Resolvr simulation engine
 // ============================================================
 
 export type LogLevel = "critical" | "warning" | "info" | "success"
@@ -96,14 +96,14 @@ export interface IncidentSnapshot {
 
 export interface ScoringEvent {
   type:
-    | "relevant_command"
-    | "irrelevant_command"
-    | "incorrect_command"
-    | "step_completed"
-    | "step_skipped"
-    | "hint_used"
-    | "escalation_handled"
-    | "time_bonus"
+  | "relevant_command"
+  | "irrelevant_command"
+  | "incorrect_command"
+  | "step_completed"
+  | "step_skipped"
+  | "hint_used"
+  | "escalation_handled"
+  | "time_bonus"
   delta: number
   reason: string
   timestamp: number

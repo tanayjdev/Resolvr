@@ -101,9 +101,9 @@ export function AIFeedbackPanel({
     showHints
       ? feedback
       : feedback.filter(
-          (item) =>
-            item.type !== "hint"
-        )
+        (item) =>
+          item.type !== "hint"
+      )
 
   // ==========================================================
   // Render
@@ -129,7 +129,7 @@ export function AIFeedbackPanel({
 
           <div>
             <h3 className="text-sm font-semibold text-foreground">
-              PathWeaver AI
+              Resolvr AI
             </h3>
 
             <p className="text-[11px] text-muted-foreground">
@@ -203,7 +203,7 @@ export function AIFeedbackPanel({
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-3">
           {visibleFeedback.length >
-          0 ? (
+            0 ? (
             visibleFeedback.map(
               (
                 item,
@@ -228,16 +228,16 @@ export function AIFeedbackPanel({
                     "rounded-xl border p-3 transition-all duration-300",
 
                     item.type ===
-                      "correct" &&
-                      "border-emerald-500/20 bg-emerald-500/[0.04]",
+                    "correct" &&
+                    "border-emerald-500/20 bg-emerald-500/[0.04]",
 
                     item.type ===
-                      "warning" &&
-                      "border-amber-500/20 bg-amber-500/[0.04]",
+                    "warning" &&
+                    "border-amber-500/20 bg-amber-500/[0.04]",
 
                     item.type ===
-                      "hint" &&
-                      "border-primary/20 bg-primary/[0.04]"
+                    "hint" &&
+                    "border-primary/20 bg-primary/[0.04]"
                   )}
                 >
                   <div className="flex items-start gap-2.5">

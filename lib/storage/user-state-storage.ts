@@ -16,7 +16,7 @@ import {
 } from "@/lib/types/user-state"
 
 export const USER_STATE_STORAGE_KEY =
-  "pathweaver-progress"
+  "resolvr-progress"
 
 export interface PersistedUserState {
   progress: UserProgress
@@ -178,7 +178,7 @@ function parseProfileOnly(
 
     pathwayProgress:
       typeof value.pathwayProgress === "number" &&
-      Number.isFinite(value.pathwayProgress)
+        Number.isFinite(value.pathwayProgress)
         ? value.pathwayProgress
         : DEFAULT_PROFILE_ONLY.pathwayProgress,
   }
@@ -199,13 +199,13 @@ function parseUserProgress(
 
     simulationsCompleted:
       typeof value.simulationsCompleted ===
-      "number"
+        "number"
         ? value.simulationsCompleted
         : DEFAULT_PROGRESS.simulationsCompleted,
 
     employabilityScore:
       typeof value.employabilityScore ===
-      "number"
+        "number"
         ? value.employabilityScore
         : DEFAULT_PROGRESS.employabilityScore,
 
@@ -216,7 +216,7 @@ function parseUserProgress(
 
     opportunitiesMatched:
       typeof value.opportunitiesMatched ===
-      "number"
+        "number"
         ? value.opportunitiesMatched
         : DEFAULT_PROGRESS.opportunitiesMatched,
 

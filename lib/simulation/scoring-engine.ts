@@ -1,6 +1,6 @@
 // ============================================================
 // lib/simulation/scoring-engine.ts
-// Dynamic readiness scoring for PathWeaver simulations
+// Dynamic readiness scoring for Resolvr simulations
 // ============================================================
 
 import type { ScoreState, ScoringEvent, SimulationStep } from "./types"
@@ -47,8 +47,8 @@ export function applyCommandScore(
       ? "relevant_command"
       : "incorrect_command"
     : delta < 0
-    ? "irrelevant_command"
-    : "relevant_command"
+      ? "irrelevant_command"
+      : "relevant_command"
 
   const event: ScoringEvent = {
     type,

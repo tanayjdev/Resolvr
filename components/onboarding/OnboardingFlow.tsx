@@ -283,12 +283,12 @@ export default function OnboardingFlow() {
         interest
       )
         ? prev.interests.filter(
-            (item) => item !== interest
-          )
+          (item) => item !== interest
+        )
         : [
-            ...prev.interests,
-            interest,
-          ],
+          ...prev.interests,
+          interest,
+        ],
     }))
     setValidationError("")
   }
@@ -454,7 +454,7 @@ export default function OnboardingFlow() {
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-              PathWeaver Setup
+              Resolvr Setup
             </span>
           </div>
 
@@ -494,12 +494,12 @@ export default function OnboardingFlow() {
                   className={cn(
                     "h-1.5 rounded-full transition-all duration-300",
                     isActive &&
-                      "bg-primary shadow-[0_0_16px_rgba(0,198,255,0.35)]",
+                    "bg-primary shadow-[0_0_16px_rgba(0,198,255,0.35)]",
                     isComplete &&
-                      "bg-primary/60",
+                    "bg-primary/60",
                     !isActive &&
-                      !isComplete &&
-                      "bg-white/10"
+                    !isComplete &&
+                    "bg-white/10"
                   )}
                 />
               )
@@ -529,7 +529,7 @@ export default function OnboardingFlow() {
               <p className="mb-6 text-sm text-muted-foreground/80">
                 {
                   stepDescriptions[
-                    step - 1
+                  step - 1
                   ]
                 }
               </p>
@@ -565,7 +565,7 @@ export default function OnboardingFlow() {
               className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
             >
               {step ===
-              ONBOARDING_STEP_COUNT
+                ONBOARDING_STEP_COUNT
                 ? "Complete Setup"
                 : "Next"}
               <ArrowRight className="ml-2 h-4 w-4" />

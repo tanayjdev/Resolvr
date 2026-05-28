@@ -1,4 +1,6 @@
 "use client"
+
+import Image from "next/image"
 import PathwayLine from "@/components/pathway/PathwayLine"
 import { OriginNode } from "@/components/pathway/OriginNode"
 import AmbientInsights from "@/components/pathway/AmbientInsights"
@@ -30,15 +32,15 @@ const GOALS = [
 ] as const
 
 export default function PathwayVisualization() {
-  const canvasRef  = useRef<HTMLDivElement>(null)
-  const isMobile   = useIsMobile()
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
-  const [activeFilter,     setActiveFilter]     = useState("all")
-  const [hoveredPath,      setHoveredPath]      = useState<string | null>(null)
+  const [activeFilter, setActiveFilter] = useState("all")
+  const [hoveredPath, setHoveredPath] = useState<string | null>(null)
   const [selectedMilestone, setSelectedMilestone] = useState<{
     path: CareerPath; milestone: Milestone
   } | null>(null)
-  const [isLoaded,  setIsLoaded]  = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState<keyof typeof goalInsights>("ML Engineer")
 
   useEffect(() => {
@@ -78,11 +80,10 @@ export default function PathwayVisualization() {
             <button
               key={goal}
               onClick={() => setSelectedGoal(goal)}
-              className={`rounded-full px-4 py-2 text-sm transition-all duration-300 ${
-                selectedGoal === goal
+              className={`rounded-full px-4 py-2 text-sm transition-all duration-300 ${selectedGoal === goal
                   ? "bg-cyan-500 text-black shadow-[0_0_25px_rgba(0,198,255,0.35)]"
                   : "bg-white/10 text-white hover:bg-white/20"
-              }`}
+                }`}
             >
               {goal}
             </button>
@@ -190,10 +191,10 @@ export default function PathwayVisualization() {
 function StarParticles() {
   const stars = Array.from({ length: 40 }, (_, i) => ({
     id: i,
-    x:       Math.random() * 100,
-    y:       Math.random() * 100,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
     opacity: Math.random() * 0.5,
-    size:    Math.random() * 2 + 0.5,
+    size: Math.random() * 2 + 0.5,
   }))
 
   return (

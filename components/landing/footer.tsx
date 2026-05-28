@@ -12,11 +12,11 @@ export function Footer() {
                 </svg>
               </div>
               <span className="text-xl font-bold font-[var(--font-syne)]">
-                Path<span className="text-gradient">Weaver</span>
+                Resol<span className="text-gradient">vr</span>
               </span>
             </a>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered career navigation for the next generation of professionals.
+              AI-powered employability intelligence for the next generation of professionals.
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} PathWeaver AI. All rights reserved.
+            © {new Date().getFullYear()} Resolvr AI. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors" aria-label="Twitter">

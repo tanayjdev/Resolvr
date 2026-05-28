@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -21,23 +22,23 @@ export function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
     }
-  
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setMobileMenuOpen(false)
       }
     }
-  
+
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setMobileMenuOpen(false)
       }
     }
-  
+
     window.addEventListener("scroll", handleScroll)
     window.addEventListener("keydown", handleEscape)
     window.addEventListener("resize", handleResize)
-  
+
     return () => {
       window.removeEventListener("scroll", handleScroll)
       window.removeEventListener("keydown", handleEscape)
@@ -50,11 +51,10 @@ export function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "glass backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.15)] py-3"
-          : "py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "glass backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.15)] py-3"
+        : "py-5"
+        }`}
     >
       <Container className="flex items-center justify-between py-1">
         {/* Logo */}
@@ -63,14 +63,14 @@ export function Navbar() {
           className="flex items-center gap-2 group"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center glow-primary">
-            <svg viewBox="0 0 24 24" className="w-6 h-6 text-primary-foreground" fill="currentColor">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <span className="text-xl font-bold font-[var(--font-syne)]">
-            Path<span className="text-gradient">Weaver</span>
-          </span>
+          <Image
+            src="/branding/logo.png"
+            alt="Resolvr"
+            width={190}
+            height={52}
+            className="h-12 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Navigation */}

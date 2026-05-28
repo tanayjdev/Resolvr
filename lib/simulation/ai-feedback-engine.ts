@@ -1,6 +1,6 @@
 // ============================================================
 // lib/simulation/ai-feedback-engine.ts
-// Dynamic AI feedback utilities for PathWeaver
+// Dynamic AI feedback utilities for Resolvr
 // ============================================================
 
 import type { AIFeedback, FeedbackType, IncidentSnapshot, SimulationStep } from "./types"

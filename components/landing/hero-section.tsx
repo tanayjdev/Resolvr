@@ -65,9 +65,9 @@ export function HeroSection() {
       const particleCount = isMobile
         ? 25
         : Math.min(
-            Math.floor((canvas.width * canvas.height) / 18000),
-            80
-          )
+          Math.floor((canvas.width * canvas.height) / 18000),
+          80
+        )
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle(canvas.width, canvas.height))
       }
@@ -76,23 +76,23 @@ export function HeroSection() {
     const connectParticles = (ctx: CanvasRenderingContext2D) => {
       const isMobile = window.innerWidth < 768
       const maxDistance = isMobile ? 70 : 110
-    
+
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x
           const dy = particles[i].y - particles[j].y
           const distance = Math.sqrt(dx * dx + dy * dy)
-    
+
           if (distance < maxDistance) {
             const opacity = (1 - distance / maxDistance) * 0.15
-    
+
             ctx.beginPath()
             ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.4})`
             ctx.lineWidth = 0.5
-    
+
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
-    
+
             ctx.stroke()
           }
         }
@@ -101,14 +101,14 @@ export function HeroSection() {
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      
+
       particles.forEach((particle) => {
         particle.update(canvas.width, canvas.height)
         particle.draw(ctx)
       })
-      
+
       connectParticles(ctx)
-      
+
       animationFrameId = requestAnimationFrame(animate)
     }
 
@@ -120,9 +120,9 @@ export function HeroSection() {
       resizeCanvas()
       initParticles()
     }
-    
+
     window.addEventListener("resize", handleResize)
-    
+
     return () => {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener("resize", handleResize)
@@ -136,7 +136,7 @@ export function HeroSection() {
         ref={canvasRef}
         className="absolute inset-0 z-0 will-change-transform"
       />
-      
+
       {/* Gradient Overlays */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background z-[1]" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[80px] opacity-70 animate-pulse-glow" />
@@ -184,7 +184,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="max-w-2xl mx-auto mb-10 text-base sm:text-lg md:text-xl leading-relaxed text-muted-foreground"
         >
-          PathWeaver AI helps students discover career pathways,
+          Resolvr AI helps students discover career pathways,
           identify skill gaps, and build real-world readiness
           through AI-powered guidance and immersive simulations —
           before they graduate.
@@ -197,13 +197,13 @@ export function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link href="/onboarding">
-          <Button
-            size="lg"
-            className="group bg-cyan-500 text-white hover:bg-cyan-400 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/20 text-lg px-8 py-6 rounded-xl flex items-center"
-          >
-            <span>Map Your Future</span>
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+            <Button
+              size="lg"
+              className="group bg-cyan-500 text-white hover:bg-cyan-400 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/20 text-lg px-8 py-6 rounded-xl flex items-center"
+            >
+              <span>Map Your Future</span>
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </Link>
           <Button
             size="lg"
