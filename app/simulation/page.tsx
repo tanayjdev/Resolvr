@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useUserProgress } from "@/context/user-context"
 import type { SimulationViewPhase, Choice } from "@/lib/simulations/types"
+import { PRODUCTION_AI_INCIDENT } from "@/lib/simulations/productionAIIncident"
 
 const SIMULATION_PHASES: SimulationViewPhase[] = [
   "briefing",
@@ -188,7 +189,7 @@ function SimulationContent() {
   const scenarioId = searchParams.get("scenario")
   
   const config = scenarioId ? getScenarioConfig(scenarioId) : null
-  const { progress, hasHydrated, updateProfile } = useUserProgress()
+  const { progress, hasHydrated, startSimulation, recordSimulationDecision, completeSimulationRun, clearSimulationRun } = useUserProgress()
 
   const [phase, setPhase] = React.useState<SimulationViewPhase>("briefing")
   
@@ -201,7 +202,21 @@ function SimulationContent() {
   
   const [hasSubmittedCompletion, setHasSubmittedCompletion] = React.useState(false)
   
-  const [aiConfidence, setAiConfidence] = React.useState(85)
+  const [aiConfidence, setAiConfidence] = React.useState(progress.aiConfidence)
+
+  // Start simulation when component mounts
+  React.useEffect(() => {
+    if (hasHydrated && config && !progress.currentSimulationRun) {
+      startSimulation(config.id)
+    }
+  }, [hasHydrated, config, progress.currentSimulationRun, startSimulation])
+
+  // Update AI confidence from simulation run state
+  React.useEffect(() => {
+    if (progress.currentSimulationRun) {
+      setAiConfidence(progress.currentSimulationRun.runningAiConfidence)
+    }
+  }, [progress.currentSimulationRun])
 
   // Graceful fallback for missing config or steps
   if (!config || !config.steps || config.steps.length === 0) {
@@ -252,7 +267,46 @@ function SimulationContent() {
   const handleChoiceSelect = (choice: Choice) => {
     setActiveChoice(choice)
     setSelectedChoices((prev) => [...prev, choice])
-    setAiConfidence((prev) => Math.max(0, Math.min(100, prev + choice.aiConfidenceDelta)))
+    
+    // Record the decision with dynamic scoring effects
+    if (currentStep && progress.currentSimulationRun) {
+      // Extract dynamic scoring from the choice
+      const scoreDelta = (choice as any).scoreDelta || choice.score - 50
+      const aiConfidenceDelta = choice.aiConfidenceDelta
+      const alignmentEffects = (choice as any).alignmentEffects || {
+        mlAlignment: 0,
+        infraAlignment: 0,
+        productAlignment: 0,
+        securityAlignment: 0
+      }
+      const riskEffects = (choice as any).riskEffects || {
+        riskProfileDelta: 'balanced',
+        stabilityImpact: 0
+      }
+      
+      // Console logging for debugging
+      console.log('=== DECISION RECORDED ===')
+      console.log('Selected Option:', choice.label)
+      console.log('Score Delta:', scoreDelta)
+      console.log('AI Confidence Delta:', aiConfidenceDelta)
+      console.log('Alignment Effects:', alignmentEffects)
+      console.log('Risk Effects:', riskEffects)
+      console.log('Previous Running Score:', progress.currentSimulationRun.runningScore)
+      console.log('Previous AI Confidence:', progress.currentSimulationRun.runningAiConfidence)
+      console.log('Previous Alignment:', progress.currentSimulationRun.runningAlignment)
+      
+      recordSimulationDecision(
+        currentStep.id,
+        choice.label,
+        scoreDelta,
+        aiConfidenceDelta,
+        alignmentEffects,
+        riskEffects
+      )
+      
+      console.log('Decision recorded successfully')
+    }
+    
     setPhase("feedback")
   }
 
@@ -289,19 +343,9 @@ function SimulationContent() {
       if (!hasSubmittedCompletion) {
         setHasSubmittedCompletion(true)
         
-        // Ensure idempotency for completed simulations
+        // Use new dynamic simulation completion method
         if (!progress.completedSimulations.includes(config.id)) {
-          const allSkills = [
-            ...(progress.skills?.map(s => s.name) || []),
-            ...config.recommendedSkills.map(s => s.label)
-          ]
-          const uniqueSkills = Array.from(new Set(allSkills))
-
-          updateProfile({
-            readinessScore: Math.min(100, (progress.readinessScore || 0) + readinessImpact),
-            completedSimulations: [...progress.completedSimulations, config.id],
-            recommendedSkills: uniqueSkills
-          })
+          completeSimulationRun()
         }
       }
     }

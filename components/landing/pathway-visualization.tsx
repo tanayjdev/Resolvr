@@ -13,6 +13,7 @@ import {
 } from "framer-motion"
 
 import { Container } from "@/components/ui/container"
+import Link from "next/link"
 
 // =========================================================
 // Types
@@ -27,6 +28,7 @@ interface PathNode {
     | "start"
     | "milestone"
     | "destination"
+  href?: string
 }
 
 interface PathEdge {
@@ -45,6 +47,7 @@ const nodes: PathNode[] = [
     x: 50,
     y: 50,
     type: "start",
+    href: "/onboarding",
   },
 
   {
@@ -53,6 +56,7 @@ const nodes: PathNode[] = [
     x: 25,
     y: 35,
     type: "milestone",
+    href: "/skills",
   },
 
   {
@@ -61,6 +65,7 @@ const nodes: PathNode[] = [
     x: 75,
     y: 35,
     type: "milestone",
+    href: "/recommendations",
   },
 
   {
@@ -69,6 +74,7 @@ const nodes: PathNode[] = [
     x: 35,
     y: 20,
     type: "milestone",
+    href: "/opportunities",
   },
 
   {
@@ -77,6 +83,7 @@ const nodes: PathNode[] = [
     x: 65,
     y: 20,
     type: "milestone",
+    href: "/simulations",
   },
 
   {
@@ -85,6 +92,7 @@ const nodes: PathNode[] = [
     x: 15,
     y: 5,
     type: "destination",
+    href: "/readiness",
   },
 
   {
@@ -93,6 +101,7 @@ const nodes: PathNode[] = [
     x: 40,
     y: 5,
     type: "destination",
+    href: "/readiness",
   },
 
   {
@@ -101,6 +110,7 @@ const nodes: PathNode[] = [
     x: 60,
     y: 5,
     type: "destination",
+    href: "/readiness",
   },
 
   {
@@ -109,6 +119,7 @@ const nodes: PathNode[] = [
     x: 85,
     y: 5,
     type: "destination",
+    href: "/readiness",
   },
 ]
 
@@ -509,66 +520,131 @@ export function PathwayVisualization() {
                   top: `${node.y}%`,
                 }}
               >
-                <div
-                  className={`
-                    relative
-                    cursor-pointer
-                    rounded-2xl
-                    px-4
-                    py-2.5
-                    text-center
-                    transition-all
-                    duration-300
-                    hover:scale-[1.03]
+                {node.href ? (
+                  <Link href={node.href}>
+                    <div
+                      className={`
+                        relative
+                        cursor-pointer
+                        rounded-2xl
+                        px-4
+                        py-2.5
+                        text-center
+                        transition-all
+                        duration-300
+                        hover:scale-[1.03]
 
-                    ${
-                      node.type ===
-                      "start"
-                        ? "bg-gradient-primary text-primary-foreground glow-primary"
-                        : ""
-                    }
+                        ${
+                          node.type ===
+                          "start"
+                            ? "bg-gradient-primary text-primary-foreground glow-primary"
+                            : ""
+                        }
 
-                    ${
-                      node.type ===
-                      "milestone"
-                        ? "glass border border-white/10 hover:border-primary/30"
-                        : ""
-                    }
+                        ${
+                          node.type ===
+                          "milestone"
+                            ? "glass border border-white/10 hover:border-primary/30"
+                            : ""
+                        }
 
-                    ${
-                      node.type ===
-                      "destination"
-                        ? "glass-panel border border-primary/20 hover:border-primary/40"
-                        : ""
-                    }
-                  `}
-                >
-                  {node.type ===
-                    "destination" &&
-                    isActive && (
-                      <div className="absolute -inset-1 rounded-2xl bg-gradient-primary opacity-20 blur-lg" />
-                    )}
+                        ${
+                          node.type ===
+                          "destination"
+                            ? "glass-panel border border-primary/20 hover:border-primary/40"
+                            : ""
+                        }
+                      `}
+                    >
+                      {node.type ===
+                        "destination" &&
+                        isActive && (
+                          <div className="absolute -inset-1 rounded-2xl bg-gradient-primary opacity-20 blur-lg" />
+                        )}
 
-                  <span
+                      <span
+                        className={`
+                          relative
+                          z-10
+                          whitespace-nowrap
+                          text-xs
+                          font-medium
+                          md:text-sm
+
+                          ${
+                            node.type ===
+                            "start"
+                              ? "text-primary-foreground"
+                              : "text-foreground"
+                          }
+                        `}
+                      >
+                        {node.label}
+                      </span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div
                     className={`
                       relative
-                      z-10
-                      whitespace-nowrap
-                      text-xs
-                      font-medium
-                      md:text-sm
+                      cursor-pointer
+                      rounded-2xl
+                      px-4
+                      py-2.5
+                      text-center
+                      transition-all
+                      duration-300
+                      hover:scale-[1.03]
 
                       ${
                         node.type ===
                         "start"
-                          ? "text-primary-foreground"
-                          : "text-foreground"
+                          ? "bg-gradient-primary text-primary-foreground glow-primary"
+                          : ""
+                      }
+
+                      ${
+                        node.type ===
+                        "milestone"
+                          ? "glass border border-white/10 hover:border-primary/30"
+                          : ""
+                      }
+
+                      ${
+                        node.type ===
+                        "destination"
+                          ? "glass-panel border border-primary/20 hover:border-primary/40"
+                          : ""
                       }
                     `}
                   >
-                    {node.label}
-                  </span>
-                </div>
+                    {node.type ===
+                      "destination" &&
+                      isActive && (
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-primary opacity-20 blur-lg" />
+                      )}
+
+                    <span
+                      className={`
+                        relative
+                        z-10
+                        whitespace-nowrap
+                        text-xs
+                        font-medium
+                        md:text-sm
+
+                        ${
+                          node.type ===
+                          "start"
+                            ? "text-primary-foreground"
+                            : "text-foreground"
+                        }
+                      `}
+                    >
+                      {node.label}
+                    </span>
+                  </div>
+                )}
               </motion.div>
             )
           })}

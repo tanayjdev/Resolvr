@@ -5,6 +5,9 @@ import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useUserProgress } from '@/context/user-context'
+import { BRAND_MONOGRAM, BRAND_LOGO } from '@/lib/branding'
 
 import {
   LayoutDashboard,
@@ -17,7 +20,10 @@ import {
   Menu,
   Bell,
   ChevronRight,
-  Compass,
+  Check,
+  X,
+  User,
+  LogOut,
 } from 'lucide-react'
 
 import {
@@ -26,13 +32,22 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
 import { Button } from '@/components/ui/button'
 
 const navItems = [
   {
     icon: LayoutDashboard,
     label: 'Dashboard',
-    href: '/onboarding',
+    href: '/dashboard',
   },
   {
     icon: Route,
@@ -47,22 +62,22 @@ const navItems = [
   {
     icon: Sparkles,
     label: 'Skills',
-    href: '#',
+    href: '/skills',
   },
   {
     icon: Target,
     label: 'Readiness',
-    href: '#',
+    href: '/readiness',
   },
   {
     icon: Briefcase,
     label: 'Opportunities',
-    href: '#',
+    href: '/opportunities',
   },
   {
     icon: Settings,
     label: 'Settings',
-    href: '#',
+    href: '/settings',
   },
 ]
 
@@ -122,8 +137,20 @@ function SidebarContent({
           className="group flex items-center gap-2"
           onClick={closeMobileMenu}
         >
-          <Compass className="w-7 h-7 sm:w-8 sm:h-8" />
-          <span className="text-lg sm:text-xl font-bold tracking-tight">Resolvr</span>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+            className="relative"
+          >
+            <Image
+              src={BRAND_LOGO}
+              alt="Resolvr"
+              width={120}
+              height={40}
+              priority
+              className="h-8 w-auto sm:h-9"
+            />
+          </motion.div>
         </Link>
       </div>
 
@@ -197,6 +224,43 @@ export function Sidebar() {
 }
 
 export function TopBar() {
+  const [notificationOpen, setNotificationOpen] = React.useState(false)
+  const [profileOpen, setProfileOpen] = React.useState(false)
+  const { progress, profile } = useUserProgress()
+
+  const mockNotifications = [
+    {
+      id: 1,
+      title: "Simulation Completed",
+      message: "You scored 85% on Production AI Incident",
+      time: "2 minutes ago",
+      unread: true,
+    },
+    {
+      id: 2,
+      title: "New Opportunity Match",
+      message: "Senior ML Engineer at TechCorp AI - 92% match",
+      time: "1 hour ago",
+      unread: true,
+    },
+    {
+      id: 3,
+      title: "Skill Milestone",
+      message: "Machine Learning skill reached 80% mastery",
+      time: "3 hours ago",
+      unread: false,
+    },
+    {
+      id: 4,
+      title: "AI Recommendation",
+      message: "Focus on Infrastructure skills this week",
+      time: "1 day ago",
+      unread: false,
+    },
+  ]
+
+  const unreadCount = mockNotifications.filter((n) => n.unread).length
+
   return (
     <header className="sticky top-0 z-20 h-16 border-b border-white/5 bg-background/80 backdrop-blur-xl">
       <div className="flex h-full items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 py-3 sm:py-4">
@@ -222,19 +286,104 @@ export function TopBar() {
             </span>
           </div>
 
-          {/* Notification */}
-          <button className="relative rounded-xl p-2 transition-colors duration-300 hover:bg-white/[0.04]">
-            <Bell className="h-5 w-5 text-muted-foreground" />
+          {/* Notification Dropdown */}
+          <DropdownMenu open={notificationOpen} onOpenChange={setNotificationOpen}>
+            <DropdownMenuTrigger asChild>
+              <button className="relative rounded-xl p-2 transition-colors duration-300 hover:bg-white/[0.04]">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                {unreadCount > 0 && (
+                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-white">
+                    {unreadCount} new
+                  </span>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <div className="max-h-80 overflow-y-auto">
+                {mockNotifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className="flex flex-col items-start gap-1 p-3 cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-medium text-sm">{notification.title}</span>
+                      {notification.unread && (
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground">{notification.message}</span>
+                    <span className="text-xs text-muted-foreground/60">{notification.time}</span>
+                  </DropdownMenuItem>
+                ))}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer justify-center text-sm font-medium text-primary">
+                Mark all as read
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
-          </button>
-
-          {/* Avatar */}
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-primary/15 to-secondary/15">
-            <span className="text-sm font-semibold text-foreground">
-              U
-            </span>
-          </div>
+          {/* Profile Dropdown */}
+          <DropdownMenu open={profileOpen} onOpenChange={setProfileOpen}>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-primary/15 to-secondary/15 transition-colors duration-300 hover:bg-white/[0.04]">
+                <span className="text-sm font-semibold text-foreground">
+                  {profile.firstName?.[0] || "U"}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-72">
+              <DropdownMenuLabel>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-primary/15 to-secondary/15">
+                    <span className="text-sm font-semibold text-foreground">
+                      {profile.firstName?.[0] || "U"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-medium">{profile.firstName || "User"} {profile.lastName || ""}</p>
+                    <p className="text-xs text-muted-foreground">{profile.careerGoal || "Career Path"}</p>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-2">
+                <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-2">
+                  <span className="text-xs text-muted-foreground">Readiness Score</span>
+                  <span className="text-xs font-semibold text-primary">{progress.employabilityScore}%</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-2 mt-1">
+                  <span className="text-xs text-muted-foreground">Simulations</span>
+                  <span className="text-xs font-semibold text-primary">{progress.simulationsCompleted}</span>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/settings" className="cursor-pointer">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/readiness" className="cursor-pointer">
+                  <Target className="h-4 w-4 mr-2" />
+                  Readiness
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>

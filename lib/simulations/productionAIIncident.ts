@@ -53,6 +53,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "A blind restart increases unknown blast radius and can amplify data skew during peak traffic.",
             consequenceText:
               "Restart churn extended the outage window and masked the root regression signal.",
+            aiConfidenceDelta: -15,
+            scoreDelta: -20,
+            alignmentEffects: {
+              mlAlignment: -5,
+              infraAlignment: -10,
+              productAlignment: -5,
+              securityAlignment: -5
+            },
+            riskEffects: {
+              riskProfileDelta: 'reckless' as any,
+              stabilityImpact: -15
+            }
           },
           {
             id: "triage-rollback",
@@ -62,6 +74,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Rollback-first is the correct production instinct when a canary regression is active.",
             consequenceText:
               "Traffic stabilized within minutes and error budget burn slowed significantly.",
+            aiConfidenceDelta: 10,
+            scoreDelta: 25,
+            alignmentEffects: {
+              mlAlignment: 5,
+              infraAlignment: 15,
+              productAlignment: 10,
+              securityAlignment: 5
+            },
+            riskEffects: {
+              riskProfileDelta: 'conservative' as any,
+              stabilityImpact: 15
+            }
           },
           {
             id: "triage-scale",
@@ -71,6 +95,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Scaling helps capacity but does not address model quality regression under bad inputs.",
             consequenceText:
               "Latency improved briefly, but confidence collapse and conversion loss persisted.",
+            aiConfidenceDelta: 0,
+            scoreDelta: 5,
+            alignmentEffects: {
+              mlAlignment: 5,
+              infraAlignment: 10,
+              productAlignment: 0,
+              securityAlignment: 0
+            },
+            riskEffects: {
+              riskProfileDelta: 'risky' as any,
+              stabilityImpact: 0
+            }
           },
         ],
       },
@@ -96,6 +132,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Reintroducing experiment traffic before data integrity checks risks repeated customer impact.",
             consequenceText:
               "Secondary regression triggered renewed alert storms and stakeholder escalation.",
+            aiConfidenceDelta: -20,
+            scoreDelta: -25,
+            alignmentEffects: {
+              mlAlignment: -10,
+              infraAlignment: -5,
+              productAlignment: -10,
+              securityAlignment: -5
+            },
+            riskEffects: {
+              riskProfileDelta: 'reckless' as any,
+              stabilityImpact: -20
+            }
           },
           {
             id: "diag-validate",
@@ -105,6 +153,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Strong diagnosis discipline — isolating data drift before traffic changes is production-grade.",
             consequenceText:
               "Team identified a schema mismatch and prepared a safe patch path.",
+            aiConfidenceDelta: 15,
+            scoreDelta: 30,
+            alignmentEffects: {
+              mlAlignment: 10,
+              infraAlignment: 10,
+              productAlignment: 15,
+              securityAlignment: 5
+            },
+            riskEffects: {
+              riskProfileDelta: 'conservative' as any,
+              stabilityImpact: 20
+            }
           },
           {
             id: "diag-cache",
@@ -114,6 +174,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Cache invalidation can help, but without contract checks the underlying drift may remain.",
             consequenceText:
               "Short-term recovery appeared stable, but confidence anomalies returned on peak load.",
+            aiConfidenceDelta: 5,
+            scoreDelta: 10,
+            alignmentEffects: {
+              mlAlignment: 5,
+              infraAlignment: 10,
+              productAlignment: 5,
+              securityAlignment: 0
+            },
+            riskEffects: {
+              riskProfileDelta: 'risky' as any,
+              stabilityImpact: 5
+            }
           },
         ],
       },
@@ -139,6 +211,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Skipping staged validation removes safety controls during an active P1 incident.",
             consequenceText:
               "A secondary failure would have extended customer impact and audit risk.",
+            aiConfidenceDelta: -25,
+            scoreDelta: -30,
+            alignmentEffects: {
+              mlAlignment: -15,
+              infraAlignment: -20,
+              productAlignment: -10,
+              securityAlignment: -10
+            },
+            riskEffects: {
+              riskProfileDelta: 'reckless' as any,
+              stabilityImpact: -25
+            }
           },
           {
             id: "recovery-canary",
@@ -148,6 +232,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Guarded canary with explicit SLO gates is the strongest production recovery pattern.",
             consequenceText:
               "Service confidence recovered with measurable, reversible rollout controls.",
+            aiConfidenceDelta: 20,
+            scoreDelta: 35,
+            alignmentEffects: {
+              mlAlignment: 15,
+              infraAlignment: 20,
+              productAlignment: 15,
+              securityAlignment: 10
+            },
+            riskEffects: {
+              riskProfileDelta: 'conservative' as any,
+              stabilityImpact: 25
+            }
           },
           {
             id: "recovery-delay",
@@ -157,6 +253,18 @@ export const PRODUCTION_AI_INCIDENT: ProductionAIIncidentConfig =
               "Delaying recovery reduces immediate change risk but prolongs customer-facing degradation.",
             consequenceText:
               "Stakeholders accepted temporary mitigation, but SLA penalties remained likely.",
+            aiConfidenceDelta: 0,
+            scoreDelta: 5,
+            alignmentEffects: {
+              mlAlignment: 0,
+              infraAlignment: 5,
+              productAlignment: 10,
+              securityAlignment: 0
+            },
+            riskEffects: {
+              riskProfileDelta: 'conservative' as any,
+              stabilityImpact: 0
+            }
           },
         ],
       },

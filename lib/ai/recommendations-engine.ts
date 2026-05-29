@@ -5,6 +5,7 @@
 
 import type { UserProgress } from "@/lib/types/user-state"
 import type { AIInsights } from "@/context/user-context"
+import type { SimulationMemory } from "@/lib/ai/scoring-engine"
 
 export interface Recommendation {
   id: string
@@ -20,14 +21,84 @@ export interface Recommendation {
 export interface RecommendationContext {
   progress: UserProgress
   insights: AIInsights
+  simulationMemory: SimulationMemory
 }
 
 /**
  * Generate dynamic recommendations based on user state
  */
 export function generateRecommendations(context: RecommendationContext): Recommendation[] {
-  const { progress, insights } = context
+  const { progress, insights, simulationMemory } = context
   const recommendations: Recommendation[] = []
+
+  // Behavior-based recommendations based on simulation memory
+  if (simulationMemory.totalSimulations >= 3) {
+    // Risk profile-based recommendations
+    if (simulationMemory.riskProfile === 'aggressive') {
+      recommendations.push({
+        id: 'risk-training',
+        type: 'simulation',
+        title: 'Production Stability Training',
+        description: 'Your risk tolerance is high. Practice conservative decision-making for production environments.',
+        priority: 'high',
+        estimatedTime: '45 min',
+        impact: 'Improve production readiness'
+      })
+    } else if (simulationMemory.riskProfile === 'conservative') {
+      recommendations.push({
+        id: 'risk-growth',
+        type: 'simulation',
+        title: 'Advanced Scenario Challenges',
+        description: 'Your decision patterns are cautious. Try more complex scenarios to build confidence.',
+        priority: 'medium',
+        estimatedTime: '60 min',
+        impact: 'Expand decision-making skills'
+      })
+    }
+
+    // Pathway affinity-based recommendations
+    const topPathway = Object.entries(simulationMemory.pathwayAffinities)
+      .sort((a, b) => b[1] - a[1])[0]
+    if (topPathway && topPathway[1] > 50) {
+      recommendations.push({
+        id: `pathway-focus-${topPathway[0]}`,
+        type: 'pathway',
+        title: `${topPathway[0]} Specialization`,
+        description: `Your performance shows strong alignment with ${topPathway[0]}. Deepen this specialization.`,
+        priority: 'high',
+        estimatedTime: '4-6 weeks',
+        impact: 'Career specialization'
+      })
+    }
+
+    // Strength-based recommendations
+    if (simulationMemory.strengths.length > 0) {
+      const topStrength = simulationMemory.strengths[0]
+      recommendations.push({
+        id: `strength-advance-${topStrength}`,
+        type: 'skill',
+        title: `Advance ${topStrength} Skills`,
+        description: `Leverage your ${topStrength} strength in advanced scenarios and certifications.`,
+        priority: 'medium',
+        estimatedTime: '2-3 weeks',
+        impact: 'Specialization'
+      })
+    }
+
+    // Weakness-based recommendations
+    if (simulationMemory.weaknesses.length > 0) {
+      const weakness = simulationMemory.weaknesses[0]
+      recommendations.push({
+        id: `weakness-improve-${weakness}`,
+        type: 'skill',
+        title: `Improve ${weakness} Skills`,
+        description: `Focus on ${weakness} to address performance gaps and improve overall readiness.`,
+        priority: 'high',
+        estimatedTime: '1-2 weeks',
+        impact: 'Balanced skill set'
+      })
+    }
+  }
 
   // Simulation recommendations based on skills
   if (progress.skills.length > 0) {

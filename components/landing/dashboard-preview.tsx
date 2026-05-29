@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import { Container } from "@/components/ui/container"
+import Link from "next/link"
 
 export function DashboardPreview() {
   const ref = useRef<HTMLDivElement>(null)
@@ -37,20 +38,21 @@ export function DashboardPreview() {
         </motion.div>
 
         {/* 3D Dashboard Preview */}
-        <motion.div
-          style={{
-            rotateX,
-            scale,
-            opacity,
-            transformPerspective: 1200,
-          }}
-          className="relative will-change-transform"
-        >
-          {/* Glow effects */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-xl opacity-40" />
+        <Link href="/dashboard">
+          <motion.div
+            style={{
+              rotateX,
+              scale,
+              opacity,
+              transformPerspective: 1200,
+            }}
+            className="relative will-change-transform cursor-pointer group"
+          >
+            {/* Glow effects */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-300" />
 
-          {/* Dashboard mockup */}
-          <div className="relative glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-white/10">
+            {/* Dashboard mockup */}
+            <div className="relative glass-panel rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-[0_20px_60px_rgba(0,198,255,0.15)]">
             {/* Window chrome */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/[0.02]">
               <div className="flex gap-1.5">
@@ -200,7 +202,8 @@ export function DashboardPreview() {
               </div>
             </div>
           </motion.div>
-        </motion.div>
+          </motion.div>
+        </Link>
       </Container>
     </section>
   )

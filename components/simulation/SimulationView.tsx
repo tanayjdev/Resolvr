@@ -168,7 +168,7 @@ function TerminalLogPanel({
 
 export default function SimulationView() {
   const {
-    recordSimulationCompletion,
+    recordSimulationWithImpact,
     progress,
   } = useUserProgress()
 
@@ -287,9 +287,12 @@ export default function SimulationView() {
       completedScores.length ===
         config.decisionSteps.length
     ) {
-      recordSimulationCompletion(
+      // Use connected intelligence method for simulation completion
+      const simulationSkills = config.decisionSteps.map((step: any) => step.skills || []).flat()
+      recordSimulationWithImpact(
         config.simulationId,
-        resolvedFinalScore
+        resolvedFinalScore,
+        simulationSkills
       )
       setHasRecordedCompletion(true)
     }

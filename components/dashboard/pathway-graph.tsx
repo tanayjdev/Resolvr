@@ -26,7 +26,10 @@ import {
   ChevronRight,
   ChevronDown,
   Sparkles,
+  Settings,
 } from "lucide-react"
+
+import { CustomizePathModal } from "@/components/dashboard/CustomizePathModal"
 
 // =========================================================
 // Types
@@ -252,6 +255,8 @@ export function AdaptivePathwayGraph() {
   const { progress, profile } =
     useUserProgress()
 
+  const [isCustomizeModalOpen, setIsCustomizeModalOpen] = React.useState(false)
+
   const pathwayData =
     React.useMemo(() => {
       return buildPathwayData({
@@ -285,6 +290,13 @@ export function AdaptivePathwayGraph() {
       profile.careerGoal,
     ])
 
+  const handleSavePath = (pathway: string, interests: string[]) => {
+    // Update user profile with new pathway and interests
+    // This would typically dispatch to a centralized context
+    console.log("Saving pathway:", pathway, interests)
+    // TODO: Integrate with AppStateContext when ready
+  }
+
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 p-4 sm:p-5 lg:p-6 backdrop-blur-xl">
       {/* Background Glow */}
@@ -314,30 +326,41 @@ export function AdaptivePathwayGraph() {
           </p>
         </div>
 
-        {/* Legend */}
-        <div className="hidden items-center gap-4 text-xs sm:flex">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+        <div className="flex items-center gap-3">
+          {/* Customize Button */}
+          <button
+            onClick={() => setIsCustomizeModalOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm hover:border-primary/20 hover:bg-primary/5 transition-all"
+          >
+            <Settings className="h-4 w-4" />
+            Customize
+          </button>
 
-            <span className="text-muted-foreground">
-              Completed
-            </span>
-          </div>
+          {/* Legend */}
+          <div className="hidden items-center gap-4 text-xs sm:flex">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
 
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+              <span className="text-muted-foreground">
+                Completed
+              </span>
+            </div>
 
-            <span className="text-muted-foreground">
-              Current
-            </span>
-          </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-primary" />
 
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
+              <span className="text-muted-foreground">
+                Current
+              </span>
+            </div>
 
-            <span className="text-muted-foreground">
-              Locked
-            </span>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
+
+              <span className="text-muted-foreground">
+                Locked
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -501,6 +524,13 @@ export function AdaptivePathwayGraph() {
           )
         )}
       </div>
+
+      <CustomizePathModal
+        isOpen={isCustomizeModalOpen}
+        onClose={() => setIsCustomizeModalOpen(false)}
+        currentPathway={progress.currentPathway}
+        onSave={handleSavePath}
+      />
     </div>
   )
 }

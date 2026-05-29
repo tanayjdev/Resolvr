@@ -15,6 +15,9 @@ import {
   type UserProgress,
 } from "@/lib/types/user-state"
 
+import type { SimulationMemory } from "@/lib/ai/scoring-engine"
+import type { SimulationRunState } from "@/lib/types/user-state"
+
 export const USER_STATE_STORAGE_KEY =
   "resolvr-progress"
 
@@ -278,6 +281,21 @@ function parseUserProgress(
       isRecord(value.simulationPerformance)
         ? value.simulationPerformance as Record<string, number>
         : DEFAULT_PROGRESS.simulationPerformance,
+
+    simulationMemory: isRecord(value.simulationMemory)
+      ? {
+          totalSimulations: typeof value.simulationMemory.totalSimulations === 'number' ? value.simulationMemory.totalSimulations : DEFAULT_PROGRESS.simulationMemory.totalSimulations,
+          averageScore: typeof value.simulationMemory.averageScore === 'number' ? value.simulationMemory.averageScore : DEFAULT_PROGRESS.simulationMemory.averageScore,
+          strengths: isStringArray(value.simulationMemory.strengths) ? value.simulationMemory.strengths : DEFAULT_PROGRESS.simulationMemory.strengths,
+          weaknesses: isStringArray(value.simulationMemory.weaknesses) ? value.simulationMemory.weaknesses : DEFAULT_PROGRESS.simulationMemory.weaknesses,
+          riskProfile: (['conservative', 'balanced', 'aggressive'].includes(value.simulationMemory.riskProfile as any) ? value.simulationMemory.riskProfile : DEFAULT_PROGRESS.simulationMemory.riskProfile) as 'conservative' | 'balanced' | 'aggressive',
+          pathwayAffinities: isRecord(value.simulationMemory.pathwayAffinities) ? value.simulationMemory.pathwayAffinities as Record<string, number> : DEFAULT_PROGRESS.simulationMemory.pathwayAffinities,
+          lastSimulationId: typeof value.simulationMemory.lastSimulationId === 'string' ? value.simulationMemory.lastSimulationId : DEFAULT_PROGRESS.simulationMemory.lastSimulationId,
+          lastSimulationScore: typeof value.simulationMemory.lastSimulationScore === 'number' ? value.simulationMemory.lastSimulationScore : DEFAULT_PROGRESS.simulationMemory.lastSimulationScore,
+        }
+      : DEFAULT_PROGRESS.simulationMemory,
+
+    currentSimulationRun: null // Always reset on load - simulation state is transient
   }
 }
 

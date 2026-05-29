@@ -342,8 +342,7 @@ export default function SimulationPage() {
         simulationComplete,
         appendFeedback,
         appendLog,
-        increaseReadiness,
-        completeSimulation,
+        recordSimulationWithImpact,
       ]
     )
 

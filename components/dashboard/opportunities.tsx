@@ -36,6 +36,8 @@ import {
   TrendingUp,
 } from "lucide-react"
 
+import { OpportunityDetailModal } from "@/components/opportunities/OpportunityDetailModal"
+
 // =========================================================
 // Type Badge
 // =========================================================
@@ -121,8 +123,10 @@ function MatchScoreBadge({
 
 function OpportunityCard({
   opportunity,
+  onView,
 }: {
   opportunity: ExtendedOpportunity
+  onView: (opportunity: ExtendedOpportunity) => void
 }) {
   return (
     <motion.div
@@ -163,7 +167,10 @@ function OpportunityCard({
             </div>
           </div>
 
-          <button className="rounded-xl border border-white/5 bg-white/[0.03] p-2 opacity-0 transition-all duration-300 hover:bg-white/[0.06] group-hover:opacity-100">
+          <button
+            onClick={() => onView(opportunity)}
+            className="rounded-xl border border-white/5 bg-white/[0.03] p-2 opacity-0 transition-all duration-300 hover:bg-white/[0.06] group-hover:opacity-100"
+          >
             <Bookmark className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
@@ -227,7 +234,10 @@ function OpportunityCard({
             }
           />
 
-          <button className="group/button inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground">
+          <button
+            onClick={() => onView(opportunity)}
+            className="group/button inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+          >
             <span>View</span>
 
             <ExternalLink className="h-4 w-4 transition-transform duration-300 group-hover/button:-translate-y-0.5 group-hover/button:translate-x-0.5" />
@@ -245,6 +255,8 @@ function OpportunityCard({
 export function OpportunityRecommendations() {
   const { progress, profile } =
     useUserProgress()
+
+  const [selectedOpportunity, setSelectedOpportunity] = React.useState<ExtendedOpportunity | null>(null)
 
   const readinessScore =
     React.useMemo(
@@ -464,6 +476,7 @@ and pathway progression.
                   opportunity={
                     opp
                   }
+                  onView={setSelectedOpportunity}
                 />
               </motion.div>
             )
@@ -509,6 +522,7 @@ and pathway progression.
                       opportunity={
                         opp
                       }
+                      onView={setSelectedOpportunity}
                     />
                   </motion.div>
                 </div>
@@ -541,6 +555,21 @@ and pathway progression.
           )}
         </div>
       </div>
+
+      <OpportunityDetailModal
+        onClose={() => setSelectedOpportunity(null)}
+        opportunity={selectedOpportunity ? {
+          id: parseInt(selectedOpportunity.id),
+          title: selectedOpportunity.title,
+          company: selectedOpportunity.company,
+          location: selectedOpportunity.location,
+          salary: "Competitive",
+          match: selectedOpportunity.matchScore,
+          requiredSkills: selectedOpportunity.tags,
+          aiRanking: selectedOpportunity.matchScore >= 90 ? "Top Match" : selectedOpportunity.matchScore >= 75 ? "High Match" : "Strong Match",
+          posted: selectedOpportunity.postedAt,
+        } : null}
+      />
     </section>
   )
 }

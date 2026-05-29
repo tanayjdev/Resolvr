@@ -47,7 +47,7 @@ export function TopBar({ activeFilter, setActiveFilter }: TopBarProps) {
 
         {/* Right - Back link */}
         <a 
-          href="#" 
+          href="/dashboard" 
           className="text-[12px] text-white/40 hover:text-white/70 transition-colors hidden sm:block"
         >
           ← Back to Dashboard

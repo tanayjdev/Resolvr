@@ -5,8 +5,9 @@
 // ============================================================
 
 import Image from "next/image"
-import { Clock, X, Server, Target, Compass } from "lucide-react"
+import { Clock, X, Server, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { BRAND_LOGO } from "@/lib/branding"
 
 interface SimulationHeaderProps {
   timeRemaining: number
@@ -30,8 +31,13 @@ export function SimulationHeader({
       <div className="flex items-center justify-between gap-2 lg:gap-4">
         {/* Logo & Title */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Compass className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
-          <span className="text-lg sm:text-xl font-bold tracking-tight">Resolvr</span>
+          <Image
+            src={BRAND_LOGO}
+            alt="Resolvr"
+            width={120}
+            height={40}
+            className="h-6 w-auto sm:h-7 md:h-8"
+          />
 
           <div className="h-4 w-px bg-border hidden sm:block" />
 

@@ -35,8 +35,12 @@ import {
 import {
   calculateSimulationImpact,
   calculateCompleteScoring,
+  updateSimulationMemory,
   type ScoringInput,
 } from "@/lib/ai/scoring-engine"
+
+import type { SimulationDecision, SimulationRunState } from "@/lib/types/user-state"
+import type { AlignmentEffects } from "@/lib/simulations/types"
 
 // ============================================================
 // AI Insights Type
@@ -139,6 +143,22 @@ interface UserContextType {
   earnCertification: (certificationName: string) => void
 
   getAIInsights: () => AIInsights
+
+  // Simulation State Management methods
+  startSimulation: (simulationId: string) => void
+  recordSimulationDecision: (
+    stepId: string,
+    decisionId: string,
+    scoreDelta: number,
+    aiConfidenceDelta: number,
+    alignmentEffects: AlignmentEffects,
+    riskEffects: {
+      riskProfileDelta: 'conservative' | 'balanced' | 'aggressive'
+      stabilityImpact: number
+    }
+  ) => void
+  completeSimulationRun: () => void
+  clearSimulationRun: () => void
 }
 
 const UserContext =
@@ -598,7 +618,15 @@ export function UserProvider({
             [simulationId]: finalScore
           },
 
-          opportunitiesMatched: prev.opportunitiesMatched + 1
+          opportunitiesMatched: prev.opportunitiesMatched + 1,
+
+          // Update simulation memory with performance data
+          simulationMemory: updateSimulationMemory(
+            prev.simulationMemory,
+            simulationId,
+            finalScore,
+            simulationSkills
+          )
         }
       })
     },
@@ -641,6 +669,178 @@ export function UserProvider({
       employabilityScore: Math.min(prev.employabilityScore + 10, 100),
       // Certification boosts readiness slightly
       readinessScore: Math.min(prev.readinessScore + 50, 1000)
+    }))
+  }, [])
+
+  // ============================================================
+  // Simulation State Management
+  // ============================================================
+
+  const startSimulation = useCallback((simulationId: string) => {
+    setProgress((prev) => ({
+      ...prev,
+      currentSimulationRun: {
+        simulationId,
+        currentStepIndex: 0,
+        decisions: [],
+        runningScore: 0,
+        runningAiConfidence: prev.aiConfidence,
+        runningAlignment: {
+          mlAlignment: 0,
+          infraAlignment: 0,
+          productAlignment: 0,
+          securityAlignment: 0
+        },
+        runningStability: 0,
+        isComplete: false
+      }
+    }))
+  }, [])
+
+  const recordSimulationDecision = useCallback((
+    stepId: string,
+    decisionId: string,
+    scoreDelta: number,
+    aiConfidenceDelta: number,
+    alignmentEffects: AlignmentEffects,
+    riskEffects: {
+      riskProfileDelta: 'conservative' | 'balanced' | 'aggressive'
+      stabilityImpact: number
+    }
+  ) => {
+    setProgress((prev) => {
+      if (!prev.currentSimulationRun) return prev
+
+      const newDecision: SimulationDecision = {
+        stepId,
+        decisionId,
+        scoreDelta,
+        aiConfidenceDelta,
+        alignmentEffects,
+        riskEffects
+      }
+
+      return {
+        ...prev,
+        currentSimulationRun: {
+          ...prev.currentSimulationRun,
+          decisions: [...prev.currentSimulationRun.decisions, newDecision],
+          runningScore: prev.currentSimulationRun.runningScore + scoreDelta,
+          runningAiConfidence: Math.max(0, Math.min(100, prev.currentSimulationRun.runningAiConfidence + aiConfidenceDelta)),
+          runningAlignment: {
+            mlAlignment: prev.currentSimulationRun.runningAlignment.mlAlignment + alignmentEffects.mlAlignment,
+            infraAlignment: prev.currentSimulationRun.runningAlignment.infraAlignment + alignmentEffects.infraAlignment,
+            productAlignment: prev.currentSimulationRun.runningAlignment.productAlignment + alignmentEffects.productAlignment,
+            securityAlignment: prev.currentSimulationRun.runningAlignment.securityAlignment + alignmentEffects.securityAlignment
+          },
+          runningStability: prev.currentSimulationRun.runningStability + riskEffects.stabilityImpact,
+          currentStepIndex: prev.currentSimulationRun.currentStepIndex + 1
+        }
+      }
+    })
+  }, [])
+
+  const completeSimulationRun = useCallback(() => {
+    setProgress((prev) => {
+      if (!prev.currentSimulationRun || prev.currentSimulationRun.isComplete) return prev
+
+      const { currentSimulationRun } = prev
+      const finalScore = Math.max(0, Math.min(100, currentSimulationRun.runningScore))
+      const simulationSkills = ['Python', 'Machine Learning', 'Infrastructure', 'Security'] // Default skills
+
+      // Console logging for debugging
+      console.log('=== SIMULATION COMPLETION ===')
+      console.log('Simulation ID:', currentSimulationRun.simulationId)
+      console.log('Final Score:', finalScore)
+      console.log('Final AI Confidence:', currentSimulationRun.runningAiConfidence)
+      console.log('Final Alignment:', currentSimulationRun.runningAlignment)
+      console.log('Total Decisions:', currentSimulationRun.decisions.length)
+      console.log('Decision History:', currentSimulationRun.decisions)
+      console.log('Previous Readiness Score:', prev.readinessScore)
+      console.log('Previous Employability Score:', prev.employabilityScore)
+
+      // Calculate impact using the scoring engine with the actual final score
+      const scoringInput: ScoringInput = {
+        readinessScore: prev.readinessScore,
+        employabilityScore: prev.employabilityScore,
+        simulationsCompleted: prev.simulationsCompleted,
+        skillsTracked: prev.skillsTracked,
+        opportunitiesMatched: prev.opportunitiesMatched,
+        completedSimulations: prev.completedSimulations,
+        unlockedPathways: prev.unlockedPathways,
+        skills: prev.skills,
+        simulationPerformance: new Map(Object.entries(prev.simulationPerformance))
+      }
+
+      const impact = calculateSimulationImpact(
+        scoringInput,
+        currentSimulationRun.simulationId,
+        finalScore,
+        simulationSkills
+      )
+
+      console.log('Calculated Impact:', impact)
+      console.log('New Readiness Score:', prev.readinessScore + impact.readinessImpact)
+      console.log('New Employability Score:', prev.employabilityScore + impact.employabilityImpact)
+
+      // Update skills with gains from alignment effects
+      const updatedSkills = prev.skills.map(skill => {
+        const alignmentKey = skill.name.toLowerCase().includes('ml') || skill.name.toLowerCase().includes('machine') ? 'mlAlignment' :
+                           skill.name.toLowerCase().includes('infra') || skill.name.toLowerCase().includes('cloud') ? 'infraAlignment' :
+                           skill.name.toLowerCase().includes('product') ? 'productAlignment' :
+                           skill.name.toLowerCase().includes('security') ? 'securityAlignment' : null
+        if (alignmentKey) {
+          const gain = currentSimulationRun.runningAlignment[alignmentKey as keyof AlignmentEffects] as number / 10
+          return {
+            ...skill,
+            level: Math.min(skill.level + gain, 100)
+          }
+        }
+        return skill
+      })
+
+      // Update AI confidence based on simulation performance
+      const newAiConfidence = Math.max(0, Math.min(100, currentSimulationRun.runningAiConfidence))
+
+      console.log('=== STATE UPDATE ===')
+      console.log('Updated AI Confidence:', newAiConfidence)
+      console.log('Updated Skills:', updatedSkills)
+
+      return {
+        ...prev,
+        completedSimulations: [...prev.completedSimulations, currentSimulationRun.simulationId],
+        simulationsCompleted: prev.simulationsCompleted + 1,
+        readinessScore: Math.min(prev.readinessScore + impact.readinessImpact, 1000),
+        employabilityScore: Math.min(prev.employabilityScore + impact.employabilityImpact, 100),
+        skills: updatedSkills,
+        skillsTracked: updatedSkills.length,
+        unlockedPathways: [...prev.unlockedPathways, ...impact.unlockedPathways],
+        milestonesCompleted: prev.milestonesCompleted + 1,
+        aiConfidence: newAiConfidence,
+        recommendationStrength: Math.min(prev.recommendationStrength + impact.recommendationStrengthChange, 100),
+        simulationPerformance: {
+          ...prev.simulationPerformance,
+          [currentSimulationRun.simulationId]: finalScore
+        },
+        simulationMemory: updateSimulationMemory(
+          prev.simulationMemory,
+          currentSimulationRun.simulationId,
+          finalScore,
+          simulationSkills
+        ),
+        opportunitiesMatched: prev.opportunitiesMatched + 1,
+        currentSimulationRun: {
+          ...currentSimulationRun,
+          isComplete: true
+        }
+      }
+    })
+  }, [])
+
+  const clearSimulationRun = useCallback(() => {
+    setProgress((prev) => ({
+      ...prev,
+      currentSimulationRun: null
     }))
   }, [])
 
@@ -728,18 +928,36 @@ export function UserProvider({
       earnCertification,
 
       getAIInsights,
+
+      // Simulation State Management methods
+      startSimulation,
+      recordSimulationDecision,
+      completeSimulationRun,
+      clearSimulationRun,
     }),
     [
       progress,
       profile,
       hasHydrated,
+      increaseReadiness,
+      completeSimulation,
+      setPathway,
+      unlockPathway,
+      toggleLowDataMode,
+      addOpportunity,
+      addCompletedSimulation,
       updateProfile,
       completeOnboarding,
       recordSimulationCompletion,
+      resetProgress,
       recordSimulationWithImpact,
       updateScoring,
       earnCertification,
       getAIInsights,
+      startSimulation,
+      recordSimulationDecision,
+      completeSimulationRun,
+      clearSimulationRun,
     ]
   )
 

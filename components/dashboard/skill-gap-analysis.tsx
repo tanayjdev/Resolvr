@@ -15,6 +15,8 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 
+import { SkillGapDetailModal } from "@/components/dashboard/SkillGapDetailModal"
+
 interface SkillGap {
   name: string
   current: number
@@ -262,6 +264,8 @@ function buildAdaptiveSkillGaps(
 export function SkillGapAnalysis() {
   const { progress, profile } = useUserProgress()
 
+  const [isDetailModalOpen, setIsDetailModalOpen] = React.useState(false)
+
   const readinessScore = React.useMemo(
     () =>
       getComputedReadinessScore(
@@ -289,56 +293,70 @@ export function SkillGapAnalysis() {
   )
 
   return (
-    <section className="glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 h-full overflow-hidden">
-      {!profile.onboardingComplete && (
-        <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-          {ONBOARDING_PROMPT_TEXT}
-        </div>
-      )}
+    <>
+      <section className="glass-panel rounded-2xl border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 h-full overflow-hidden">
+        {!profile.onboardingComplete && (
+          <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+            {ONBOARDING_PROMPT_TEXT}
+          </div>
+        )}
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 mb-3">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[11px] font-medium tracking-[0.14em] uppercase text-primary">
-              AI Skill Intelligence
-            </span>
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 mb-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-[11px] font-medium tracking-[0.14em] uppercase text-primary">
+                AI Skill Intelligence
+              </span>
+            </div>
+
+            <h3 className="font-heading text-base sm:text-lg md:text-xl font-semibold text-foreground tracking-tight">
+              Skill Gap Analysis
+            </h3>
+
+            <p className="text-xs sm:text-sm text-muted-foreground/80 mt-0.5 sm:mt-1 leading-relaxed">
+              Identify the most critical skills needed to reach your target career outcomes.
+            </p>
           </div>
 
-          <h3 className="font-heading text-base sm:text-lg md:text-xl font-semibold text-foreground tracking-tight">
-            Skill Gap Analysis
-          </h3>
-
-          <p className="text-xs sm:text-sm text-muted-foreground/80 mt-0.5 sm:mt-1 leading-relaxed">
-            Identify the most critical skills needed to reach your target career outcomes.
-          </p>
+          <button
+            onClick={() => setIsDetailModalOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5"
+          >
+            <span>View Report</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </button>
         </div>
 
-        <button className="hidden sm:flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
-          <span>View Report</span>
-          <ArrowUpRight className="w-4 h-4" />
+        {/* Skill Cards */}
+        <div className="space-y-3 sm:space-y-4">
+          {adaptiveSkillGaps.map((skill, index) => (
+            <SkillCard
+              key={skill.name}
+              skill={skill}
+              index={index}
+            />
+          ))}
+        </div>
+
+        {/* Mobile CTA */}
+        <button
+          onClick={() => setIsDetailModalOpen(true)}
+          className="sm:hidden mt-4 sm:mt-5 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span>View Full Report</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </div>
         </button>
-      </div>
+      </section>
 
-      {/* Skill Cards */}
-      <div className="space-y-3 sm:space-y-4">
-        {adaptiveSkillGaps.map((skill, index) => (
-          <SkillCard
-            key={skill.name}
-            skill={skill}
-            index={index}
-          />
-        ))}
-      </div>
-
-      {/* Mobile CTA */}
-      <button className="sm:hidden mt-4 sm:mt-5 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/5">
-        <div className="flex items-center justify-center gap-2">
-          <span>View Full Report</span>
-          <ArrowUpRight className="w-4 h-4" />
-        </div>
-      </button>
-    </section>
+      <SkillGapDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        skillGaps={adaptiveSkillGaps}
+      />
+    </>
   )
 }

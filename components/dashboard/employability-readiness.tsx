@@ -18,6 +18,8 @@ import {
   Sparkles,
 } from 'lucide-react'
 
+import { EmployabilityDetailModal } from "@/components/dashboard/EmployabilityDetailModal"
+
 interface CircularProgressProps {
   value: number
   size?: number
@@ -127,15 +129,12 @@ export function EmployabilityReadiness() {
   const { progress, profile } =
   useUserProgress()
 
-const { readinessScore, skills } = progress
+  const [isDetailModalOpen, setIsDetailModalOpen] = React.useState(false)
 
-const employabilityScore = React.useMemo(
-  () =>
-    getComputedReadinessScore(
-      profile
-    ),
-  [profile]
-)
+const { readinessScore, skills, employabilityScore, milestonesCompleted, simulationMemory } = progress
+
+// Use actual employability score from global state, not computed
+const displayEmployabilityScore = employabilityScore
 
 const skillBreakdown =
   skills.map((skill: Skill) => ({
@@ -181,7 +180,7 @@ const skillBreakdown =
 
             <span>
             +{Math.floor(
-        readinessScore / 100
+        (simulationMemory.averageScore >= 70 ? 15 : simulationMemory.averageScore >= 50 ? 8 : 3)
         ) || 6}
         % readiness growth
       </span>
@@ -193,7 +192,7 @@ const skillBreakdown =
           {/* Progress Circle */}
           <div className="flex flex-shrink-0 justify-center">
             <CircularProgress
-              value={employabilityScore}
+              value={displayEmployabilityScore}
               size={140}
               strokeWidth={10}
             />
@@ -261,12 +260,23 @@ const skillBreakdown =
         </div>
 
         {/* Footer CTA */}
-        <button className="group mt-7 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/[0.05]">
+        <button
+          onClick={() => setIsDetailModalOpen(true)}
+          className="group mt-7 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:border-primary/20 hover:bg-primary/[0.05]"
+        >
           <span>View Detailed Analysis</span>
 
           <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </button>
       </div>
+
+      <EmployabilityDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        employabilityScore={displayEmployabilityScore}
+        skills={skills}
+        simulationMemory={simulationMemory}
+      />
     </div>
   )
 }

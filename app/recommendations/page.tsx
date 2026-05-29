@@ -16,6 +16,8 @@ import { BottomBar } from "@/components/pathway/bottom-bar"
 import { DetailPanel } from "@/components/pathway/detail-panel"
 import { MobilePathwayView } from "@/components/pathway/mobile-view"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useUserProgress } from "@/context/user-context"
+import { generateRecommendations, type Recommendation } from "@/lib/ai/recommendations-engine"
 
 // ─── These constants are the single source of truth ──────────────────────
 // PathwayLine.tsx reads the same ORIGIN_X / ORIGIN_Y values internally.
@@ -34,6 +36,17 @@ const GOALS = [
 export default function PathwayVisualization() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+
+  // Get global user state
+  const { progress, getAIInsights } = useUserProgress()
+  const aiInsights = getAIInsights()
+
+  // Generate dynamic recommendations based on user state
+  const recommendations = generateRecommendations({
+    progress,
+    insights: aiInsights,
+    simulationMemory: progress.simulationMemory
+  })
 
   const [activeFilter, setActiveFilter] = useState("all")
   const [hoveredPath, setHoveredPath] = useState<string | null>(null)

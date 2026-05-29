@@ -1,4 +1,5 @@
 import type { ScenarioConfig } from "@/lib/simulations/types"
+import type { AlignmentEffects } from "@/lib/simulations/types"
 
 const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
   id: "production-ai-incident",
@@ -51,6 +52,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:43:15] metrics-pipeline | ALERT total conversion drop 45%",
           ],
           aiConfidenceDelta: -30,
+          scoreDelta: -20,
+          alignmentEffects: {
+            mlAlignment: -5,
+            infraAlignment: -10,
+            productAlignment: -5,
+            securityAlignment: -5
+          },
+          riskEffects: {
+            riskProfileDelta: 'aggressive',
+            stabilityImpact: -15
+          }
         },
         {
           label: "Rollback serving deployment to last stable release and freeze new traffic",
@@ -63,6 +75,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:43:20] metrics-pipeline | INFO latency recovering to p99 500ms",
           ],
           aiConfidenceDelta: +15,
+          scoreDelta: 25,
+          alignmentEffects: {
+            mlAlignment: 5,
+            infraAlignment: 15,
+            productAlignment: 10,
+            securityAlignment: 5
+          },
+          riskEffects: {
+            riskProfileDelta: 'conservative',
+            stabilityImpact: 15
+          }
         },
         {
           label: "Scale replicas by 3x and keep the new model version live",
@@ -75,6 +98,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:43:30] metrics-pipeline | ALERT conversion still dropping",
           ],
           aiConfidenceDelta: -10,
+          scoreDelta: 5,
+          alignmentEffects: {
+            mlAlignment: 5,
+            infraAlignment: 10,
+            productAlignment: 0,
+            securityAlignment: 0
+          },
+          riskEffects: {
+            riskProfileDelta: 'balanced',
+            stabilityImpact: 0
+          }
         },
       ],
     },
@@ -103,6 +137,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:47:15] data-quality | FATAL feature store poisoned",
           ],
           aiConfidenceDelta: -35,
+          scoreDelta: -25,
+          alignmentEffects: {
+            mlAlignment: -10,
+            infraAlignment: -5,
+            productAlignment: -10,
+            securityAlignment: -5
+          },
+          riskEffects: {
+            riskProfileDelta: 'aggressive',
+            stabilityImpact: -20
+          }
         },
         {
           label: "Run contract validation, pause experiments, and compare offline vs online feature parity",
@@ -115,6 +160,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:47:18] deploy-bot | INFO hotfix patch path verified",
           ],
           aiConfidenceDelta: +20,
+          scoreDelta: 30,
+          alignmentEffects: {
+            mlAlignment: 10,
+            infraAlignment: 10,
+            productAlignment: 15,
+            securityAlignment: 5
+          },
+          riskEffects: {
+            riskProfileDelta: 'conservative',
+            stabilityImpact: 20
+          }
         },
         {
           label: "Flush caches only and resume full traffic in 10 minutes",
@@ -127,6 +183,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:47:25] data-quality | ERROR schema mismatch returned",
           ],
           aiConfidenceDelta: -15,
+          scoreDelta: 10,
+          alignmentEffects: {
+            mlAlignment: 5,
+            infraAlignment: 10,
+            productAlignment: 5,
+            securityAlignment: 0
+          },
+          riskEffects: {
+            riskProfileDelta: 'balanced',
+            stabilityImpact: 5
+          }
         },
       ],
     },
@@ -155,6 +222,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:53:25] sre-bot | CRITICAL rollback window exhausted",
           ],
           aiConfidenceDelta: -40,
+          scoreDelta: -30,
+          alignmentEffects: {
+            mlAlignment: -15,
+            infraAlignment: -20,
+            productAlignment: -10,
+            securityAlignment: -10
+          },
+          riskEffects: {
+            riskProfileDelta: 'aggressive',
+            stabilityImpact: -25
+          }
         },
         {
           label: "Deploy hotfix via guarded canary with confidence and latency SLO gates",
@@ -167,6 +245,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:53:45] deploy-bot | SUCCESS rolling out to 100%",
           ],
           aiConfidenceDelta: +25,
+          scoreDelta: 35,
+          alignmentEffects: {
+            mlAlignment: 15,
+            infraAlignment: 20,
+            productAlignment: 15,
+            securityAlignment: 10
+          },
+          riskEffects: {
+            riskProfileDelta: 'conservative',
+            stabilityImpact: 25
+          }
         },
         {
           label: "Delay fix until tomorrow to avoid change risk tonight",
@@ -179,6 +268,17 @@ const PRODUCTION_AI_INCIDENT: ScenarioConfig = {
             "[08:53:20] metrics-pipeline | INFO operating in degraded state",
           ],
           aiConfidenceDelta: -20,
+          scoreDelta: 5,
+          alignmentEffects: {
+            mlAlignment: 0,
+            infraAlignment: 5,
+            productAlignment: 10,
+            securityAlignment: 0
+          },
+          riskEffects: {
+            riskProfileDelta: 'conservative',
+            stabilityImpact: 0
+          }
         },
       ],
     },

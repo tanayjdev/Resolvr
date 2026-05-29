@@ -8,6 +8,7 @@ import { getFeaturedSimulation } from "@/lib/pathwayData"
 import * as React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useRouter } from "next/navigation"
 import {
   Play,
   Clock,
@@ -62,11 +63,17 @@ export function FeaturedSimulation() {
   const { progress, profile } =
     useUserProgress()
 
+  const router = useRouter()
+
   const sim: Simulation =
     getFeaturedSimulation(
       profile.careerGoal,
       profile.onboardingComplete
     )
+
+  const handleStartSimulation = () => {
+    router.push(`/simulations/${sim.id}`)
+  }
 
   return (
     <motion.section
@@ -105,15 +112,15 @@ export function FeaturedSimulation() {
         </div>
 
         <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
-  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
 
-  Last completed:
-  {
-    progress.completedSimulations[
-      progress.completedSimulations.length - 1
-    ] || "No simulations completed"
-  }
-</div>
+          Last completed:
+          {
+            progress.completedSimulations.length > 0
+              ? progress.completedSimulations[progress.completedSimulations.length - 1]
+              : "No simulations completed"
+          }
+        </div>
 
 
         {/* Main Card */}
@@ -202,6 +209,7 @@ export function FeaturedSimulation() {
         {/* Bottom CTA */}
         <motion.button
           whileTap={{ scale: 0.98 }}
+          onClick={handleStartSimulation}
           className="group/button relative mt-auto overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-r from-primary via-cyan-400 to-secondary px-5 py-4 text-primary-foreground transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,198,255,0.18)]"
         >
           <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/button:opacity-100">

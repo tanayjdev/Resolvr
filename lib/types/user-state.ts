@@ -11,6 +11,32 @@ export interface Opportunity {
   match: number
 }
 
+import type { SimulationMemory } from "@/lib/ai/scoring-engine"
+import type { AlignmentEffects } from "@/lib/simulations/types"
+
+export interface SimulationDecision {
+  stepId: string
+  decisionId: string
+  scoreDelta: number
+  aiConfidenceDelta: number
+  alignmentEffects: AlignmentEffects
+  riskEffects: {
+    riskProfileDelta: 'conservative' | 'balanced' | 'aggressive'
+    stabilityImpact: number
+  }
+}
+
+export interface SimulationRunState {
+  simulationId: string
+  currentStepIndex: number
+  decisions: SimulationDecision[]
+  runningScore: number
+  runningAiConfidence: number
+  runningAlignment: AlignmentEffects
+  runningStability: number
+  isComplete: boolean
+}
+
 export interface UserProgress {
   readinessScore: number
 
@@ -46,6 +72,10 @@ export interface UserProgress {
   recommendationStrength: number
 
   simulationPerformance: Record<string, number> // simulationId -> score
+
+  simulationMemory: SimulationMemory
+
+  currentSimulationRun: SimulationRunState | null
 }
 
 export const DEFAULT_PROGRESS: UserProgress = {
@@ -98,4 +128,17 @@ export const DEFAULT_PROGRESS: UserProgress = {
   recommendationStrength: 70,
 
   simulationPerformance: {},
+
+  simulationMemory: {
+    totalSimulations: 0,
+    averageScore: 0,
+    strengths: [],
+    weaknesses: [],
+    riskProfile: 'balanced',
+    pathwayAffinities: {},
+    lastSimulationId: null,
+    lastSimulationScore: 0
+  },
+
+  currentSimulationRun: null
 }

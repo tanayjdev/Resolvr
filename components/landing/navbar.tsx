@@ -4,9 +4,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Compass } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
+import { BRAND_LOGO } from "@/lib/branding"
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -63,8 +64,20 @@ export function Navbar() {
           className="flex items-center gap-2 group"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <Compass className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9" />
-          <span className="text-xl sm:text-2xl font-bold tracking-tight">Resolvr</span>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+            className="relative"
+          >
+            <Image
+              src={BRAND_LOGO}
+              alt="Resolvr"
+              width={120}
+              height={40}
+              priority
+              className="h-8 w-auto sm:h-9 md:h-10"
+            />
+          </motion.div>
         </Link>
 
         {/* Desktop Navigation */}
@@ -82,9 +95,11 @@ export function Navbar() {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary transition-all duration-300 hover:scale-[1.02] px-4 sm:px-5 py-2 text-sm">
-            Map Your Future
-          </Button>
+          <Link href="/onboarding">
+            <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90 glow-primary transition-all duration-300 hover:scale-[1.02] px-4 sm:px-5 py-2 text-sm">
+              Map Your Future
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -118,9 +133,11 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <Button className="bg-gradient-primary text-primary-foreground mt-2 w-full active:scale-[0.98] transition-transform">
-                Map Your Future
-              </Button>
+              <Link href="/onboarding" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="bg-gradient-primary text-primary-foreground mt-2 w-full active:scale-[0.98] transition-transform">
+                  Map Your Future
+                </Button>
+              </Link>
             </div>
           </motion.div>
         )}

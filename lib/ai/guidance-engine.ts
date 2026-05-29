@@ -5,6 +5,7 @@
 
 import type { UserProgress } from "@/lib/types/user-state"
 import type { AIInsights } from "@/context/user-context"
+import type { SimulationMemory } from "@/lib/ai/scoring-engine"
 
 export interface GuidanceMessage {
   id: string
@@ -20,6 +21,7 @@ export interface GuidanceContext {
   insights: AIInsights
   recentSimulationId?: string
   recentSimulationScore?: number
+  simulationMemory?: SimulationMemory
 }
 
 /**
@@ -27,7 +29,71 @@ export interface GuidanceContext {
  */
 export function generateGuidance(context: GuidanceContext): GuidanceMessage[] {
   const messages: GuidanceMessage[] = []
-  const { progress, insights, recentSimulationId, recentSimulationScore } = context
+  const { progress, insights, recentSimulationId, recentSimulationScore, simulationMemory } = context
+
+  // Consequence-based feedback based on simulation memory
+  if (simulationMemory) {
+    // Risk profile feedback
+    if (simulationMemory.riskProfile === 'aggressive' && simulationMemory.totalSimulations >= 3) {
+      messages.push({
+        id: `risk-aggressive-${Date.now()}`,
+        type: "improvement",
+        title: "Risk Profile: Aggressive",
+        message: "Your decision patterns show high risk tolerance. Consider more conservative approaches for production systems.",
+        priority: "medium",
+        timestamp: Date.now()
+      })
+    } else if (simulationMemory.riskProfile === 'conservative' && simulationMemory.totalSimulations >= 3) {
+      messages.push({
+        id: `risk-conservative-${Date.now()}`,
+        type: "improvement",
+        title: "Risk Profile: Conservative",
+        message: "Your decision patterns are very cautious. Consider taking calculated risks when appropriate.",
+        priority: "low",
+        timestamp: Date.now()
+      })
+    }
+
+    // Strength-based feedback
+    if (simulationMemory.strengths.length > 0) {
+      const topStrength = simulationMemory.strengths[0]
+      messages.push({
+        id: `strength-${Date.now()}`,
+        type: "achievement",
+        title: "Strength Identified",
+        message: `Your ${topStrength} skills are consistently strong. Leverage this in advanced scenarios.`,
+        priority: "medium",
+        timestamp: Date.now()
+      })
+    }
+
+    // Weakness-based feedback
+    if (simulationMemory.weaknesses.length > 0) {
+      const weakness = simulationMemory.weaknesses[0]
+      messages.push({
+        id: `weakness-${Date.now()}`,
+        type: "improvement",
+        title: "Area for Improvement",
+        message: `Focus on ${weakness} skills to improve your overall simulation performance.`,
+        priority: "high",
+        timestamp: Date.now()
+      })
+    }
+
+    // Pathway affinity feedback
+    const topPathway = Object.entries(simulationMemory.pathwayAffinities)
+      .sort((a, b) => b[1] - a[1])[0]
+    if (topPathway && topPathway[1] > 50) {
+      messages.push({
+        id: `pathway-affinity-${Date.now()}`,
+        type: "recommendation",
+        title: "Pathway Alignment",
+        message: `Your performance shows strong alignment with ${topPathway[0]}. Consider this career path.`,
+        priority: "high",
+        timestamp: Date.now()
+      })
+    }
+  }
 
   // Achievement messages
   if (recentSimulationScore && recentSimulationScore >= 90) {

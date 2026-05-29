@@ -1,5 +1,9 @@
 import type { ScenarioConfig } from "@/lib/simulations/types"
 import PRODUCTION_AI_INCIDENT from "./production-ai-incident"
+import KUBERNETES_REGIONAL_FAILURE from "./k8s-regional-failure"
+import CICD_MELTDOWN from "./cicd-meltdown"
+import SECURITY_TOKEN_BREACH from "./security-token-breach"
+import REC_ENGINE_DRIFT from "./rec-engine-drift"
 
 export interface ScenarioMetadata {
   id: string
@@ -31,7 +35,7 @@ export const SCENARIO_REGISTRY: ScenarioMetadata[] = [
     category: "Cloud Infrastructure",
     readinessImpact: 30,
     incidentSummary: "Complete loss of us-east-1 control plane during peak traffic. Cross-region failover failing.",
-    isAvailable: false,
+    isAvailable: true,
   },
   {
     id: "cicd-meltdown",
@@ -41,7 +45,7 @@ export const SCENARIO_REGISTRY: ScenarioMetadata[] = [
     category: "DevOps",
     readinessImpact: 15,
     incidentSummary: "Build times increased by 400% blocking all hotfixes. Runner pools exhausted.",
-    isAvailable: false,
+    isAvailable: true,
   },
   {
     id: "security-token-breach",
@@ -51,7 +55,7 @@ export const SCENARIO_REGISTRY: ScenarioMetadata[] = [
     category: "Security",
     readinessImpact: 35,
     incidentSummary: "GitHub admin token leaked in public repository. Active data exfiltration detected.",
-    isAvailable: false,
+    isAvailable: true,
   },
   {
     id: "rec-engine-drift",
@@ -61,11 +65,17 @@ export const SCENARIO_REGISTRY: ScenarioMetadata[] = [
     category: "AI Systems",
     readinessImpact: 20,
     incidentSummary: "Slow conversion drop over 72 hours tracked to embedding space drift. Investigate feature pipelines.",
-    isAvailable: false,
+    isAvailable: true,
   },
 ]
 
 export const getScenarioConfig = (id: string): ScenarioConfig | null => {
-  if (id === "production-ai-incident") return PRODUCTION_AI_INCIDENT
-  return null
+  const configs: Record<string, ScenarioConfig> = {
+    "production-ai-incident": PRODUCTION_AI_INCIDENT,
+    "k8s-regional-failure": KUBERNETES_REGIONAL_FAILURE,
+    "cicd-meltdown": CICD_MELTDOWN,
+    "security-token-breach": SECURITY_TOKEN_BREACH,
+    "rec-engine-drift": REC_ENGINE_DRIFT,
+  }
+  return configs[id] || null
 }

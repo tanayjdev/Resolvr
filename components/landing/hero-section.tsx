@@ -1,12 +1,19 @@
 "use client"
 import Link from "next/link"
-import { useEffect, useRef } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles, X, Play } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [demoOpen, setDemoOpen] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -209,7 +216,9 @@ export function HeroSection() {
             size="lg"
             variant="outline"
             className="border-border/60 bg-white/5 backdrop-blur-md hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 text-lg px-8 py-6"
+            onClick={() => setDemoOpen(true)}
           >
+            <Play className="mr-2 w-5 h-5" />
             Watch Demo
           </Button>
         </motion.div>
@@ -230,6 +239,26 @@ export function HeroSection() {
           </div>
         </motion.div>
       </div>
+
+      {/* Demo Modal */}
+      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
+        <DialogContent className="max-w-4xl bg-background/95 backdrop-blur-xl border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold font-[var(--font-syne)]">
+              Resolvr AI Demo
+            </DialogTitle>
+          </DialogHeader>
+          <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center border border-white/10">
+            <div className="text-center">
+              <Play className="w-16 h-16 mx-auto text-primary mb-4" />
+              <p className="text-muted-foreground">Interactive demo preview</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                See how Resolvr AI helps you map your career pathway
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

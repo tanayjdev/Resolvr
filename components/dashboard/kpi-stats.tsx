@@ -14,6 +14,7 @@ import {
   Target,
   Gamepad2,
   Briefcase,
+  BrainCircuit,
 } from 'lucide-react'
 
 interface KPICardProps {
@@ -145,19 +146,28 @@ export function KPIStats() {
   const { progress, profile } =
     useUserProgress()
 
-  const readinessScore = React.useMemo(
-    () =>
-      getComputedReadinessScore(
-        profile
-      ),
-    [profile]
-  )
+  // Use actual readiness score from global state, not computed
+  const readinessScore = progress.employabilityScore
 
   const {
     skills,
     simulationsCompleted,
     opportunitiesMatched,
+    certificationsEarned,
+    milestonesCompleted,
+    aiConfidence,
   } = progress
+
+  // Calculate dynamic trend based on actual simulation performance
+  const recentScores = Object.values(progress.simulationPerformance).slice(-5)
+  const avgRecentScore = recentScores.length > 0 
+    ? recentScores.reduce((a, b) => a + b, 0) / recentScores.length 
+    : 0
+  
+  const readinessTrend = avgRecentScore >= 80 ? 15 : avgRecentScore >= 60 ? 8 : avgRecentScore >= 40 ? 3 : 0
+  const skillsTrend = Math.min(skills.length * 2, 15)
+  const simulationsTrend = Math.min(simulationsCompleted * 3, 25)
+  const opportunitiesTrend = Math.min(opportunitiesMatched, 10)
 
   const stats: KPICardProps[] = [
     {
@@ -167,8 +177,8 @@ export function KPIStats() {
         ? `Adaptive readiness for ${profile.careerGoal || 'your pathway'}`
         : 'Complete onboarding to unlock personalized readiness',
       trend: {
-        value: 12,
-        positive: true,
+        value: readinessTrend,
+        positive: readinessTrend > 0,
       },
       icon: Target,
       accentColor: 'primary',
@@ -177,10 +187,10 @@ export function KPIStats() {
     {
       title: 'Skills Tracked',
       value: skills.length,
-      subtitle: '6 mastered this month',
+      subtitle: `${skills.filter(s => s.level >= 70).length} mastered this month`,
       trend: {
-        value: 8,
-        positive: true,
+        value: skillsTrend,
+        positive: skillsTrend > 0,
       },
       icon: Sparkles,
       accentColor: 'secondary',
@@ -189,10 +199,10 @@ export function KPIStats() {
     {
       title: 'Simulations Completed',
       value: simulationsCompleted,
-      subtitle: '3 certifications earned',
+      subtitle: `${progress.simulationMemory.totalSimulations} total runs`,
       trend: {
-        value: 15,
-        positive: true,
+        value: simulationsTrend,
+        positive: simulationsTrend > 0,
       },
       icon: Gamepad2,
       accentColor: 'accent',
@@ -201,13 +211,29 @@ export function KPIStats() {
     {
       title: 'Opportunities Matched',
       value: opportunitiesMatched,
-      subtitle: '7 high-priority opportunities',
+      subtitle: 'Based on your current profile',
       trend: {
-        value: 5,
-        positive: true,
+        value: opportunitiesTrend,
+        positive: opportunitiesTrend > 0,
       },
       icon: Briefcase,
       accentColor: 'primary',
+    },
+
+    {
+      title: 'AI Confidence',
+      value: `${aiConfidence}%`,
+      subtitle: progress.simulationMemory.riskProfile === 'aggressive' 
+        ? 'High risk tolerance detected' 
+        : progress.simulationMemory.riskProfile === 'conservative'
+          ? 'Conservative decision patterns'
+          : 'Balanced decision patterns',
+      trend: {
+        value: Math.round(progress.simulationMemory.averageScore >= 70 ? 10 : progress.simulationMemory.averageScore >= 50 ? 5 : 0),
+        positive: progress.simulationMemory.averageScore >= 60,
+      },
+      icon: BrainCircuit,
+      accentColor: 'secondary',
     },
   ]
 
