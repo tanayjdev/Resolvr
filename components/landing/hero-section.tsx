@@ -1,19 +1,12 @@
 "use client"
 import Link from "next/link"
-import { useEffect, useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useEffect, useRef } from "react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles, X, Play } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { ArrowRight, Sparkles } from "lucide-react"
 
 export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [demoOpen, setDemoOpen] = useState(false)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -201,7 +194,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex justify-center"
         >
           <Link href="/onboarding">
             <Button
@@ -212,53 +205,8 @@ export function HeroSection() {
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-border/60 bg-white/5 backdrop-blur-md hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 text-lg px-8 py-6"
-            onClick={() => setDemoOpen(true)}
-          >
-            <Play className="mr-2 w-5 h-5" />
-            Watch Demo
-          </Button>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex justify-center pt-2">
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1.5 h-1.5 rounded-full bg-primary"
-            />
-          </div>
         </motion.div>
       </div>
-
-      {/* Demo Modal */}
-      <Dialog open={demoOpen} onOpenChange={setDemoOpen}>
-        <DialogContent className="max-w-4xl bg-background/95 backdrop-blur-xl border-white/10">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold font-[var(--font-syne)]">
-              Resolvr AI Demo
-            </DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center border border-white/10">
-            <div className="text-center">
-              <Play className="w-16 h-16 mx-auto text-primary mb-4" />
-              <p className="text-muted-foreground">Interactive demo preview</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                See how Resolvr AI helps you map your career pathway
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </section>
   )
 }

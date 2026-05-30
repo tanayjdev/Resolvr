@@ -1,13 +1,12 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
-import { BRAND_LOGO } from "@/lib/branding"
+import { BrandLogo } from "@/components/branding/brand-logo"
 
 const navLinks = [
   { label: "Features", href: "#features" },
@@ -69,14 +68,7 @@ export function Navbar() {
             transition={{ duration: 0.2 }}
             className="relative"
           >
-            <Image
-              src={BRAND_LOGO}
-              alt="Resolvr"
-              width={120}
-              height={40}
-              priority
-              className="h-8 w-auto sm:h-9 md:h-10"
-            />
+            <BrandLogo size="navbar" priority />
           </motion.div>
         </Link>
 

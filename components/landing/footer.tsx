@@ -1,9 +1,8 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { BRAND_LOGO } from "@/lib/branding"
+import { BrandLogo } from "@/components/branding/brand-logo"
 
 export function Footer() {
   return (
@@ -18,13 +17,7 @@ export function Footer() {
                 transition={{ duration: 0.2 }}
                 className="relative"
               >
-                <Image
-                  src={BRAND_LOGO}
-                  alt="Resolvr"
-                  width={120}
-                  height={40}
-                  className="h-8 w-auto"
-                />
+                <BrandLogo size="footer" />
               </motion.div>
             </Link>
             <p className="text-sm text-muted-foreground mb-4">

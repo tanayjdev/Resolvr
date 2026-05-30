@@ -4,10 +4,9 @@
 // components/simulation/simulation-header.tsx
 // ============================================================
 
-import Image from "next/image"
 import { Clock, X, Server, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { BRAND_LOGO } from "@/lib/branding"
+import { BrandLogo } from "@/components/branding/brand-logo"
 
 interface SimulationHeaderProps {
   timeRemaining: number
@@ -31,13 +30,7 @@ export function SimulationHeader({
       <div className="flex items-center justify-between gap-2 lg:gap-4">
         {/* Logo & Title */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <Image
-            src={BRAND_LOGO}
-            alt="Resolvr"
-            width={120}
-            height={40}
-            className="h-6 w-auto sm:h-7 md:h-8"
-          />
+          <BrandLogo size="compact" />
 
           <div className="h-4 w-px bg-border hidden sm:block" />
 

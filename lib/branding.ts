@@ -2,6 +2,10 @@
 // Use these constants throughout the application for consistent branding
 
 export const BRAND_LOGO = "/branding/logo.png"
+
+/** Intrinsic pixel dimensions of logo.png — keep in sync with the asset (4:1). */
+export const BRAND_LOGO_WIDTH = 1000
+export const BRAND_LOGO_HEIGHT = 250
 export const BRAND_MONOGRAM = "/branding/monogram.png"
 export const BRAND_GLOW = "/branding/monogram-glow.png"
 export const BRAND_FAVICON = "/branding/favicon.ico"
