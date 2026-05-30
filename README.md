@@ -14,6 +14,14 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com/)
 
+<br/>
+
+**[🚀 Live Demo](https://your-link.vercel.app)**
+
+<!-- HERO BANNER — replace with a real collage/screenshot once deployed -->
+<!-- Suggested: a side-by-side of the dashboard + simulation terminal, exported at ~1400×600px -->
+<!-- <img src="./public/branding/hero-banner.png" alt="Resolvr AI platform preview" width="100%" /> -->
+
 </div>
 
 ---
@@ -23,6 +31,31 @@
 Resolvr AI helps students discover where they stand, what they're missing, and how to close the gap. Rather than generic career advice, it combines an adaptive readiness engine with production-grade incident simulations to give each user an honest picture of their employability and a concrete path forward.
 
 A new user completes a five-step onboarding (career goal → interests → skill level → learning style → weekly commitment), which seeds a personal readiness score and unlocks a tailored career pathway. From there, everything — the simulations recommended, the skill gaps surfaced, and the opportunities ranked — adapts to their specific profile.
+
+---
+
+## Screenshots
+
+> **To do:** Take screenshots once deployed and drop them into `./public/screenshots/`. Suggested tool: [ScreenToGif](https://www.screentogif.com/) for the simulation GIF, browser fullscreen for the statics.
+
+### Simulation Terminal
+<!-- Replace the src below with your actual GIF — record a ~15s clip of typing kubectl commands and watching the score change -->
+<!-- Tip: export at 800px wide, keep under 5MB -->
+<!-- <img src="./public/screenshots/simulation-demo.gif" alt="Simulation terminal demo" width="100%" /> -->
+![Simulation terminal — GIF coming soon](https://via.placeholder.com/900x500/0d1117/00c2ff?text=Simulation+Terminal+GIF+%E2%80%94+coming+soon)
+
+### Dashboard
+<!-- <img src="./public/screenshots/dashboard.png" alt="Dashboard" width="100%" /> -->
+![Dashboard screenshot](https://via.placeholder.com/900x500/0d1117/7c3aed?text=Dashboard+screenshot+%E2%80%94+coming+soon)
+
+### Pathway Explorer & Opportunity Intelligence
+
+| Pathway Explorer | Opportunity Intelligence |
+|---|---|
+| ![Pathway](https://via.placeholder.com/440x280/0d1117/00c2ff?text=Pathway+Explorer) | ![Opportunities](https://via.placeholder.com/440x280/0d1117/7c3aed?text=Opportunity+Intelligence) |
+
+<!-- Replace table cells above with: -->
+<!-- | <img src="./public/screenshots/pathway.png" width="440" /> | <img src="./public/screenshots/opportunities.png" width="440" /> | -->
 
 ---
 
