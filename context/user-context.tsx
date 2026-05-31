@@ -10,6 +10,8 @@ import {
   type ReactNode,
 } from "react"
 
+import { useAuth } from "@/context/auth-context"
+
 import {
   buildUserProfile,
   DEFAULT_PROFILE_ONLY,
@@ -30,6 +32,7 @@ import {
   getDefaultPersistedState,
   readPersistedUserState,
   writePersistedUserState,
+  getUserScopedStorageKey,
 } from "@/lib/storage/user-state-storage"
 
 import {
@@ -175,6 +178,7 @@ export function UserProvider({
 }: {
   children: ReactNode
 }) {
+  const { currentUser, getUserData, saveUserData, isAuthenticated } = useAuth()
   const [progress, setProgress] =
     useState<UserProgress>(DEFAULT_PROGRESS)
 
@@ -196,26 +200,36 @@ export function UserProvider({
   )
 
   useEffect(() => {
-    const persisted =
-      readPersistedUserState()
-
-    setProgress(persisted.progress)
-    setProfileOnly(
-      persisted.profileOnly
-    )
-    setHasHydrated(true)
-  }, [])
-
-  useEffect(() => {
-    if (!hasHydrated) {
+    if (!currentUser || !isAuthenticated) {
+      setHasHydrated(true)
       return
     }
 
-    writePersistedUserState({
+    // Load user-scoped data
+    const userData = getUserData(currentUser.email)
+    if (userData) {
+      setProgress(userData.progress)
+      setProfileOnly(userData.profileOnly)
+    } else {
+      // Initialize with defaults for new user
+      const defaults = getDefaultPersistedState()
+      setProgress(defaults.progress)
+      setProfileOnly(defaults.profileOnly)
+    }
+    setHasHydrated(true)
+  }, [currentUser, isAuthenticated, getUserData])
+
+  useEffect(() => {
+    if (!hasHydrated || !currentUser || !isAuthenticated) {
+      return
+    }
+
+    // Save user-scoped data
+    saveUserData(currentUser.email, {
       progress,
       profileOnly,
     })
-  }, [progress, profileOnly, hasHydrated])
+  }, [progress, profileOnly, hasHydrated, currentUser, isAuthenticated, saveUserData])
 
   const increaseReadiness = (
     value: number

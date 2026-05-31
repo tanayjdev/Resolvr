@@ -14,6 +14,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 import { UserProvider } from "@/context/user-context"
+import { AuthProvider } from "@/context/auth-context"
 
 // =========================================================
 // Fonts
@@ -193,9 +194,11 @@ export default function RootLayout({
         `}
       >
         {/* Global App State */}
-        <UserProvider>
-          {children}
-        </UserProvider>
+        <AuthProvider>
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </AuthProvider>
 
         {/* Analytics */}
         {process.env.NODE_ENV ===

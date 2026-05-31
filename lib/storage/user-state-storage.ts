@@ -21,6 +21,10 @@ import type { SimulationRunState } from "@/lib/types/user-state"
 export const USER_STATE_STORAGE_KEY =
   "resolvr-progress"
 
+export function getUserScopedStorageKey(email: string): string {
+  return `resolvr-user-${email.replace(/[@.]/g, '-')}-data`
+}
+
 export interface PersistedUserState {
   progress: UserProgress
   profileOnly: ProfileOnlyState

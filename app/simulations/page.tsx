@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   BrainCircuit,
@@ -20,6 +21,8 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useUserProgress } from "@/context/user-context"
+import { useAuth } from "@/context/auth-context"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { SCENARIO_REGISTRY } from "@/lib/scenarios"
 
 const CATEGORIES = [
@@ -45,8 +48,25 @@ const itemVariants = {
 }
 
 export default function SimulationsHubPage() {
+  const router = useRouter()
   const { progress, hasHydrated } = useUserProgress()
+  const { isAuthenticated, isLoading } = useAuth()
   const [activeCategory, setActiveCategory] = React.useState<string>("All")
+
+  React.useEffect(() => {
+    if (!hasHydrated || isLoading) return
+    if (!isAuthenticated) {
+      router.replace("/login")
+    }
+  }, [hasHydrated, isLoading, isAuthenticated, router])
+
+  if (!hasHydrated || isLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
+      </div>
+    )
+  }
 
   const filteredScenarios = React.useMemo(() => {
     if (activeCategory === "All") return SCENARIO_REGISTRY
@@ -67,31 +87,32 @@ export default function SimulationsHubPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
-      {/* Ambient Glows */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-[20%] left-[10%] h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute top-[40%] right-[-10%] h-[600px] w-[600px] rounded-full bg-secondary/5 blur-[120px]" />
-      </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+        {/* Ambient Glows */}
+        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div className="absolute -top-[20%] left-[10%] h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px]" />
+          <div className="absolute top-[40%] right-[-10%] h-[600px] w-[600px] rounded-full bg-secondary/5 blur-[120px]" />
+        </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
-        {/* Header Section */}
-        <div className="mb-12 max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 backdrop-blur-md">
-            <Terminal className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
-              Operations Center
-            </span>
-          </div>
-          <h1 className="mb-4 font-[var(--font-syne)] text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            AI Simulation <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-              Command Center
-            </span>
-          </h1>
-          <p className="text-lg text-muted-foreground/80 leading-relaxed max-w-xl">
-            Adaptive employability simulations powered by AI decision analysis. 
-            Test your engineering instincts against production-grade incidents.
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
+          {/* Header Section */}
+          <div className="mb-12 max-w-3xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 backdrop-blur-md">
+              <Terminal className="h-4 w-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+                Operations Center
+              </span>
+            </div>
+            <h1 className="mb-4 font-[var(--font-syne)] text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              AI Simulation <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                Command Center
+              </span>
+            </h1>
+            <p className="text-lg text-muted-foreground/80 leading-relaxed max-w-xl">
+              Adaptive employability simulations powered by AI decision analysis. 
+              Test your engineering instincts against production-grade incidents.
           </p>
         </div>
 
@@ -276,5 +297,6 @@ export default function SimulationsHubPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   )
 }

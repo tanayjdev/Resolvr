@@ -15,6 +15,8 @@ import {
 } from "lucide-react"
 
 import { useUserProgress } from "@/context/user-context"
+import { useAuth } from "@/context/auth-context"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import PageTransition from "@/components/common/PageTransition"
 import { Sidebar, TopBar, BottomNav } from "@/components/dashboard/navigation"
 import { cn } from "@/lib/utils"
@@ -22,15 +24,20 @@ import { cn } from "@/lib/utils"
 export default function SkillsPage() {
   const router = useRouter()
   const { progress, profile, hasHydrated } = useUserProgress()
+  const { isAuthenticated, isLoading } = useAuth()
 
   React.useEffect(() => {
-    if (!hasHydrated) return
+    if (!hasHydrated || isLoading) return
+    if (!isAuthenticated) {
+      router.replace("/login")
+      return
+    }
     if (!profile.onboardingComplete) {
       router.replace("/onboarding")
     }
-  }, [hasHydrated, profile.onboardingComplete, router])
+  }, [hasHydrated, isLoading, isAuthenticated, profile.onboardingComplete, router])
 
-  if (!hasHydrated || !profile.onboardingComplete) {
+  if (!hasHydrated || isLoading || !isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
@@ -50,26 +57,27 @@ export default function SkillsPage() {
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen overflow-hidden bg-background text-foreground">
-        <Sidebar />
+    <ProtectedRoute>
+      <PageTransition>
+        <div className="min-h-screen overflow-hidden bg-background text-foreground">
+          <Sidebar />
 
-        <div className="relative lg:pl-64">
-          <TopBar />
+          <div className="relative lg:pl-64">
+            <TopBar />
 
-          <main className="relative space-y-6 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-10">
-            {/* Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
-              className="flex items-center justify-between"
-            >
-              <div>
-                <h1 className="font-[var(--font-syne)] text-2xl font-bold tracking-tight sm:text-3xl">
-                  Skills Intelligence
-                </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+            <main className="relative space-y-6 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-10">
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45 }}
+                className="flex items-center justify-between"
+              >
+                <div>
+                  <h1 className="font-[var(--font-syne)] text-2xl font-bold tracking-tight sm:text-3xl">
+                    Skills Intelligence
+                  </h1>
+                  <p className="mt-1 text-sm text-muted-foreground">
                   Track your skill development and AI-powered recommendations
                 </p>
               </div>
@@ -215,5 +223,6 @@ export default function SkillsPage() {
         <BottomNav />
       </div>
     </PageTransition>
+    </ProtectedRoute>
   )
 }

@@ -1,9 +1,12 @@
 "use client"
 
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import PathwayLine from "@/components/pathway/PathwayLine"
 import { OriginNode } from "@/components/pathway/OriginNode"
 import AmbientInsights from "@/components/pathway/AmbientInsights"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
+import { useAuth } from "@/context/auth-context"
 
 import { useEffect, useRef, useState, useCallback } from "react"
 
@@ -34,8 +37,17 @@ const GOALS = [
 ] as const
 
 export default function PathwayVisualization() {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
   const canvasRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+
+  // Check authentication
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login")
+    }
+  }, [isAuthenticated, isLoading, router])
 
   // Get global user state
   const { progress, getAIInsights } = useUserProgress()
@@ -71,21 +83,32 @@ export default function PathwayVisualization() {
     if (e.target === canvasRef.current) setSelectedMilestone(null)
   }, [])
 
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
+      </div>
+    )
+  }
+
   if (isMobile) {
     return (
-      <MobilePathwayView
-        activeFilter={activeFilter}
-        setActiveFilter={setActiveFilter}
-        selectedMilestone={selectedMilestone}
-        onMilestoneClick={handleMilestoneClick}
-        onClosePanel={handleClosePanel}
-      />
+      <ProtectedRoute>
+        <MobilePathwayView
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+          selectedMilestone={selectedMilestone}
+          onMilestoneClick={handleMilestoneClick}
+          onClosePanel={handleClosePanel}
+        />
+      </ProtectedRoute>
     )
   }
 
   return (
-    <PageTransition>
-      <div className="relative h-screen w-screen overflow-hidden bg-[#030308]">
+    <ProtectedRoute>
+      <PageTransition>
+        <div className="relative h-screen w-screen overflow-hidden bg-[#030308]">
 
         {/* ── Goal selector ──────────────────────────────────────────── */}
         <div className="absolute left-6 top-20 z-50 flex flex-wrap gap-3">
@@ -198,6 +221,7 @@ export default function PathwayVisualization() {
         )}
       </div>
     </PageTransition>
+    </ProtectedRoute>
   )
 }
 

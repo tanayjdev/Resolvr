@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   AlertTriangle,
@@ -16,6 +17,8 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useUserProgress } from "@/context/user-context"
+import { useAuth } from "@/context/auth-context"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import type { SimulationViewPhase, Choice } from "@/lib/simulations/types"
 import { PRODUCTION_AI_INCIDENT } from "@/lib/simulations/productionAIIncident"
 
@@ -185,11 +188,28 @@ import { getScenarioConfig } from "@/lib/scenarios"
 
 // We extract the inner content into a component so it can use useSearchParams
 function SimulationContent() {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
   const searchParams = useSearchParams()
   const scenarioId = searchParams.get("scenario")
   
   const config = scenarioId ? getScenarioConfig(scenarioId) : null
   const { progress, hasHydrated, startSimulation, recordSimulationDecision, completeSimulationRun, clearSimulationRun } = useUserProgress()
+
+  // Authentication check
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login")
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
+      </div>
+    )
+  }
 
   const [phase, setPhase] = React.useState<SimulationViewPhase>("briefing")
   
@@ -356,26 +376,27 @@ function SimulationContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10%] top-[-20%] h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] h-80 w-80 rounded-full bg-secondary/10 blur-[120px]" />
-      </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[-10%] top-[-20%] h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+          <div className="absolute bottom-[-20%] right-[-10%] h-80 w-80 rounded-full bg-secondary/10 blur-[120px]" />
+        </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                Incident Simulator
-              </span>
+        <div className="relative z-10 mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+                  Incident Simulator
+                </span>
+              </div>
+
+              <h1 className="font-[var(--font-syne)] text-2xl font-bold tracking-tight sm:text-3xl">
+                {config.title}
+              </h1>
             </div>
-
-            <h1 className="font-[var(--font-syne)] text-2xl font-bold tracking-tight sm:text-3xl">
-              {config.title}
-            </h1>
-          </div>
 
           <div className="rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-destructive">
             {config.severity}
@@ -572,6 +593,7 @@ function SimulationContent() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   )
 }
 

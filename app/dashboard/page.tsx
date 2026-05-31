@@ -5,6 +5,8 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 
 import { useUserProgress } from "@/context/user-context"
+import { useAuth } from "@/context/auth-context"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 
 import DashboardShell from "@/components/onboarding/DashboardShell"
 
@@ -16,8 +18,15 @@ export default function DashboardPage() {
     hasHydrated,
   } = useUserProgress()
 
+  const { isAuthenticated, isLoading } = useAuth()
+
   React.useEffect(() => {
-    if (!hasHydrated) {
+    if (!hasHydrated || isLoading) {
+      return
+    }
+
+    if (!isAuthenticated) {
+      router.replace("/login")
       return
     }
 
@@ -26,12 +35,16 @@ export default function DashboardPage() {
     }
   }, [
     hasHydrated,
+    isLoading,
+    isAuthenticated,
     profile.onboardingComplete,
     router,
   ])
 
   if (
     !hasHydrated ||
+    isLoading ||
+    !isAuthenticated ||
     !profile.onboardingComplete
   ) {
     return (
@@ -41,5 +54,9 @@ export default function DashboardPage() {
     )
   }
 
-  return <DashboardShell />
+  return (
+    <ProtectedRoute>
+      <DashboardShell />
+    </ProtectedRoute>
+  )
 }

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserProgress } from '@/context/user-context'
+import { useAuth } from '@/context/auth-context'
 import { BrandLogo } from '@/components/branding/brand-logo'
 
 import {
@@ -219,6 +220,7 @@ export function TopBar() {
   const [notificationOpen, setNotificationOpen] = React.useState(false)
   const [profileOpen, setProfileOpen] = React.useState(false)
   const { progress, profile } = useUserProgress()
+  const { logout } = useAuth()
 
   const mockNotifications = [
     {
@@ -370,7 +372,10 @@ export function TopBar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer text-destructive">
+              <DropdownMenuItem 
+                className="cursor-pointer text-destructive"
+                onClick={() => logout()}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
               </DropdownMenuItem>

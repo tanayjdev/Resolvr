@@ -20,6 +20,9 @@ import { MobileTabNav } from "@/components/simulation/mobile-tab-nav"
 
 // ── Context ────────────────────────────────────────────────
 import { useUserProgress } from "@/context/user-context"
+import { useAuth } from "@/context/auth-context"
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
+import { useRouter } from "next/navigation"
 
 // ── Engines ────────────────────────────────────────────────
 import {
@@ -63,12 +66,30 @@ import type {
 } from "@/lib/simulation/types"
 
 export default function SimulationPage() {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
+  
   // ── User Progress ───────────────────────────────────────
   const {
     increaseReadiness,
     completeSimulation,
     recordSimulationWithImpact,
   } = useUserProgress()
+
+  // ── Authentication Check ───────────────────────────────
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login")
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-10 w-10 animate-pulse rounded-full border border-primary/30 bg-primary/10" />
+      </div>
+    )
+  }
 
   // ── Timer ───────────────────────────────────────────────
   const [timeRemaining, setTimeRemaining] =
@@ -407,25 +428,26 @@ export default function SimulationPage() {
   // ── Render ──────────────────────────────────────────────
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <SimulationHeader
-        timeRemaining={
-          timeRemaining
-        }
-        readinessScore={
-          scoreState.current
-        }
-        onExit={handleExit}
-      />
+    <ProtectedRoute>
+      <div className="flex min-h-screen flex-col bg-background">
+        <SimulationHeader
+          timeRemaining={
+            timeRemaining
+          }
+          readinessScore={
+            scoreState.current
+          }
+          onExit={handleExit}
+        />
 
-      <main className="flex flex-1 flex-col gap-2 sm:gap-3 overflow-hidden p-2 sm:p-3 lg:gap-4 lg:p-4">
-        {/* Incident */}
-        <IncidentPanel />
+        <main className="flex flex-1 flex-col gap-2 sm:gap-3 overflow-hidden p-2 sm:p-3 lg:gap-4 lg:p-4">
+          {/* Incident */}
+          <IncidentPanel />
 
-        {/* Desktop */}
-        <div className="hidden min-h-0 flex-1 gap-4 lg:grid lg:grid-cols-12">
-          {/* Left */}
-          <div className="col-span-4 flex min-h-0 flex-col gap-4">
+          {/* Desktop */}
+          <div className="hidden min-h-0 flex-1 gap-4 lg:grid lg:grid-cols-12">
+            {/* Left */}
+            <div className="col-span-4 flex min-h-0 flex-col gap-4">
             <LogsPanel
               logs={logs}
               className="flex-1"
@@ -588,5 +610,6 @@ export default function SimulationPage() {
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   )
 }
