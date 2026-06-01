@@ -21,6 +21,9 @@ import {
   useUserProgress,
 } from "@/context/user-context"
 
+import { useAuth } from "@/context/auth-context"
+import { supabase } from "@/lib/supabase"
+
 import type {
   SkillLevel,
   WeeklyHours,
@@ -36,6 +39,7 @@ import {
   WEEKLY_HOURS_OPTIONS,
   getResumeStep,
   mapCareerGoalToPathway,
+  mapCareerGoalToCareerTrack,
 } from "@/lib/onboarding/options"
 
 import { Button } from "@/components/ui/button"
@@ -109,6 +113,8 @@ export default function OnboardingFlow() {
     completeOnboarding,
     setPathway,
   } = useUserProgress()
+
+  const { currentUser } = useAuth()
 
   const [step, setStep] =
     React.useState(1)
@@ -228,7 +234,7 @@ export default function OnboardingFlow() {
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validateStep(step)) {
       setValidationError(
         getValidationMessage(step)
@@ -240,8 +246,11 @@ export default function OnboardingFlow() {
     persistCurrentStep()
 
     if (step >= ONBOARDING_STEP_COUNT) {
+      const careerTrack = form.careerGoal ? mapCareerGoalToCareerTrack(form.careerGoal) : null
+      
       updateProfile({
         careerGoal: form.careerGoal,
+        careerTrack,
         interests: form.interests,
         skillLevel: form.skillLevel,
         learningStyle:
@@ -252,6 +261,28 @@ export default function OnboardingFlow() {
         ],
         pathwayProgress: 12,
       })
+
+      // Save to Supabase profiles table
+      if (currentUser && careerTrack) {
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              career_track: careerTrack,
+              skill_level: form.skillLevel,
+              time_commitment: form.weeklyHours,
+              interests: form.interests,
+              onboarding_complete: true,
+            })
+            .eq('id', currentUser.id)
+
+          if (error) {
+            console.error("Failed to save profile to Supabase:", error)
+          }
+        } catch (error) {
+          console.error("Error saving profile to Supabase:", error)
+        }
+      }
 
       if (form.careerGoal) {
         setPathway(

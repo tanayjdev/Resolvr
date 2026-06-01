@@ -621,13 +621,20 @@
 ========================================================= */
 
 @media (max-width: 640px) {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
   }
 
-  p, span, div {
+  p,
+  span,
+  div {
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
@@ -882,4 +889,49 @@
 
 .font-display-fallback {
   font-display: fallback;
+}
+
+/* =========================================================
+   SETTINGS THEME EFFECTS
+========================================================= */
+
+/* Reduced Motion - Disable all animations and transitions */
+.reduce-motion * {
+  animation: none !important;
+  transition: none !important;
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+}
+
+/* High Contrast - Increase contrast for better readability */
+.high-contrast {
+  --foreground: rgba(255, 255, 255, 1);
+  --card-foreground: rgba(255, 255, 255, 1);
+  --muted-foreground: rgba(255, 255, 255, 0.8);
+  --border: rgba(255, 255, 255, 0.2);
+}
+
+.high-contrast * {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Low Data Mode - Disable heavy effects */
+.low-data .dot-pattern {
+  display: none;
+}
+
+.low-data .glow-effect {
+  display: none;
+}
+
+.low-data .blur-xl {
+  filter: none !important;
+}
+
+.low-data .blur-2xl {
+  filter: none !important;
+}
+
+.low-data .blur-3xl {
+  filter: none !important;
 }

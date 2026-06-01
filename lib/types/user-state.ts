@@ -60,8 +60,6 @@ export interface UserProgress {
 
   opportunities: Opportunity[]
 
-  lowDataMode: boolean
-
   // Connected Intelligence fields
   certificationsEarned: number
 
@@ -115,8 +113,6 @@ export const DEFAULT_PROGRESS: UserProgress = {
       match: 91,
     },
   ],
-
-  lowDataMode: false,
 
   // Connected Intelligence fields
   certificationsEarned: 0,

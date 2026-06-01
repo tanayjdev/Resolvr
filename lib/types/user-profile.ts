@@ -3,6 +3,8 @@ import {
   type UserProgress,
 } from "@/lib/types/user-state"
 
+import type { CareerTrack } from "@/lib/personas/persona-config"
+
 export type SkillLevel =
   | "Beginner"
   | "Intermediate"
@@ -15,6 +17,8 @@ export type WeeklyHours =
 
 export interface UserProfile {
   careerGoal: string
+
+  careerTrack: CareerTrack | null
 
   interests: string[]
 
@@ -39,6 +43,7 @@ export interface UserProfile {
 export type ProfileOnlyState = Pick<
   UserProfile,
   | "careerGoal"
+  | "careerTrack"
   | "skillLevel"
   | "learningStyle"
   | "weeklyHours"
@@ -49,6 +54,7 @@ export type ProfileOnlyState = Pick<
 
 export const DEFAULT_PROFILE_ONLY: ProfileOnlyState = {
   careerGoal: "",
+  careerTrack: null,
   skillLevel: "Beginner",
   learningStyle: "",
   weeklyHours: "2hrs",

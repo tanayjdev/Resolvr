@@ -48,6 +48,8 @@ export interface DashboardOpportunity {
   tags: string[]
 
   reason: string
+
+  url: string
 }
 
 export interface GuidanceCard {
@@ -172,6 +174,7 @@ export const OPPORTUNITY_MAP: Record<
       tags: ["Python", "LLMs", "TensorFlow"],
       reason:
         "Aligned with your AI Engineer goal and ML simulation momentum.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=ML%20Engineering%20Intern%20Swiggy&location=Bangalore",
     },
     {
       id: "ai-research",
@@ -184,6 +187,7 @@ export const OPPORTUNITY_MAP: Record<
       tags: ["Deep Learning", "PyTorch"],
       reason:
         "Strong fit for advanced model experimentation and deployment skills.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=AI%20Research%20Fellow%20NVIDIA&location=Remote",
     },
   ],
 
@@ -203,6 +207,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Matches analytics interests and your data science career trajectory.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Data%20Science%20Intern%20Flipkart&location=Bangalore",
     },
     {
       id: "ds-ml-product",
@@ -218,6 +223,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Combines experimentation rigor with applied ML product delivery.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=ML%20Product%20Analyst%20Razorpay&location=Remote",
     },
   ],
 
@@ -237,6 +243,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Prioritizes API and platform engineering strengths from your pathway.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Backend%20Platform%20Intern%20Razorpay&location=Remote",
     },
     {
       id: "be-services",
@@ -252,6 +259,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Supports backend scalability skills and architecture milestones.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Distributed%20Services%20Intern%20Uber&location=Hyderabad",
     },
   ],
 
@@ -267,6 +275,7 @@ export const OPPORTUNITY_MAP: Record<
       tags: ["AWS", "Kubernetes", "Cloud"],
       reason:
         "Targets cloud infrastructure goals and Kubernetes simulation progress.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Cloud%20SRE%20Intern%20Google&location=Bengaluru",
     },
     {
       id: "cloud-platform",
@@ -282,6 +291,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Matches cloud architecture interests and platform reliability focus.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Cloud%20Platform%20Engineer%20Intern%20Microsoft&location=Remote",
     },
   ],
 
@@ -297,6 +307,7 @@ export const OPPORTUNITY_MAP: Record<
       tags: ["Docker", "CI/CD", "Kubernetes"],
       reason:
         "Aligned with infrastructure automation and CI/CD pathway milestones.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=DevOps%20Intern%20Zerodha&location=Bangalore",
     },
     {
       id: "devops-release",
@@ -312,6 +323,7 @@ export const OPPORTUNITY_MAP: Record<
       ],
       reason:
         "Strengthens delivery pipeline skills tied to your DevOps specialization.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Release%20Engineering%20Intern%20Atlassian&location=Remote",
     },
   ],
 }
@@ -497,6 +509,7 @@ const NEUTRAL_OPPORTUNITIES: DashboardOpportunity[] =
       tags: ["Career Exploration"],
       reason:
         "Complete onboarding to unlock role-specific opportunity matching.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Technology%20Intern&location=Remote",
     },
     {
       id: "neutral-2",
@@ -509,6 +522,7 @@ const NEUTRAL_OPPORTUNITIES: DashboardOpportunity[] =
       tags: ["General Tech"],
       reason:
         "Personalized matches appear after your profile setup is complete.",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Graduate%20Trainee&location=Hybrid",
     },
   ]
 

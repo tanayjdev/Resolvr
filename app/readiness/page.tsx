@@ -17,6 +17,7 @@ import {
 
 import { useUserProgress } from "@/context/user-context"
 import { useAuth } from "@/context/auth-context"
+import { usePersona } from "@/context/persona-context"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import PageTransition from "@/components/common/PageTransition"
 import { Sidebar, TopBar, BottomNav } from "@/components/dashboard/navigation"
@@ -26,6 +27,7 @@ export default function ReadinessPage() {
   const router = useRouter()
   const { progress, profile, hasHydrated } = useUserProgress()
   const { isAuthenticated, isLoading } = useAuth()
+  const { persona } = usePersona()
 
   React.useEffect(() => {
     if (!hasHydrated || isLoading) return
@@ -46,8 +48,9 @@ export default function ReadinessPage() {
     )
   }
 
-  const readinessScore = progress.readinessScore
-  const employabilityScore = progress.employabilityScore
+  // Use persona-specific readiness scores if available
+  const readinessScore = persona?.readinessScore || progress.readinessScore
+  const employabilityScore = persona?.employabilityScore || progress.employabilityScore
   const aiConfidence = progress.aiConfidence
   const simulationMemory = progress.simulationMemory
 

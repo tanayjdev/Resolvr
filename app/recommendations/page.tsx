@@ -7,6 +7,7 @@ import { OriginNode } from "@/components/pathway/OriginNode"
 import AmbientInsights from "@/components/pathway/AmbientInsights"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/context/auth-context"
+import { usePersona } from "@/context/persona-context"
 
 import { useEffect, useRef, useState, useCallback } from "react"
 
@@ -39,8 +40,14 @@ const GOALS = [
 export default function PathwayVisualization() {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAuth()
+  const { persona, dashboardData } = usePersona()
   const canvasRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+
+  // Use persona-specific pathways if available
+  const personaPathways = persona?.pathways || []
+  const personaSimulations = persona?.simulations || []
+  const personaOpportunities = persona?.opportunities || []
 
   // Check authentication
   useEffect(() => {

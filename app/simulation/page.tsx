@@ -184,7 +184,7 @@ function TerminalLogPanel({
 }
 
 import { useSearchParams } from "next/navigation"
-import { getScenarioConfig } from "@/lib/scenarios"
+import { getScenarioConfig, SCENARIO_REGISTRY } from "@/lib/scenarios"
 
 // We extract the inner content into a component so it can use useSearchParams
 function SimulationContent() {
@@ -195,6 +195,20 @@ function SimulationContent() {
   
   const config = scenarioId ? getScenarioConfig(scenarioId) : null
   const { progress, hasHydrated, startSimulation, recordSimulationDecision, completeSimulationRun, clearSimulationRun } = useUserProgress()
+
+  // All useState hooks must be declared before any early returns
+  const [phase, setPhase] = React.useState<SimulationViewPhase>("briefing")
+  
+  // Safely initialize to first step if available
+  const initialStepId = config?.steps?.[0]?.id || null
+  const [currentStepId, setCurrentStepId] = React.useState<string | null>(initialStepId)
+  
+  const [selectedChoices, setSelectedChoices] = React.useState<Choice[]>([])
+  const [activeChoice, setActiveChoice] = React.useState<Choice | null>(null)
+  
+  const [hasSubmittedCompletion, setHasSubmittedCompletion] = React.useState(false)
+  
+  const [aiConfidence, setAiConfidence] = React.useState(progress.aiConfidence)
 
   // Authentication check
   React.useEffect(() => {
@@ -210,19 +224,6 @@ function SimulationContent() {
       </div>
     )
   }
-
-  const [phase, setPhase] = React.useState<SimulationViewPhase>("briefing")
-  
-  // Safely initialize to first step if available
-  const initialStepId = config?.steps?.[0]?.id || null
-  const [currentStepId, setCurrentStepId] = React.useState<string | null>(initialStepId)
-  
-  const [selectedChoices, setSelectedChoices] = React.useState<Choice[]>([])
-  const [activeChoice, setActiveChoice] = React.useState<Choice | null>(null)
-  
-  const [hasSubmittedCompletion, setHasSubmittedCompletion] = React.useState(false)
-  
-  const [aiConfidence, setAiConfidence] = React.useState(progress.aiConfidence)
 
   // Start simulation when component mounts
   React.useEffect(() => {
@@ -240,6 +241,12 @@ function SimulationContent() {
 
   // Graceful fallback for missing config or steps
   if (!config || !config.steps || config.steps.length === 0) {
+    console.error("=== SCENARIO NOT FOUND ===")
+    console.error("Requested scenario ID:", scenarioId)
+    console.error("Config found:", !!config)
+    console.error("Steps found:", config?.steps?.length || 0)
+    console.error("Available scenario IDs:", SCENARIO_REGISTRY.map(s => s.id).join(", "))
+
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
         <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
@@ -247,8 +254,14 @@ function SimulationContent() {
         <p className="text-muted-foreground mb-6 max-w-md">
           The requested simulation scenario is either missing or incorrectly configured.
         </p>
+        <div className="mb-6 p-4 rounded-xl border border-white/10 bg-white/[0.02] text-left max-w-md">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Debug Info:</p>
+          <p className="text-sm text-muted-foreground">Scenario ID: <code className="bg-white/10 px-1 py-0.5 rounded">{scenarioId || "null"}</code></p>
+          <p className="text-sm text-muted-foreground mt-1">Available IDs:</p>
+          <p className="text-xs text-muted-foreground mt-1 font-mono">{SCENARIO_REGISTRY.map(s => s.id).join(", ")}</p>
+        </div>
         <Button asChild className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">
-          <Link href="/dashboard">Return to Dashboard</Link>
+          <Link href="/simulations">Return to Simulations</Link>
         </Button>
       </div>
     )

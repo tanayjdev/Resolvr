@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useUserProgress } from "@/context/user-context"
 import { useAuth } from "@/context/auth-context"
+import { usePersona } from "@/context/persona-context"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { SCENARIO_REGISTRY } from "@/lib/scenarios"
 
@@ -51,6 +52,7 @@ export default function SimulationsHubPage() {
   const router = useRouter()
   const { progress, hasHydrated } = useUserProgress()
   const { isAuthenticated, isLoading } = useAuth()
+  const { persona } = usePersona()
   const [activeCategory, setActiveCategory] = React.useState<string>("All")
 
   React.useEffect(() => {
@@ -68,10 +70,14 @@ export default function SimulationsHubPage() {
     )
   }
 
+  // Use persona-specific simulations if available, otherwise fall back to SCENARIO_REGISTRY
+  const personaSimulations = persona?.simulations || []
+  const allScenarios = personaSimulations.length > 0 ? personaSimulations : SCENARIO_REGISTRY
+
   const filteredScenarios = React.useMemo(() => {
-    if (activeCategory === "All") return SCENARIO_REGISTRY
-    return SCENARIO_REGISTRY.filter((s) => s.category === activeCategory)
-  }, [activeCategory])
+    if (activeCategory === "All") return allScenarios
+    return allScenarios.filter((s) => s.category === activeCategory)
+  }, [activeCategory, allScenarios])
 
   const { strongestSkill, weakestSkill, completedCount } = React.useMemo(() => {
     const skills = progress.skills || []
@@ -147,6 +153,7 @@ export default function SimulationsHubPage() {
               <AnimatePresence mode="popLayout">
                 {filteredScenarios.map((scenario) => {
                   const isCompleted = progress.completedSimulations.includes(scenario.id)
+                  const score = progress.simulationPerformance[scenario.id]
 
                   return (
                     <motion.div
@@ -174,9 +181,12 @@ export default function SimulationsHubPage() {
                             </span>
                           </div>
                           {isCompleted && (
-                            <div className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-xs font-semibold text-success border border-success/20">
+                            <div className="flex items-center gap-2 rounded-full bg-success/10 px-2 py-1 text-xs font-semibold text-success border border-success/20">
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               <span className="uppercase tracking-wider text-[10px]">Cleared</span>
+                              {score !== undefined && (
+                                <span className="ml-1 text-[10px] font-bold">{score}%</span>
+                              )}
                             </div>
                           )}
                         </div>

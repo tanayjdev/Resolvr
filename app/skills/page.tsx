@@ -16,6 +16,7 @@ import {
 
 import { useUserProgress } from "@/context/user-context"
 import { useAuth } from "@/context/auth-context"
+import { usePersona } from "@/context/persona-context"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import PageTransition from "@/components/common/PageTransition"
 import { Sidebar, TopBar, BottomNav } from "@/components/dashboard/navigation"
@@ -25,6 +26,7 @@ export default function SkillsPage() {
   const router = useRouter()
   const { progress, profile, hasHydrated } = useUserProgress()
   const { isAuthenticated, isLoading } = useAuth()
+  const { persona, dashboardData } = usePersona()
 
   React.useEffect(() => {
     if (!hasHydrated || isLoading) return
@@ -45,11 +47,14 @@ export default function SkillsPage() {
     )
   }
 
-  const skills = progress.skills
+  // Use persona-specific skills if available, otherwise fall back to progress skills
+  const skills = persona?.skills || progress.skills
   const masteredSkills = skills.filter((s) => s.level >= 80)
   const developingSkills = skills.filter((s) => s.level >= 50 && s.level < 80)
   const emergingSkills = skills.filter((s) => s.level < 50)
 
+  // Use persona-specific pathways if available
+  const pathways = persona?.pathways || []
   const skillCategories = {
     "Technical Skills": skills.slice(0, 3),
     "Soft Skills": skills.slice(3, 6),

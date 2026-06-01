@@ -13,7 +13,6 @@ export default function LoginPage() {
   const router = useRouter()
   const { login, isLoading } = useAuth()
   const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
 
@@ -21,13 +20,13 @@ export default function LoginPage() {
     e.preventDefault()
     setError("")
 
-    if (!email || !username || !password) {
+    if (!email || !password) {
       setError("Please fill in all fields")
       return
     }
 
     try {
-      await login(email, username, password)
+      await login(email, password)
     } catch (err: any) {
       setError(err.message || "Login failed")
     }
@@ -83,21 +82,6 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background/50 border-white/10 focus:border-primary/50"
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium text-foreground">
-                  Username
-                </label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="yourusername"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
                   className="bg-background/50 border-white/10 focus:border-primary/50"
                   disabled={isLoading}
                 />

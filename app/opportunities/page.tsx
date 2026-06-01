@@ -17,6 +17,7 @@ import {
 
 import { useUserProgress } from "@/context/user-context"
 import { useAuth } from "@/context/auth-context"
+import { usePersona } from "@/context/persona-context"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import PageTransition from "@/components/common/PageTransition"
 import { Sidebar, TopBar, BottomNav } from "@/components/dashboard/navigation"
@@ -29,6 +30,7 @@ export default function OpportunitiesPage() {
   const router = useRouter()
   const { progress, profile, hasHydrated } = useUserProgress()
   const { isAuthenticated, isLoading } = useAuth()
+  const { persona } = usePersona()
   type Opportunity = {
   id: number
   title: string
@@ -68,9 +70,9 @@ export default function OpportunitiesPage() {
     )
   }
 
-  
-
-  const mockOpportunities = [
+  // Use persona-specific opportunities if available
+  const personaOpportunities = persona?.opportunities || []
+  const opportunities = personaOpportunities.length > 0 ? personaOpportunities : [
     {
       id: 1,
       title: "Senior ML Engineer",
@@ -81,6 +83,7 @@ export default function OpportunitiesPage() {
       requiredSkills: ["Python", "Machine Learning", "TensorFlow", "MLOps"],
       aiRanking: "Top Match",
       posted: "2 days ago",
+      url: "https://www.linkedin.com/jobs/search/?keywords=Senior%20ML%20Engineer&location=San%20Francisco",
     },
     {
       id: 2,
@@ -92,59 +95,14 @@ export default function OpportunitiesPage() {
       requiredSkills: ["Product Management", "AI/ML", "Strategy", "Analytics"],
       aiRanking: "High Match",
       posted: "3 days ago",
-    },
-    {
-      id: 3,
-      title: "Platform Engineer",
-      company: "CloudScale",
-      location: "New York, NY",
-      salary: "$150k - $200k",
-      match: 85,
-      requiredSkills: ["Kubernetes", "Cloud Infrastructure", "DevOps", "Go"],
-      aiRanking: "Strong Match",
-      posted: "1 week ago",
-    },
-    {
-      id: 4,
-      title: "Research Scientist",
-      company: "DeepMind Labs",
-      location: "London, UK",
-      salary: "$140k - $190k",
-      match: 82,
-      requiredSkills: ["Research", "PyTorch", "Deep Learning", "Publications"],
-      aiRanking: "Good Match",
-      posted: "5 days ago",
-    },
-    {
-      id: 5,
-      title: "ML Infrastructure Lead",
-      company: "Scale AI",
-      location: "Remote",
-      salary: "$200k - $280k",
-      match: 78,
-      requiredSkills: ["MLOps", "Infrastructure", "Python", "AWS"],
-      aiRanking: "Good Match",
-      posted: "1 week ago",
-    },
-    {
-      id: 6,
-      title: "Data Science Manager",
-      company: "Analytics Pro",
-      location: "Chicago, IL",
-      salary: "$170k - $230k",
-      match: 75,
-      requiredSkills: ["Leadership", "Data Science", "SQL", "Team Management"],
-      aiRanking: "Moderate Match",
-      posted: "2 weeks ago",
+      url: "https://www.linkedin.com/jobs/search/?keywords=AI%20Product%20Manager&location=Remote",
     },
   ]
 
-  const opportunities = progress.opportunities || []
-  const employabilityScore = progress.employabilityScore
+  const employabilityScore = persona?.employabilityScore || progress.employabilityScore
 
   const filteredOpportunities = React.useMemo(() => {
-    
-    let filtered = [...mockOpportunities]
+    let filtered = [...opportunities]
 
     if (filters.matchPercentage !== null) {
       filtered = filtered.filter((o) => o.match >= filters.matchPercentage!)
@@ -160,12 +118,12 @@ export default function OpportunitiesPage() {
         (o) =>
           o.title.toLowerCase().includes(query) ||
           o.company.toLowerCase().includes(query) ||
-          o.requiredSkills.some((skill) => skill.toLowerCase().includes(query))
+          o.requiredSkills.some((skill: string) => skill.toLowerCase().includes(query))
       )
     }
 
     return filtered
-  }, [filters, mockOpportunities])
+  }, [filters, opportunities])
 
   if (!hasHydrated || !profile.onboardingComplete) {
     return (

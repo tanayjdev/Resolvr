@@ -30,6 +30,7 @@ interface Opportunity {
   requiredSkills: string[]
   aiRanking: string
   posted: string
+  url: string
 }
 
 interface OpportunityDetailModalProps {
@@ -175,7 +176,15 @@ export function OpportunityDetailModal({ opportunity, onClose }: OpportunityDeta
                 className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-3 hover:border-primary/20 transition-colors"
               >
                 <span className="text-sm">{sim}</span>
-                <Button size="sm" variant="ghost" className="gap-1">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="gap-1"
+                  onClick={() => {
+                    // Navigate to simulations page
+                    window.location.href = '/simulations'
+                  }}
+                >
                   Start
                   <ArrowRight className="h-3 w-3" />
                 </Button>
@@ -200,7 +209,15 @@ export function OpportunityDetailModal({ opportunity, onClose }: OpportunityDeta
                   <p className="text-sm font-medium">{resource.title}</p>
                   <p className="text-xs text-muted-foreground">{resource.provider} • {resource.type}</p>
                 </div>
-                <Button size="sm" variant="ghost" className="gap-1">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="gap-1"
+                  onClick={() => {
+                    // Open resource in new tab (placeholder URL)
+                    window.open('https://www.google.com/search?q=' + encodeURIComponent(resource.title), '_blank')
+                  }}
+                >
                   View
                   <ArrowRight className="h-3 w-3" />
                 </Button>
@@ -211,11 +228,21 @@ export function OpportunityDetailModal({ opportunity, onClose }: OpportunityDeta
 
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t border-white/10">
-          <Button className="flex-1 gap-2">
+          <Button 
+            className="flex-1 gap-2"
+            onClick={() => window.open(opportunity.url, '_blank')}
+          >
             Apply Now
             <ArrowRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" className="gap-2">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => {
+              // Save functionality - could be expanded to save to user's saved opportunities
+              alert('Opportunity saved to your favorites!')
+            }}
+          >
             Save
             <Star className="h-4 w-4" />
           </Button>

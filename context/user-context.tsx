@@ -11,6 +11,7 @@ import {
 } from "react"
 
 import { useAuth } from "@/context/auth-context"
+import { supabase } from "@/lib/supabase"
 
 import {
   buildUserProfile,
@@ -111,8 +112,6 @@ interface UserContextType {
     pathway: string
   ) => void
 
-  toggleLowDataMode: () => void
-
   addOpportunity: (
     opportunity: Opportunity
   ) => void
@@ -205,7 +204,7 @@ export function UserProvider({
       return
     }
 
-    // Load user-scoped data
+    // Load user-scoped data from localStorage first
     const userData = getUserData(currentUser.email)
     if (userData) {
       setProgress(userData.progress)
@@ -216,6 +215,32 @@ export function UserProvider({
       setProgress(defaults.progress)
       setProfileOnly(defaults.profileOnly)
     }
+
+    // Override with Supabase profile data if available
+    if (currentUser.profile) {
+      setProfileOnly((prev) => ({
+        ...prev,
+        careerGoal: currentUser.profile!.career_track || prev.careerGoal,
+        careerTrack: (currentUser.profile!.career_track as any) || prev.careerTrack,
+        skillLevel: (currentUser.profile!.skill_level as any) || prev.skillLevel,
+        weeklyHours: (currentUser.profile!.time_commitment as any) || prev.weeklyHours,
+        onboardingComplete: currentUser.profile!.onboarding_complete ?? prev.onboardingComplete,
+      }))
+    }
+
+    // Override with Supabase user_progress data if available
+    if (currentUser.userProgress) {
+      setProgress((prev) => ({
+        ...prev,
+        readinessScore: currentUser.userProgress!.readiness_score ?? prev.readinessScore,
+        completedSimulations: currentUser.userProgress!.completed_simulations ?? prev.completedSimulations,
+        simulationsCompleted: currentUser.userProgress!.simulations_completed ?? prev.simulationsCompleted,
+        employabilityScore: currentUser.userProgress!.employability_score ?? prev.employabilityScore,
+        skills: currentUser.userProgress!.skills ?? prev.skills,
+        simulationPerformance: currentUser.userProgress!.simulation_performance ?? prev.simulationPerformance,
+      }))
+    }
+
     setHasHydrated(true)
   }, [currentUser, isAuthenticated, getUserData])
 
@@ -308,16 +333,6 @@ export function UserProvider({
             ],
     }))
   }
-
-  const toggleLowDataMode =
-    () => {
-      setProgress((prev) => ({
-        ...prev,
-
-        lowDataMode:
-          !prev.lowDataMode,
-      }))
-    }
 
   const addOpportunity = (
     opportunity: Opportunity
@@ -820,7 +835,7 @@ export function UserProvider({
       console.log('Updated AI Confidence:', newAiConfidence)
       console.log('Updated Skills:', updatedSkills)
 
-      return {
+      const newProgress = {
         ...prev,
         completedSimulations: [...prev.completedSimulations, currentSimulationRun.simulationId],
         simulationsCompleted: prev.simulationsCompleted + 1,
@@ -848,8 +863,39 @@ export function UserProvider({
           isComplete: true
         }
       }
+
+      // Save to Supabase user_progress table
+      if (currentUser && isAuthenticated) {
+        supabase
+          .from('user_progress')
+          .upsert({
+            user_id: currentUser.id,
+            readiness_score: newProgress.readinessScore,
+            employability_score: newProgress.employabilityScore,
+            simulations_completed: newProgress.simulationsCompleted,
+            completed_simulations: newProgress.completedSimulations,
+            skills: newProgress.skills,
+            simulation_performance: newProgress.simulationPerformance,
+            ai_confidence: newProgress.aiConfidence,
+            recommendation_strength: newProgress.recommendationStrength,
+            milestones_completed: newProgress.milestonesCompleted,
+            opportunities_matched: newProgress.opportunitiesMatched,
+            unlocked_pathways: newProgress.unlockedPathways,
+          }, {
+            onConflict: 'user_id'
+          })
+          .then(({ error }) => {
+            if (error) {
+              console.error("Failed to save simulation progress to Supabase:", error)
+            } else {
+              console.log("Simulation progress saved to Supabase successfully")
+            }
+          })
+      }
+
+      return newProgress
     })
-  }, [])
+  }, [currentUser, isAuthenticated])
 
   const clearSimulationRun = useCallback(() => {
     setProgress((prev) => ({
@@ -920,8 +966,6 @@ export function UserProvider({
 
       unlockPathway,
 
-      toggleLowDataMode,
-
       addOpportunity,
 
       addCompletedSimulation,
@@ -957,7 +1001,6 @@ export function UserProvider({
       completeSimulation,
       setPathway,
       unlockPathway,
-      toggleLowDataMode,
       addOpportunity,
       addCompletedSimulation,
       updateProfile,

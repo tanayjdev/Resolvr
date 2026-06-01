@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight, Sparkles, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
 import { useState } from "react"
@@ -12,9 +12,85 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import emailjs from "@emailjs/browser"
 
 export function CTASection() {
   const [contactOpen, setContactOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setSuccess(false)
+
+    // Validation
+    if (!formData.name.trim()) {
+      setError("Please enter your name")
+      return
+    }
+    if (!formData.email.trim()) {
+      setError("Please enter your email")
+      return
+    }
+    if (!validateEmail(formData.email)) {
+      setError("Please enter a valid email address")
+      return
+    }
+    if (!formData.message.trim()) {
+      setError("Please enter your message")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || ""
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || ""
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error("EmailJS configuration is missing. Please contact support.")
+      }
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+          to_email: "devangbhawan007@gmail.com",
+        },
+        publicKey
+      )
+
+      setSuccess(true)
+      setFormData({ name: "", email: "", message: "" })
+      
+      // Close modal after success
+      setTimeout(() => {
+        setContactOpen(false)
+        setSuccess(false)
+      }, 2000)
+    } catch (err) {
+      console.error("EmailJS error:", err)
+      setError(err instanceof Error ? err.message : "Failed to send message. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
@@ -79,38 +155,76 @@ export function CTASection() {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-muted-foreground">
-              Have questions? We'd love to hear from you. Fill out the form below and we'll get back to you within 24 hours.
-            </p>
-            <form className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-1 block">Name</label>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors"
-                />
+            {success ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <CheckCircle2 className="w-16 h-16 text-green-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Message Sent!</h3>
+                <p className="text-muted-foreground">
+                  We'll get back to you within 24 hours.
+                </p>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Email</label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">Message</label>
-                <textarea
-                  placeholder="How can we help?"
-                  rows={4}
-                  className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors resize-none"
-                />
-              </div>
-              <Button className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90">
-                Send Message
-              </Button>
-            </form>
+            ) : (
+              <>
+                <p className="text-muted-foreground">
+                  Have questions? We'd love to hear from you. Fill out the form below and we'll get back to you within 24 hours.
+                </p>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Name</label>
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      disabled={isLoading}
+                      className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Email</label>
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      disabled={isLoading}
+                      className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Message</label>
+                    <textarea
+                      placeholder="How can we help?"
+                      rows={4}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      disabled={isLoading}
+                      className="w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 focus:border-primary/50 focus:outline-none transition-colors resize-none disabled:opacity-50"
+                    />
+                  </div>
+                  {error && (
+                    <div className="flex items-center gap-2 text-red-500 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Message"
+                    )}
+                  </Button>
+                </form>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

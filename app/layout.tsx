@@ -15,6 +15,8 @@ import "./globals.css"
 
 import { UserProvider } from "@/context/user-context"
 import { AuthProvider } from "@/context/auth-context"
+import { PersonaProvider } from "@/context/persona-context"
+import { SettingsProvider } from "@/context/SettingsContext"
 
 // =========================================================
 // Fonts
@@ -196,7 +198,11 @@ export default function RootLayout({
         {/* Global App State */}
         <AuthProvider>
           <UserProvider>
-            {children}
+            <PersonaProvider>
+              <SettingsProvider>
+                {children}
+              </SettingsProvider>
+            </PersonaProvider>
           </UserProvider>
         </AuthProvider>
 

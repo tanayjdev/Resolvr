@@ -5,12 +5,17 @@ import type {
   WeeklyHours,
 } from "@/lib/types/user-profile"
 
+import type { CareerTrack } from "@/lib/personas/persona-config"
+
 export const CAREER_GOAL_OPTIONS = [
   "AI Engineer",
   "Data Scientist",
   "Backend Developer",
   "Cloud Engineer",
   "DevOps Engineer",
+  "Web Developer",
+  "Cybersecurity Specialist",
+  "Product Manager",
 ] as const
 
 export type CareerGoalOption =
@@ -81,6 +86,23 @@ export function mapCareerGoalToPathway(
     mapping[careerGoal] ??
     "Machine Learning"
   )
+}
+
+export function mapCareerGoalToCareerTrack(
+  careerGoal: string
+): CareerTrack {
+  const mapping: Record<string, CareerTrack> = {
+    "AI Engineer": "ai-engineer",
+    "Data Scientist": "data-science",
+    "Backend Developer": "web-developer",
+    "Cloud Engineer": "cloud-engineer",
+    "DevOps Engineer": "cloud-engineer",
+    "Web Developer": "web-developer",
+    "Cybersecurity Specialist": "cybersecurity",
+    "Product Manager": "product-manager",
+  }
+
+  return mapping[careerGoal] ?? "web-developer"
 }
 
 export function getResumeStep(

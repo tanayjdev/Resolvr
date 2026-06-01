@@ -568,6 +568,7 @@ and pathway progression.
           requiredSkills: selectedOpportunity.tags,
           aiRanking: selectedOpportunity.matchScore >= 90 ? "Top Match" : selectedOpportunity.matchScore >= 75 ? "High Match" : "Strong Match",
           posted: selectedOpportunity.postedAt,
+          url: selectedOpportunity.url,
         } : null}
       />
     </section>
