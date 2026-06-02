@@ -8,12 +8,12 @@
 
 <br/>
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-0ea5e9?style=for-the-badge&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-v4.2-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20DB-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Live Demo](https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-resolvr--lac.vercel.app-00C2FF?style=for-the-badge)](https://resolvr-lac.vercel.app)
-&nbsp;&nbsp;
 
 <br/>
 
@@ -191,7 +191,7 @@ Five steps. Two minutes. Fully personalized experience unlocked.
                                   (loop repeats, score grows)
 ```
 
-State lives in two React contexts — `UserContext` (profile + progress) and `AppStateContext` (active sim run, filters, notifications) — both persisted to `localStorage`.
+Auth and user profiles are persisted via **Supabase** (auth + `profiles` + `user_progress` tables). Client-side state lives in two React contexts — `UserContext` (profile + progress) and `AppStateContext` (active sim run, filters, notifications) — with a typed `localStorage` layer for fast reads.
 
 <br/>
 
@@ -204,6 +204,9 @@ resolvr/
 ├── app/                        # Next.js App Router pages
 │   ├── page.tsx                # Landing page
 │   ├── layout.tsx              # Root layout
+│   ├── auth/                   # Supabase auth callback handler
+│   ├── login/                  # Login page
+│   ├── signup/                 # Signup page
 │   ├── dashboard/              # Main dashboard
 │   ├── onboarding/             # 5-step onboarding flow
 │   ├── pathway/                # Career pathway explorer
@@ -223,10 +226,12 @@ resolvr/
 │   ├── pathway/                # Roadmap nodes, progress visualization
 │   ├── opportunities/          # Opportunity cards, filters, modals
 │   ├── onboarding/             # Step components
+│   ├── auth/                   # ProtectedRoute wrapper
 │   ├── common/                 # Shared utilities, page transitions
 │   └── ui/                     # Radix/shadcn base primitives
 │
 ├── context/
+│   ├── auth-context.tsx        # Supabase session + AuthUser state
 │   ├── user-context.tsx        # UserProfile + UserProgress global state
 │   └── app-state.tsx           # Opportunities, simulations, AI insights
 │
@@ -234,18 +239,22 @@ resolvr/
 │   ├── ai/
 │   │   └── scoring-engine.ts   # ScoringInput/Output, SimulationMemory, riskProfile
 │   ├── simulation/             # Types, scoring engine, command parser, incident engine
-│   ├── scenarios/              # All 5 scenario config files
+│   ├── simulations/            # All 5 scenario config files
 │   ├── pathways/               # pathway-engine.ts, pathway-recommendations.ts
 │   ├── onboarding/             # Career goals, interests, skill levels, learning styles
 │   ├── types/                  # UserProfile, UserProgress, enhanced data models
 │   ├── storage/                # Typed localStorage read/write wrappers
+│   ├── supabase.ts             # Supabase client initialisation
 │   ├── readiness-engine.ts     # computeReadinessScore()
 │   ├── mock-data.ts            # Career paths, skills, opportunities seed data
 │   └── utils.ts
 │
 ├── hooks/                      # Custom React hooks
+├── backend/
+│   └── main.py                 # FastAPI stub (pathway, simulation, score endpoints)
 └── public/
     ├── branding/               # Logo, favicon, PWA icons (192px, 512px, apple-touch)
+    ├── site.webmanifest        # PWA manifest
     └── team/                   # Team member photos
 ```
 
@@ -263,14 +272,21 @@ cd Resolvr
 # 2. Install
 pnpm install          # or: npm install
 
-# 3. Run
+# 3. Set up environment variables
+cp .env.example .env.local
+# Fill in your Supabase project URL and anon key
+# NEXT_PUBLIC_SUPABASE_URL=...
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+# NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# 4. Run
 pnpm dev              # → http://localhost:3000
 
-# 4. Build
+# 5. Build
 pnpm build
 ```
 
-> ✅ **Zero config required.** No `.env` file, no API keys, no database. Runs fully on client-side mock data + `localStorage`. Just clone and go.
+> ⚠️ **Supabase required.** Create a free project at [supabase.com](https://supabase.com), copy your project URL and anon key into `.env.local`. Auth, user profiles, and progress data all live in Supabase.
 
 > ⚠️ `next.config.mjs` sets `typescript.ignoreBuildErrors: true` so TypeScript errors won't block production builds. Run `tsc --noEmit` separately to catch type issues during development.
 
@@ -284,14 +300,15 @@ pnpm build
 
 | Layer | Technology |
 |:---|:---|
-| **Framework** | Next.js 16.2 (App Router) + React 19 |
-| **Language** | TypeScript 5.7 |
-| **Styling** | Tailwind CSS v4 + Framer Motion |
+| **Framework** | Next.js 16.2.6 (App Router) + React 19 |
+| **Language** | TypeScript 5.7.3 |
+| **Styling** | Tailwind CSS v4.2 + Framer Motion v12 |
 | **Components** | Radix UI + shadcn/ui + Lucide React |
-| **Charts** | Recharts |
-| **Forms** | React Hook Form + Zod |
-| **State** | React Context — `UserContext` + `AppStateContext` |
-| **Persistence** | `localStorage` via typed wrappers (`lib/storage/`) |
+| **Charts** | Recharts 2.15 |
+| **Validation** | Zod 3.24 |
+| **Auth & DB** | Supabase (auth + `profiles` + `user_progress` tables) |
+| **State** | React Context — `AuthContext` + `UserContext` + `AppStateContext` |
+| **Persistence** | Supabase (cloud) + typed `localStorage` wrappers (client cache) |
 | **Deployment** | Vercel |
 
 </div>
@@ -302,15 +319,16 @@ pnpm build
 
 ## 🗺️ Roadmap
 
-- [ ] 🔐 Authentication + persistent cloud accounts
-- [ ] 🤖 Real LLM responses (replace mock AI feedback)
-- [ ] 📡 Backend API for live opportunity data
+- [x] 🔐 Authentication + persistent cloud accounts (Supabase)
+- [ ] 🤖 Real LLM responses (replace rule-based AI feedback engine)
+- [ ] 📡 Backend API for live opportunity data (FastAPI stub → production)
 - [ ] 💻 Live coding assessments inside simulation steps
 - [ ] 🎮 Gamification — XP, badges, streak tracking
 - [ ] 🏆 Multi-user leaderboards and peer comparison
-- [ ] 📱 Mobile-optimized simulation terminal
+- [ ] 📱 Mobile-optimised simulation terminal
 - [ ] 🌩️ New scenarios — cloud cost incidents, DB outages, data pipeline failures
 - [ ] 📊 Exportable career readiness reports
+- [ ] 🌐 Regional language support (Hindi + other Indian languages)
 
 <br/>
 
@@ -338,7 +356,7 @@ pnpm build
 
 <div align="center">
 
-| Name | Role | Linkedin |
+| Name | Role | LinkedIn |
 |:---|:---|:---:|
 | **Tanay Jain** | Backend Engineer & Infrastructure Lead | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/tanay-jain-321617375) |
 | **Devang Bhawan** | Frontend Engineering Lead | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/devang-bhawan-8248193a1) |
