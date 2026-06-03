@@ -33,9 +33,13 @@
 
 Resolvr puts you inside that moment — before it matters. You pick a career goal, get a real readiness score, and work through actual P0/P1 production incidents in a live terminal. Every command you run, every hint you take, every escalation you handle (or miss) updates your employability score in real time.
 
-**No static quizzes. No fake career advice. Real incident scenarios, real skill gaps, real paths forward.**
+**No static quizzes. No fake career advice. Real incident scenarios, real skill gaps, real paths forward.** <br/>
 
-<br/>
+> ⚠️ Prototype Note
+>
+> Phase 1 uses deterministic readiness scoring, structured recommendation logic, and curated seed datasets for opportunities and career pathways.
+>
+> Phase 2 introduces live LLM responses, backend APIs, and expanded opportunity intelligence.
 
 ---
 
